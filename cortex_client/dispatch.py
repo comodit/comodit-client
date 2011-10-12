@@ -22,7 +22,7 @@ from control.organizations import OrganizationsController
 from control.parameters import ParametersController
 from control.provisioner import ProvisionerController
 from control.settings import SettingsController
-from control.sync import SyncController
+from control.sync.sync import SyncController
 from control.users import UsersController
 from rest.exceptions import ApiException
 from util import globals
