@@ -12,16 +12,13 @@ RELEASE = "Ongoing development"
 from control.applications import ApplicationsController
 from control.platforms import PlatformsController
 from control.changes import ChangesController
-from control.cms import CmsController
 from control.distributions import DistributionsController
 from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
 from control.files import FilesController
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
-from control.parameters import ParametersController
 from control.provisioner import ProvisionerController
-from control.settings import SettingsController
 from control.sync.sync import SyncController
 from control.users import UsersController
 from rest.exceptions import ApiException
@@ -31,9 +28,10 @@ import optparse
 import traceback
 import sys
 import control.router
+from config import Config, ConfigException
 
 def run(argv):
-    control.router.register(["user"], UsersController())
+    control.router.register(["users"], UsersController())
     control.router.register(["pf",  "platforms"], PlatformsController())
     control.router.register(["app",  "applications"], ApplicationsController())
     control.router.register(["dist", "distributions"], DistributionsController())
@@ -41,18 +39,22 @@ def run(argv):
     control.router.register(["env",  "environments"], EnvironmentsController())
     control.router.register(["host", "hosts"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
-    control.router.register(["cms",  "configuration"], CmsController())        
     control.router.register(["sync"], SyncController())
-    control.router.register(["param", "parameters"], ParametersController());
     control.router.register(["cr", "changes"], ChangesController());
-    control.router.register(["settings"], SettingsController());    
     control.router.register(["files"], FilesController());    
     _parse(argv)
 
 def _parse(argv):
-            
-    usage = "usage: %prog resource [command] [options]"
+
+    usage = "usage: %prog (resource|service) [command] [options]"
     parser = optparse.OptionParser(usage)
+
+    try:
+        config=Config()
+    except ConfigException, e:
+        print "Configuration error:"
+        print e.msg
+        exit(-1)
 
     parser.add_option("-f", "--file", dest="filename", help="input file with a JSON object")
     parser.add_option("-j", "--json", dest="json",     help="input JSON object via command line")
@@ -67,20 +69,16 @@ def _parse(argv):
     parser.add_option("--env-path",   dest="env_path", help="Path to the parent environment")
     parser.add_option("--env-uuid",   dest="env_uuid", help="UUID of the parent environment")
 
-    parser.add_option("--host",        dest="host",      help="Path or UUID of the parent host (conditioned by --with-uuid)")
-    parser.add_option("--host-path",   dest="host_path", help="Path to the parent host")
-    parser.add_option("--host-uuid",   dest="host_uuid", help="UUID of the parent host")
-
-    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default="http://localhost:8000/api")
-    parser.add_option("--user",       dest="username", help="username on cortex server", default="admin")
-    parser.add_option("--pass",       dest="password", help="password on cortex server", default="secret")
-
+    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=config.config["client"]["api"])
+    parser.add_option("--user",       dest="username", help="username on cortex server", default=config.config["client"]["username"])
+    parser.add_option("--pass",       dest="password", help="password on cortex server", default=config.config["client"]["password"])
+    parser.add_option("--templates",  dest="templates_path", help="directory containing JSON templates", default=config.templates_path)
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
     parser.add_option("--debug",      dest="debug",    help="display debug information", action="store_true", default=False)    
     parser.add_option("--version",    dest="version",  help="display version information", action="store_true", default=False)
-    
+
     (globals.options, args) = parser.parse_args()
 
     if globals.options.version:
@@ -124,8 +122,10 @@ def print_resources():
     print '''
 Resources:
     platforms           Underlying infrastructure platforms
-    applications        Recipes to provision and configure applications on a host
-    distributions       Recipes to provision and configure distributions on a host
+    applications        Recipes to provision and configure applications on a
+                        host
+    distributions       Recipes to provision and configure distributions on a
+                        host
     parameters          Describe parameters used in recipes
     files               Files used in recipes
     users               User accounts
@@ -135,5 +135,4 @@ Resources:
 
 Services:
     provisioner         Provision virtual machines based on a host definition
-    cms                 Configuration manager
 ''' 

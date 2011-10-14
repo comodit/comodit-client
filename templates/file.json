@@ -1,0 +1,11 @@
+{
+    "name": "<file name>", 
+    "parameters": [
+        {
+            "name": "<parameter name>",
+            "description": "<parameter description>",
+            "key": "<parameter key>",
+            "value": "<parameter default value>"
+        }
+    ] 
+}

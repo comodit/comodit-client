@@ -9,6 +9,7 @@
 
 import json, os
 
+from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
 from cortex_client.util import globals, prompt, fileupload
 from cortex_client.rest.client import Client
@@ -17,12 +18,10 @@ from cortex_client.util.editor import edit_text
 
 import urlparse
 
-TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'templates'))
-
 class FilesController(AbstractController):
 
     _resource = "files"
-    _template = ""
+    _template = "file.json"
     _parameters = {}
 
     def __init__(self):
@@ -127,23 +126,37 @@ class FilesController(AbstractController):
     def _add(self, argv):
         options = globals.options
 
-        if not options.filename:
-            raise MissingException("You must provide a file to upload (--file)")
+        if options.filename:
+            with open(options.filename, 'r') as f:
+                item = json.load(f)
+        elif options.json:
+            item = json.loads(options.json)
+        else :
+            template = open(os.path.join(Config().templates_path, self._template)).read()
+            #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
+            updated = edit_text(template)
+            #updated = re.sub(r'#.*$', "", updated)
+            item = json.loads(updated)
 
-        with open(options.filename, 'r') as f:
+        template_file_name = item["name"]
+        with open(template_file_name, 'r') as f:
             url = urlparse.urlparse(self._endpoint() + "/" + self._resource)
-            response = fileupload.post_multipart(url.netloc, url.path, [("test", "none")], [("file", options.filename, f.read())], {"Authorization": "Basic " + (options.username + ":" + options.password).encode("base64").rstrip()})
+            response = fileupload.post_multipart(url.netloc, url.path,
+                                                 [("test", "none")],
+                                                 [("file", template_file_name, f.read())],
+                                                 {"Authorization": "Basic " + (options.username + ":" + options.password).encode("base64").rstrip()})
 
-        result = json.loads(response);
+        uuid = json.loads(response)[0];
+
+        if options.force: self._parameters["force"] = "true"
+
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.update(self._resource + "/" + uuid + "/_meta", item, self._parameters)
 
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
         else:
-            if (len(result) == "0"):
-                print "Request returned 0 object."
-            else:
-                for o in result:
-                    print o
+            self._render(result)
 
     def _write(self, argv):
         options = globals.options
@@ -192,6 +205,12 @@ class FilesController(AbstractController):
         else:
             print "Name:", item['name']
             print "UUID:", item['uuid']
+            if(item.has_key("parameters")):
+                print "Parameters:",
+                parameters = item['parameters']
+                for p in parameters:
+                    print p["key"],
+                print
 
 
     def _resolv(self, path):
@@ -202,14 +221,20 @@ class FilesController(AbstractController):
         return options.api
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perfom.
 
 Actions:
     list            List all files available to the user
-    show [uuid]     Show the details of a file
-    add             Upload a new file
-    update [uuid]   Update the details of a file
-    delete [uuid]   Delete a file
-    read [uuid]     Fetch the content of a file
-    write [uuid]    Update the content of a file
+    show <uuid>     Show the details of a file
+    add             Create a new file (see below for more details)
+    update <uuid>   Update the details of a file
+    delete <uuid>   Delete a file
+    read <uuid>     Fetch the content of a file
+    write <uuid>    Update the content of a file (content is read from file
+                    whose name must be provided through --file option)
+
+A file is completely described by its details and its content. Details include a
+file name as well as a list of parameters. When creating a new file (add),
+details must be provided (through --file, --json or interactively), the content
+is read from file whose name is given in the details.
 '''

@@ -1,6 +1,0 @@
-{
-    "key": "my_parameter", 
-    "name": "My parameter",
-    "description": "Another parameter",
-    "default_value": "80" 
-}

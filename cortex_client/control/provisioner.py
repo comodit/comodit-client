@@ -19,7 +19,8 @@ class ProvisionerController(AbstractController):
     def __init__(self):
         super(ProvisionerController, self ).__init__()
         self._register(["ks", "kickstart"], self._kickstart)
-        self._register(["create"], self._provision)
+        self._register(["provision"], self._provision)
+        self._default_action = self._help
 
     def _kickstart(self, argv):
         options = globals.options
@@ -75,3 +76,16 @@ class ProvisionerController(AbstractController):
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']
+
+    def _help(self, argv):
+        print '''You must provide an action.
+
+Actions:
+    kickstart <id>  Displays the kickstart associated to given host
+    provision <id>  Provisions given host
+    
+A path may uniquely define a host. The path to a particular host is as follows:
+<organization name>/<environment name>/<host name>.
+
+<id> may either be a UUID (--with-uuid option must be provided) or a path.
+'''

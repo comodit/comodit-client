@@ -4,6 +4,13 @@
    "environment":"<UUID of parent environment>",
    "distribution": "<uuid of a distribution>",
    "applications": [
-   	"<UUID of an application>"
+     "<UUID of an application>"
+   ]
+   "platform" : "<UUID of a platform>"
+   "settings": [
+     {
+       "key": "<k>",
+       "value": "<v>"
+     }
    ]
 }

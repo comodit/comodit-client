@@ -9,10 +9,11 @@
 
 import json
 
-from cortex_client.util import globals
+from cortex_client.util import globals, prompt
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException, MissingException
 from cortex_client.rest.client import Client
+from cortex_client.rest.exceptions import ApiException
 
 class HostsController(ResourceController):
 
@@ -22,6 +23,11 @@ class HostsController(ResourceController):
     def __init__(self):
         super(HostsController, self ).__init__()
         self._register(["s", "state"], self._state)
+        self._register(["start"], self._start)
+        self._register(["pause"], self._pause)
+        self._register(["resume"], self._resume)
+        self._register(["shutdown"], self._shutdown)
+        self._register(["poweroff"], self._poweroff)
 
     def _list(self, argv):
         options = globals.options
@@ -47,15 +53,22 @@ class HostsController(ResourceController):
 
         super(HostsController, self)._list(argv)
 
+    def _get_uuid(self, argv):
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid host identifier")
+
+        # Validate input parameters
+        if globals.options.uuid:
+            return argv[0]
+        else:
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
+            return uuid
+
     def _state(self, argv):
         options = globals.options
 
-        # Require an object as argument
-        if len(argv) == 0:
-            raise MissingException("You must provide a valid object identifier")
-
-        # Validate input parameters
-        uuid = argv[0]
+        uuid = self._get_uuid(argv)
 
         # Query the server
         client = Client(self._endpoint(), options.username, options.password)
@@ -71,7 +84,7 @@ class HostsController(ResourceController):
             print item['uuid'], item['name']
         else:
             print "Name:", item['name']
-            print "UUUID:", item['uuid']
+            print "UUID:", item['uuid']
             if item.has_key('description'):
                 print "Description:", item['description']
 
@@ -86,16 +99,79 @@ class HostsController(ResourceController):
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']
 
+    def _apply_action(self, action, argv):
+        options = globals.options
+
+        uuid = self._get_uuid(argv)
+
+        # Query the server
+        client = Client(self._endpoint(), options.username, options.password)
+        client.update(self._resource + "/" + uuid + "/" + action, decode=False)
+
+    def _delete(self, argv):
+        options = globals.options
+
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+
+        # Validate input parameters
+        if options.uuid:
+            uuid = argv[0]
+        else:
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
+
+        client = Client(self._endpoint(), options.username, options.password)
+        item = client.read(self._resource + "/" + uuid)
+
+        if (prompt.confirm(prompt="Delete " + item['name'] + " ?", resp=False)) :
+            if(prompt.confirm(prompt="Delete VM also ?", resp=False)):
+                try:
+                    client.update(self._resource + "/" + uuid + "/_delete", decode=False)
+                except ApiException, e:
+                    if(e.code == 400):
+                        print "Could not delete VM:", e.message
+                    else:
+                        raise e
+            client.delete(self._resource + "/" + uuid)
+
+    def _start(self, argv):
+        self._apply_action("_start", argv)
+
+    def _pause(self, argv):
+        self._apply_action("_pause", argv)
+        
+    def _resume(self, argv):
+        self._apply_action("_resume", argv)
+
+    def _shutdown(self, argv):
+        self._apply_action("_stop", argv)
+        
+    def _poweroff(self, argv):
+        self._apply_action("_off", argv)
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.
 
 Actions:
-    list --env [id]    List all hosts within an environment
-    show [id]          Show the details of a host
-    state [id]         Show the state of a host
+    list [--env <id> | --env-path <path> | --env-uuid <uuid>]
+                       List all hosts, optionally within an environment
+    show <id>          Show the details of a host
+    state <id>         Show the state of a host
     add                Add an host
-    update [id]        Update a host
-    delete [id]        Delete a host
+    update <id>        Update a host
+    delete <id>        Delete a host
+    start <id>         Start a host
+    pause <id>         Pause a host
+    resume <id>        Resume a host's execution
+    shutdown <id>      Shutdown a host
+    poweroff <id>      Power-off a host
 
+A path may uniquely define an environment or a host. The path to a particular
+environment is as follows: <organization name>/<environment name>. The path
+to a particular host is as follows: <organization name>/<environment name>/
+<host name>.
+
+<id> may either be a UUID (--with-uuid option must be provided) or a path.
 '''

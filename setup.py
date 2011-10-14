@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from platform import python_version
+from setuptools import setup, find_packages
+
+major, minor, micro = python_version().split('.')
+
+if major != '2' or minor not in ['6', '7']:
+    raise Exception('unsupported version of python')
 
 requires = [
     'python >= 2.6',
@@ -9,18 +15,16 @@ requires = [
 
 setup(
     name='cortex-client',
-    version='0.7.0',
     description='cortex command line client',
     author='Laurent Eschenauer',
     author_email='laurent.eschenauer@gmail.com',
     url='https://github.com/guardis/cortex-client',
     license='',
-    packages=['cortex_client', 'cortex_client/control', 'cortex_client/rest', 'cortex_client/util'],
+    packages=find_packages(),
     scripts=[
-        'cortex'
+        'cortex-client'
     ],
     include_package_data=True,
-    data_files=[('/usr/bin/', ['cortex']),],
     # Here's the list of usable classifiers:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

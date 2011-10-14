@@ -21,9 +21,6 @@
       		"group":"root",
       		"mode":"644",
       		"template":"<UUID of file template>",
-      		"parameters": [
-      			"parameter_one"
-      		]
       	}
       ]
 }

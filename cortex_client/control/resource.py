@@ -9,14 +9,13 @@
 
 import json, os
 
+from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
 from cortex_client.util import globals, prompt
 from cortex_client.rest.client import Client
 from cortex_client.control.exceptions import NotFoundException, MissingException
 from cortex_client.util.editor import edit_text
 
-
-TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'templates'))
 
 class ResourceController(AbstractController):
 
@@ -81,7 +80,7 @@ class ResourceController(AbstractController):
         elif options.json:
             item = json.loads(options.json)
         else :
-            template = open(os.path.join(TEMPLATE_DIR, self._template)).read()
+            template = open(os.path.join(Config().templates_path, self._template)).read()
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             updated = edit_text(template)
             #updated = re.sub(r'#.*$', "", updated)

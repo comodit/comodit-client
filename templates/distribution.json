@@ -4,4 +4,5 @@
     "url":"http://example.com/public/centos/5.5/os/i386/",
     "initrd":"/var/lib/cortex/dist/my-distro/initrd.img",
     "vmlinuz":"/var/lib/cortex/dist/my-distro/vmlinuz",
+    "kickstart": "<UUID of kickstart template>"
 }

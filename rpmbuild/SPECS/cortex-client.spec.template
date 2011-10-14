@@ -1,0 +1,56 @@
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+
+%define main_package cortex_client
+
+Name: cortex-client
+Version: #VERSION#
+Release: #RELEASE#%{?dist}
+Summary: Cortex Client
+
+Group: System Environment/Applications
+License: Custom/Proprietary
+Vendor: Guardis
+Source0: %{name}-%{version}-#RELEASE#.tar.gz
+
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch: noarch
+
+Packager: Gerard Dethier <gerard.dethier@guardis.com>
+
+BuildRequires: python-devel
+BuildRequires: python-setuptools
+
+Requires: python >= 2.6
+Requires: python(abi) >= 2.6
+
+%description
+
+%prep
+%setup -c
+
+%build
+%{__python} setup.py build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__mkdir} -p %{buildroot}/etc/cortex/client/templates/
+
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+
+%{__cp} cortex-client %{buildroot}/usr/bin/cortex-client
+%{__cp} conf/cortex-client.conf %{buildroot}/etc/cortex/
+%{__cp} templates/*.json %{buildroot}/etc/cortex/client/templates/
+
+# Remove egg info
+%{__rm} -rf %{buildroot}/%{python_sitelib}/%{main_package}*.egg-info
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+/usr/bin/cortex-client
+%config(noreplace)/etc/cortex/cortex-client.conf
+/etc/cortex/client/templates/*.json
+%{python_sitelib}/%{main_package}
+
+%changelog

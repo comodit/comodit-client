@@ -1,5 +1,5 @@
 {
-    "name":"my-app",
+    "name":"my-platform",
     "description":"My application example",
     "driver": "com.guardis.*",
     "settings": [

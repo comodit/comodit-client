@@ -40,7 +40,7 @@ class SyncController(AbstractController):
 
         # Ensures local repository does not contain stale data
         if(os.path.exists(self._root)):
-            shutil.rmtree(self._root)
+            raise SyncException(self._root+" already exists.")
 
         self._ensureFolders()
         self._dumpApplications()
