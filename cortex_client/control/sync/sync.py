@@ -7,19 +7,15 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import os, json, shutil
+import os
 
 from cortex_client.util import globals, path
 from cortex_client.control.abstract import AbstractController
 from cortex_client.control.exceptions import MissingException
-from cortex_client.control.exceptions import ControllerException
-from cortex_client.rest.client import Client
 from cortex_client.rest.exceptions import ApiException
-from actions import *
 
-class SyncException(ControllerException):
-    def __init__(self, msg):
-        ControllerException.__init__(self, msg)
+from actions import *
+from exceptions import SyncException
 
 class SyncController(AbstractController):
 
@@ -35,7 +31,6 @@ class SyncController(AbstractController):
         if not self._options.username:
             raise MissingException("Pull requires a username to be defined")
 
-        self._client = Client(self._options.api, self._options.username, self._options.password)
         self._root = "cortex." + self._options.username
 
         # Ensures local repository does not contain stale data
@@ -43,6 +38,7 @@ class SyncController(AbstractController):
             raise SyncException(self._root+" already exists.")
 
         self._ensureFolders()
+        self._dumpFiles()
         self._dumpApplications()
         self._dumpDistributions()
         self._dumpOrganizations()
@@ -60,12 +56,12 @@ class SyncController(AbstractController):
         if not self._options.username:
             raise MissingException("Push requires a username")
 
-        self._client = Client(self._options.api, self._options.username, self._options.password)
         self._root = "cortex." + self._options.username
 
         self._readRemoteEntities()
 
         self._actions = ActionsQueue()
+        self._pushFiles()
         self._pushApplications()
         self._pushDistributions()
         self._pushPlatforms()
@@ -78,49 +74,36 @@ class SyncController(AbstractController):
             print "Push not fast-forward:"
             self._actions.display()
 
-    def _readDefinitionFile(self, file_name):
-        if(not os.path.exists(file_name)):
-            raise SyncException("Definition file "+file_name+" not found")
-    
-        with open(file_name, 'r') as f:
-            return json.load(f)
-
     def _readRemoteEntities(self):
-        file_list = self._client.read("files")
+        file_list = self._api.get_file_collection().get_resources()
         self._remote_files = {}
-        if(file_list["count"] != "0"):
-            for f in file_list["items"]:
-                self._remote_files[f["uuid"]] = f
+        for f in file_list:
+            self._remote_files[f.get_uuid()] = f
 
-        app_list = self._client.read("applications")
+        app_list = self._api.get_application_collection().get_resources()
         self._remote_applications = {}
-        if(app_list["count"] != "0"):
-            for app in app_list["items"]:
-                self._remote_applications[app["name"]] = app
-        
-        dist_list = self._client.read("distributions")
+        for app in app_list:
+            self._remote_applications[app.get_name()] = app
+
+        dist_list = self._api.get_distribution_collection().get_resources()
         self._remote_distributions = {}
-        if(dist_list["count"] != "0"):
-            for dist in dist_list["items"]:
-                self._remote_distributions[dist["name"]] = dist
+        for dist in dist_list:
+            self._remote_distributions[dist.get_name()] = dist
                 
-        host_list = self._client.read("hosts")
+        host_list = self._api.get_host_collection().get_resources()
         self._remote_hosts = {}
-        if(host_list["count"] != "0"):
-            for host in host_list["items"]:
-                self._remote_hosts[host["name"]] = host
+        for host in host_list:
+            self._remote_hosts[host.get_name()] = host
 
-        org_list = self._client.read("organizations")
+        org_list = self._api.get_organization_collection().get_resources()
         self._remote_organizations = {}
-        if(org_list["count"] != "0"):
-            for org in org_list["items"]:
-                self._remote_organizations[org["name"]] = org
+        for org in org_list:
+            self._remote_organizations[org.get_name()] = org
 
-        plats_list = self._client.read("platforms")
+        plats_list = self._api.get_platform_collection().get_resources()
         self._remote_platforms = {}
-        if(plats_list["count"] != "0"):
-            for plat in plats_list["items"]:
-                self._remote_platforms[plat["name"]] = plat
+        for plat in plats_list:
+            self._remote_platforms[plat.get_name()] = plat
 
     def _help(self, argv):
         print """You must provide an action to perfom.
@@ -133,45 +116,30 @@ Actions:
 """
 
     def _ensureFolders(self):
+        path.ensure(os.path.join(self._root, "files"))
         path.ensure(os.path.join(self._root, "applications"))
         path.ensure(os.path.join(self._root, "distributions"))
         path.ensure(os.path.join(self._root, "organizations"))
         path.ensure(os.path.join(self._root, "platforms"))
 
-    def _dumpTemplate(self, dest_folder, file_uuid, template_folder_name = None):
-        """
-        Dumps a template to a given folder. A template includes a file as well
-        as parameters associated to it. This method creates a subfolder whose name
-        is the file UUID or is given as argument. This subfolder will contain
-        2 files: the template file as well as a JSON file (definition.json)
-        containing associated parameters.
-        """
-        path.ensure(dest_folder)
-        content = self._client.read('files/' + file_uuid, decode=False)
-        file_meta = self._client.read('files/' + file_uuid + '/_meta')
-        file_name = file_meta['name']
-        if(template_folder_name != None):
-            output_folder = os.path.join(dest_folder, template_folder_name)
-        else:
-            output_folder = os.path.join(dest_folder, file_uuid)
-        path.ensure(output_folder)
-        with open(os.path.join(output_folder, file_name), 'w') as f:
-            f.write(content.read())
-        with open(os.path.join(output_folder, "definition.json"), 'w') as f:
-            f.write(json.dumps(file_meta, sort_keys=True, indent=4))
+    def _pushTemplate(self, src_folder):
+        f = self._api.new_file()
+        f.load(src_folder)
 
-    def _pushTemplate(self, root_folder, template_subfolder):
-        src_folder = os.path.join(root_folder, template_subfolder)
-        if(not os.path.exists(src_folder)):
-            raise SyncException("Template folder does not exist")
-        with open(os.path.join(src_folder, "definition.json"), 'r') as f:
-            template_meta = json.load(f)
-
-        local_uuid = template_meta["uuid"]
+        local_uuid = f.get_uuid()
         if(self._remote_files.has_key(local_uuid)):
-            self._actions.addAction(UpdateTemplateAction(False, self._client, src_folder, template_meta))
+            self._actions.addAction(UpdateTemplateAction(False, f))
         else:
-            self._actions.addAction(CreateTemplateAction(True, self._client, src_folder, template_meta))
+            self._actions.addAction(CreateTemplateAction(True, f))
+
+    def _pushFiles(self):
+        if(not os.path.exists(self._root + "/files")):
+            return
+
+        files_folder = os.path.join(self._root, "files")
+        files_list = os.listdir(files_folder)
+        for f in files_list:
+            self._pushTemplate(os.path.join(files_folder, f))
 
     def _pushApplications(self):
         if(not os.path.exists(self._root + "/applications")):
@@ -179,9 +147,10 @@ Actions:
 
         app_folder = os.path.join(self._root, "applications")
         apps_list = os.listdir(app_folder)
-        self._new_from_old_app = {}
-        for app in apps_list:
-            self._pushApplication(os.path.join(app_folder, app))
+        for app_name in apps_list:
+            app = self._api.new_application()
+            app.load(os.path.join(app_folder, app_name))
+            self._pushResource(app, self._remote_applications)
 
     def _getUniqueName(self, base_name, names_dict):
         if(not names_dict.has_key(base_name)):
@@ -195,52 +164,33 @@ Actions:
 
         return new_name
 
-    def _pushResource(self, res_type, local_res, available_resources):
-        res_name = local_res["name"]
-        local_uuid = local_res["uuid"]
+    def _pushResource(self, local_res, available_resources):
+        res_name = local_res.get_name()
+        local_uuid = local_res.get_uuid()
         if(available_resources.has_key(res_name)):
             remote_res = available_resources[res_name]
-            remote_uuid = remote_res["uuid"]
+            remote_uuid = remote_res.get_uuid()
             if(remote_uuid == local_uuid):
-                self._actions.addAction(UpdateResource(False, self._client,
-                                                       res_type, local_res))
+                self._actions.addAction(UpdateResource(False, local_res))
             else:
                 new_name = self._getUniqueName(res_name, available_resources)
-                local_res["name"] = new_name
-                self._actions.addAction(CreateResource(False, self._client,
-                                                       res_type, local_res))
+                local_res.set_name(new_name)
+                self._actions.addAction(CreateResource(False, local_res))
         else:
-            self._actions.addAction(CreateResource(True, self._client,
-                                                       res_type, local_res))
+            self._actions.addAction(CreateResource(True, local_res))
 
-    def _pushApplication(self, app_folder):
-        def_file = os.path.join(app_folder, "definition.json")
-        app_def = self._readDefinitionFile(def_file)
-
-        # Upload file resources
-        if (app_def.has_key("files")):
-            app_files = app_def["files"]
-            for app_file in app_files:
-                template_uuid = app_file["template"]
-                self._pushTemplate(app_folder, template_uuid)
-
-        # Define new application
-        self._pushResource("applications", app_def, self._remote_applications)
+    def _dumpFiles(self):
+        files = self._api.get_file_collection().get_resources()
+        files_folder = os.path.join(self._root, "files")
+        for f in files:
+            f.dump(os.path.join(files_folder, f.get_uuid()))
 
     def _dumpApplications(self):
-        result = self._client.read('applications')
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                name = o['name']
-                output_dir = os.path.join(self._root, "applications", name)
-                path.ensure(output_dir)
-                app_meta = json.dumps(o, sort_keys=True, indent=4)
-                with open(os.path.join(output_dir, "definition.json"), 'w') as f:
-                    f.write(app_meta)
-                if (o.has_key("files")):
-                    for t in o["files"]:
-                        file_uuid = t["template"]
-                        self._dumpTemplate(output_dir, file_uuid)
+        apps = self._api.get_application_collection().get_resources()
+        apps_folder = os.path.join(self._root, "applications")
+        for a in apps:
+            app_folder = os.path.join(apps_folder, a.get_name())
+            a.dump(app_folder)
 
     def _pushDistributions(self):
         if(not os.path.exists(self._root + "/distributions")):
@@ -248,48 +198,32 @@ Actions:
 
         dist_folder = os.path.join(self._root, "distributions")
         dists_list = os.listdir(dist_folder)
-        self._new_from_old_dist = {}
-        for dist in dists_list:
-            self._pushDistribution(os.path.join(dist_folder, dist))
-
-    def _pushDistribution(self, dist_folder):
-        def_file = os.path.join(dist_folder, "definition.json")
-        dist_def = self._readDefinitionFile(def_file)
-
-        # Upload kickstart
-        self._pushTemplate(dist_folder, "kickstart")
-
-        # Define new distribution
-        self._pushResource("distributions", dist_def, self._remote_distributions)
+        for dist_name in dists_list:
+            dist = self._api.new_distribution()
+            dist.load(os.path.join(dist_folder, dist_name))
+            self._pushResource(dist, self._remote_distributions)
 
     def _dumpDistributions(self):
-        result = self._client.read('distributions')
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                # Dump distribution description
-                dist_name = o['name']
-                data = json.dumps(o, sort_keys=True, indent=4)
-                dist_folder = os.path.join(self._root, "distributions", dist_name)
-                path.ensure(dist_folder)
-                with open(os.path.join(dist_folder, "definition.json"), 'w') as f:
-                    f.write(data)
-
-                # Dump kickstart
-                ks_uuid = o['kickstart']
-                self._dumpTemplate(dist_folder, ks_uuid, "kickstart")
+        dists = self._api.get_distribution_collection().get_resources()
+        dists_folder = os.path.join(self._root, "distributions")
+        for d in dists:
+            d.dump(os.path.join(dists_folder, d.get_name()))
 
     def _dumpOrganizations(self):
-        result = self._client.read('organizations')
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                data = json.dumps(o, sort_keys=True, indent=4)
-                uuid = o['uuid']
-                name = o['name']
-                file = os.path.join(self._root, "organizations", name)
-                path.ensure(file)
-                with open(os.path.join(file, "definition.json"), 'w') as f:
-                    f.write(data)
-                self._dumpEnvironments(uuid, file)
+        orgs = self._api.get_organization_collection().get_resources()
+        orgs_folder = os.path.join(self._root, "organizations")
+        for o in orgs:
+            org_folder = os.path.join(orgs_folder, o.get_name())
+            o.dump(org_folder)
+
+            envs = self._api.get_environment_collection().get_resources({"organizationId" : o.get_uuid()})
+            for e in envs:
+                env_folder = os.path.join(org_folder, e.get_name())
+                e.dump(env_folder)
+
+                hosts = self._api.get_host_collection().get_resources({"environmentId" : e.get_uuid()})
+                for h in hosts:
+                    h.dump(os.path.join(env_folder, h.get_name()))
 
     def _pushOrganizations(self):
         if(not os.path.exists(self._root + "/organizations")):
@@ -301,21 +235,19 @@ Actions:
             self._pushOrganization(os.path.join(org_folder, org))
 
     def _pushOrganization(self, org_folder):
-        def_file = os.path.join(org_folder, "definition.json")
-        org_def = self._readDefinitionFile(def_file)
+        org = self._api.new_organization()
+        org.load(org_folder)
 
         # Create organization
-        self._pushResource("organizations", org_def, self._remote_organizations)
+        self._pushResource(org, self._remote_organizations)
 
         # Get environments
         available_environments = {}
-        if(org_def.has_key("uuid")):
+        if(org.get_uuid()):
             try:
-                env_list = self._client.read("environments",
-                                             {"organizationId" : org_def["uuid"]})
-                if(env_list["count"] != "0"):
-                    for env in env_list["items"]:
-                        available_environments[env["name"]] = env
+                env_list = self._api.get_environment_collection().get_resources({"organizationId" : org.get_uuid()})
+                for env in env_list:
+                    available_environments[env.get_name()] = env
             except ApiException, e:
                 if(e.code == 404):
                     pass
@@ -325,15 +257,15 @@ Actions:
         # Create environments
         envs_list = os.listdir(org_folder)
         for env in envs_list:
-            if(os.path.isdir(os.path.join(org_folder, env))):
-                self._pushEnvironment(org_folder, env, available_environments)
+            env_folder = os.path.join(org_folder, env)
+            if(os.path.isdir(env_folder)):
+                self._pushEnvironment(env_folder, available_environments)
 
-    def _pushEnvironment(self, org_folder, env_name, available_environments):
-        env_folder = os.path.join(org_folder, env_name)
-        def_file = os.path.join(env_folder, "definition.json")
-        env_def = self._readDefinitionFile(def_file)
+    def _pushEnvironment(self, env_folder, available_environments):
+        env = self._api.new_environment()
+        env.load(env_folder)
 
-        self._pushResource("environments", env_def, available_environments)
+        self._pushResource(env, available_environments)
         self._pushHosts(env_folder)
 
     def _pushHosts(self, env_folder):
@@ -344,61 +276,26 @@ Actions:
 
     def _pushHost(self, env_folder, host):
         host_folder = os.path.join(env_folder, host)
-        def_file = os.path.join(host_folder, "definition.json")
-        host_def = self._readDefinitionFile(def_file)
+        host = self._api.new_host()
+        host.load(host_folder)
 
         # Create host
-        self._pushResource("hosts", host_def, self._remote_hosts)
-
-    def _dumpEnvironments(self, uuid, root):
-        result = self._client.read('environments', parameters={"organizationId":uuid})
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                data = json.dumps(o, sort_keys=True, indent=4)
-                uuid = o['uuid']
-                name = o['name']
-                file = os.path.join(root, name)
-                path.ensure(file)
-                with open(os.path.join(file, "definition.json"), 'w') as f:
-                    f.write(data)
-                self._dumpHosts(uuid, file)
-
-    def _dumpHosts(self, uuid, root):
-        result = self._client.read('hosts', parameters={"environmentId":uuid})
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                data = json.dumps(o, sort_keys=True, indent=4)
-                uuid = o['uuid']
-                name = o['name']
-                file = os.path.join(root, name)
-                path.ensure(file)
-                with open(os.path.join(file, "definition.json"), 'w') as f:
-                    f.write(data)
+        self._pushResource(host, self._remote_hosts)
 
     def _dumpPlatforms(self):
-        result = self._client.read('platforms')
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                data = json.dumps(o, sort_keys=True, indent=4)
-                uuid = o['uuid']
-                name = o['name']
-                file = os.path.join(self._root, "platforms")
-                path.ensure(file)
-                with open(os.path.join(file, name + ".json"), 'w') as f:
-                    f.write(data)
-                    
+        plats = self._api.get_platform_collection().get_resources()
+        plats_folder = os.path.join(self._root, "platforms")
+        for p in plats:
+            p.dump(os.path.join(plats_folder, p.get_name()))
+
     def _pushPlatforms(self):
         if(not os.path.exists(self._root + "/platforms")):
             return
 
-        plat_folder = os.path.join(self._root, "platforms")
-        plats_list = os.listdir(plat_folder)
-        self._new_from_old_plat = {}
-        for plat_file_name in plats_list:
-            self._pushPlatform(plat_folder, plat_file_name)
-
-    def _pushPlatform(self, plat_folder, plat_file_name):
-        def_file = os.path.join(plat_folder, plat_file_name)
-        plat_def = self._readDefinitionFile(def_file)
-
-        self._pushResource("platforms", plat_def, self._remote_platforms)
+        plats_folder = os.path.join(self._root, "platforms")
+        plats_list = os.listdir(plats_folder)
+        for plat_name in plats_list:
+            plat = self._api.new_platform()
+            plat_folder = os.path.join(plats_folder, plat_name)
+            plat.load(plat_folder)
+            self._pushResource(plat, self._remote_platforms)

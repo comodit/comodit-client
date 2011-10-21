@@ -7,7 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import urllib, urllib2, json
+import urllib, urllib2, json, urlparse
+import cortex_client.util.fileupload as fileupload
 from urllib2 import HTTPError
 from cortex_client.util import urllibx
 from cortex_client.rest.exceptions import ApiException
@@ -65,6 +66,26 @@ class Client:
         req = urllibx.RequestWithMethod(url, method='DELETE', headers=self._headers())
         self._urlopen(req)
         return
+
+    def upload_new_file(self, file_name):
+        with open(file_name, 'r') as f:
+            url = urlparse.urlparse(self.endpoint + "/files")
+            response = fileupload.post_multipart(url.netloc, url.path,
+                                                 [("test", "none")],
+                                                 [("file", file_name, f.read())],
+                                                 {"Authorization": "Basic " + (self.username + ":" + self.password).encode("base64").rstrip()})
+
+        return json.loads(response)[0];
+
+    def upload_to_exising_file(self, file_name, uuid):
+        with open(file_name, 'r') as f:
+            url = urlparse.urlparse(self.endpoint + "/files/" + uuid)
+            response = fileupload.post_multipart(url.netloc, url.path,
+                                                 [("test", "none")],
+                                                 [("file", file_name, f.read())],
+                                                 {"Authorization": "Basic " + (self.username + ":" + self.password).encode("base64").rstrip()})
+
+        return json.loads(response);
 
     def _headers(self):
         s = self.username + ":" + self.password

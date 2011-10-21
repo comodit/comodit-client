@@ -18,7 +18,6 @@ from control.exceptions import ControllerException, ArgumentException
 from control.files import FilesController
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
-from control.provisioner import ProvisionerController
 from control.sync.sync import SyncController
 from control.users import UsersController
 from rest.exceptions import ApiException
@@ -29,6 +28,7 @@ import traceback
 import sys
 import control.router
 from config import Config, ConfigException
+from api.api import CortexApi
 
 def run(argv):
     control.router.register(["users"], UsersController())
@@ -38,15 +38,14 @@ def run(argv):
     control.router.register(["org",  "organizations"], OrganizationsController())
     control.router.register(["env",  "environments"], EnvironmentsController())
     control.router.register(["host", "hosts"], HostsController())
-    control.router.register(["prov", "provisioner"], ProvisionerController())
     control.router.register(["sync"], SyncController())
     control.router.register(["cr", "changes"], ChangesController());
-    control.router.register(["files"], FilesController());    
+    control.router.register(["files"], FilesController());
     _parse(argv)
 
 def _parse(argv):
 
-    usage = "usage: %prog (resource|service) [command] [options]"
+    usage = "usage: %prog resource [command] [options]"
     parser = optparse.OptionParser(usage)
 
     try:
@@ -90,13 +89,16 @@ def _parse(argv):
         print_resources()
         exit(-1)
 
-    _dispatch(args[0], args[1:])
+    api = CortexApi(globals.options.api, globals.options.username,
+                    globals.options.password)
+
+    _dispatch(args[0], args[1:], api)
     
-def _dispatch(resource, args):
+def _dispatch(resource, args, api):
     options = globals.options
     
     try:
-        control.router.dispatch(resource, args)
+        control.router.dispatch(resource, api, args)
         exit(0)
     except ControllerException as e:
         print e.msg
@@ -126,13 +128,10 @@ Resources:
                         host
     distributions       Recipes to provision and configure distributions on a
                         host
-    parameters          Describe parameters used in recipes
     files               Files used in recipes
     users               User accounts
     organizations       Top-level organization
     environments        Environment defined within an organization
     hosts               Host defined within an environment
-
-Services:
-    provisioner         Provision virtual machines based on a host definition
+    changes             Change requests
 ''' 

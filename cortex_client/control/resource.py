@@ -12,16 +12,11 @@ import json, os
 from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
 from cortex_client.util import globals, prompt
-from cortex_client.rest.client import Client
-from cortex_client.control.exceptions import NotFoundException, MissingException
 from cortex_client.util.editor import edit_text
+from cortex_client.control.exceptions import MissingException
 
 
 class ResourceController(AbstractController):
-
-    _resource = ""
-    _template = ""
-    _parameters = {}
 
     def __init__(self):
         super(ResourceController, self).__init__()
@@ -34,42 +29,22 @@ class ResourceController(AbstractController):
         self._default_action = self._help
 
     def _list(self, argv):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource, parameters=self._parameters)
-
-        if options.raw:
-            print json.dumps(result, sort_keys=True, indent=4)
+        resources_list = self._get_resources(argv)
+        if(len(resources_list) == 0):
+            print "No resources to list"
         else:
-            if (result['count'] == "0"):
-                print "Request returned 0 object."
-            else:
-                for o in result['items']:
-                    self._render(o)
+            for r in resources_list:
+                print r.get_uuid(), r.get_identifier()
 
     def _show(self, argv):
-        options = globals.options
-
-        # Require an object as argument
-        if len(argv) == 0:
-            raise MissingException("You must provide a valid object identifier")
-
-        # Validate input parameters
-        if options.uuid:
-            uuid = argv[0]
-        else:
-            uuid = self._resolv(argv[0])
-            if not uuid: raise NotFoundException(uuid)
-
-        # Query the server
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/" + uuid)
+        res = self._get_resource(argv)
 
         # Display the result
+        options = globals.options
         if options.raw:
-            print json.dumps(result, sort_keys=True, indent=4)
+            res.show(as_json = True)
         else:
-            self._render(result, detailed=True)
+            res.show()
 
     def _add(self, argv):
         options = globals.options
@@ -77,91 +52,62 @@ class ResourceController(AbstractController):
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
+                res = self.get_collection()._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
+            res = self.get_collection()._new_resource(item)
         else :
             template = open(os.path.join(Config().templates_path, self._template)).read()
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             updated = edit_text(template)
             #updated = re.sub(r'#.*$', "", updated)
-            item = json.loads(updated)
+            res = self.get_collection()._new_resource(json.loads(updated))
 
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.create(self._resource, item, self._parameters)
-
-        if options.raw:
-            print json.dumps(result, sort_keys=True, indent=4)
-        else:
-            self._render(result)
+        res.create()
+        res.show(as_json = options.raw)
 
     def _update(self, argv):
         options = globals.options
-        self._parameters = {}
-
-        client = Client(self._endpoint(), options.username, options.password)
 
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                uuid = item.get("uuid")
+                res = self._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
-            uuid = item.get("uuid")
+            res = self._new_resource(item)
         elif len(argv) > 0:
-            # Get the uuid/path from the command line
-            if options.uuid:
-                uuid = argv[0]
-            else:
-                uuid = self._resolv(argv[0])
-                if not uuid: raise NotFoundException(argv[0])
-            # Find the resource
-            item = client.read(self._resource + "/" + uuid)
-            if not item: raise NotFoundException(uuid)
-            # Edit the resouce
-            original = json.dumps(item, sort_keys=True, indent=4)
+            res = self._get_resource(argv)
+            # Edit the resource
+            original = json.dumps(res.get_json(), sort_keys=True, indent=4)
             #original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
             updated = edit_text(original)
             #updated = re.sub(r'#.*$', "", updated)
-            item = json.loads(updated)
+            res.set_json(json.loads(updated))
 
-        if options.force: self._parameters["force"] = "true"
-
-        result = client.update(self._resource + "/" + uuid, item, self._parameters)
-
-        if options.raw:
-            print json.dumps(result, sort_keys=True, indent=4)
-        else:
-            self._render(result)
+        res.commit(options.force)
+        res.show(as_json = options.raw)
 
     def _delete(self, argv):
-        options = globals.options
-
-        # Require an object as argument
-        if len(argv) == 0:
-            raise MissingException("You must provide a valid object identifier")
-
-        # Validate input parameters
-        if options.uuid:
-            uuid = argv[0]
-        else:
-            uuid = self._resolv(argv[0])
-            if not uuid: raise NotFoundException(uuid)
-
-        client = Client(self._endpoint(), options.username, options.password)
-        item = client.read(self._resource + "/" + uuid)
-
-        if (prompt.confirm(prompt="Delete " + item['name'] + " ?", resp=False)) :
-            client.delete(self._resource + "/" + uuid)
-
-    def _render(self, item, detailed=False):
-        pass
-
-    def _resolv(self, path):
-        pass
-
-    def _endpoint(self):
-        options = globals.options
-        return options.api
+        res = self._get_resource(argv)
+        if (prompt.confirm(prompt="Delete " + res.get_name() + " ?", resp=False)) :
+            res.delete()
 
     def _help(self, argv):
         print "Oops, this piece is missing some documentation"
+
+    def _get_resource(self, argv):
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid host identifier")
+
+        # Validate input parameters
+        if(globals.options.uuid):
+            return self.get_collection().get_resource(argv[0])
+        else:
+            return self.get_collection().get_resource_from_path(argv[0])
+
+    def _get_resources(self, argv, parameters = {}):
+        return self.get_collection().get_resources(parameters)
+
+    def get_collection(self):
+        raise NotImplementedError

@@ -5,9 +5,14 @@ __all__= ["ActionsQueue",
           "UpdateTemplateAction",
           "CreateTemplateAction"]
 
-import os, json, urlparse
+from exceptions import SyncException
 
-from cortex_client.util import fileupload
+from cortex_client.api.application import Application
+from cortex_client.api.distribution import Distribution
+from cortex_client.api.organization import Organization
+from cortex_client.api.environment import Environment
+from cortex_client.api.host import Host
+from cortex_client.api.platform import Platform
 
 class UuidConversionTable:
     def __init__(self):
@@ -27,152 +32,118 @@ class Action(object):
         return self._is_fast_forward
 
     def executeAction(self, uuid_conversion_table):
-        raise NotImplemented
+        raise NotImplementedError
 
     def display(self):
         print "Fast-forward:", self._is_fast_forward
 
 class TemplateAction(Action):
-    def __init__(self, is_fast_forward, client, template_folder, template_meta):
+    def __init__(self, is_fast_forward, file_object):
         super(TemplateAction, self).__init__(is_fast_forward)
-        self._client = client
-        self._template_folder = template_folder
-        self._template_meta = template_meta
+        self._file_object = file_object
 
 class UpdateTemplateAction(TemplateAction):
-    def __init__(self, is_fast_forward, client, template_folder, template_meta):
-        super(UpdateTemplateAction, self).__init__(is_fast_forward, client,
-                                                   template_folder, template_meta)
-
-    def _update_template(self, uuid, file_name):
-        with open(file_name, 'r') as f:
-            url = urlparse.urlparse(self._client.endpoint + "/files/" + uuid)
-            response = fileupload.post_multipart(url.netloc, url.path,
-                                             [("test", "none")],
-                                             [("file", file_name, f.read())],
-                                             {"Authorization": "Basic " +
-                                              (self._client.username + ":" +
-                                               self._client.password).encode("base64").rstrip()})
-        result = json.loads(response);
-        return result[0]
+    def __init__(self, is_fast_forward, file_object):
+        super(UpdateTemplateAction, self).__init__(is_fast_forward, file_object)
 
     def executeAction(self, uuid_conversion_table):
-        old_uuid = self._template_meta["uuid"]
-        new_uuid = self._update_template(old_uuid, os.path.join(self._template_folder,
-                                                          self._template_meta["name"]))
-        self._client.update("files/" + new_uuid + "/_meta", self._template_meta)
+        old_uuid = self._file_object.get_uuid()
+        self._file_object.commit()
+        new_uuid = self._file_object.get_uuid()
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
     def display(self):
         super(UpdateTemplateAction, self).display()
-        print "Update template "+self._template_meta["name"]
+        print "Summary: Update template "+self._file_object.get_name()
 
 class CreateTemplateAction(TemplateAction):
-    def __init__(self, is_fast_forward, client, template_folder, template_meta_data):
-        super(CreateTemplateAction, self).__init__(is_fast_forward, client,
-                                                   template_folder,
-                                                   template_meta_data)
-
-    def _upload_template(self, file_name):
-        with open(file_name, 'r') as f:
-            url = urlparse.urlparse(self._client.endpoint + "/files")
-            response = fileupload.post_multipart(url.netloc, url.path,
-                                                 [("test", "none")],
-                                                 [("file", file_name, f.read())],
-                                                 {"Authorization": "Basic " +
-                                                  (self._client.username + ":" +
-                                                   self._client.password).encode("base64").rstrip()})
-
-        result = json.loads(response);
-        return result[0]
+    def __init__(self, is_fast_forward, file_object):
+        super(CreateTemplateAction, self).__init__(is_fast_forward, file_object)
 
     def executeAction(self, uuid_conversion_table):
-        old_uuid = self._template_meta["uuid"]
-        new_uuid = self._upload_template(os.path.join(self._template_folder,
-                                                      self._template_meta["name"]))
-
-        self._template_meta["uuid"] = new_uuid
-        self._client.update("files/" + new_uuid + "/_meta", self._template_meta)
+        old_uuid = self._file_object.get_uuid()
+        self._file_object.create()
+        new_uuid = self._file_object.get_uuid()
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
     def display(self):
         super(CreateTemplateAction).display()
-        print "Create template "+self._template_meta["name"]
+        print "Summary: Create template "+self._file_object.get_name()
 
 class ResourceAction(Action):
-    def __init__(self, is_fast_forward, resource_type, meta_data):
+    def __init__(self, is_fast_forward, res_object):
         super(ResourceAction, self).__init__(is_fast_forward)
-        self._resource_type = resource_type
-        self._meta_data = meta_data
+        self._res_object = res_object
 
     def _update_meta_data(self, uuid_conversion_table):
-        if(self._resource_type == "applications"):
+        if(isinstance(self._res_object, Application)):
+            app = self._res_object
+
             # Update templates' UUID
-            if (self._meta_data.has_key("files")):
-                app_files = self._meta_data["files"]
-                for app_file in app_files:
-                    app_file["template"] = uuid_conversion_table.getNewUuid(app_file["template"])
-        elif(self._resource_type == "distributions"):
+            app_files = app.get_files()
+            for app_file in app_files:
+                app_file.set_template_uuid(uuid_conversion_table.getNewUuid(app_file.get_template_uuid()))
+        elif(isinstance(self._res_object, Distribution)):
+            dist = self._res_object
+
             # Update kickstart UUID
-            self._meta_data["kickstart"] = uuid_conversion_table.getNewUuid(self._meta_data["kickstart"])
-        elif(self._resource_type == "platforms"):
+            dist.set_kickstart(uuid_conversion_table.getNewUuid(dist.get_kickstart()))
+        elif(isinstance(self._res_object, Platform)):
             pass
-        elif(self._resource_type == "organizations"):
-            # Clear environments (they will be re-added later)
-            if(self._meta_data.has_key("environments")):
-                del self._meta_data["environments"]
-        elif(self._resource_type == "environments"):
-            # Clear hosts (they will be re-added later)
-            if(self._meta_data.has_key("hosts")):
-                del self._meta_data["hosts"]
+        elif(isinstance(self._res_object, Organization)):
+            pass
+        elif(isinstance(self._res_object, Environment)):
+            env = self._res_object
+
             # Update organization
-            self._meta_data["organization"] = uuid_conversion_table.getNewUuid(self._meta_data["organization"])
-        elif(self._resource_type == "hosts"):
-            self._meta_data["distribution"] = uuid_conversion_table.getNewUuid(self._meta_data["distribution"])
-            self._meta_data["environment"] = uuid_conversion_table.getNewUuid(self._meta_data["environment"])
-            self._meta_data["organization"] = uuid_conversion_table.getNewUuid(self._meta_data["organization"])
-            self._meta_data["platform"] = uuid_conversion_table.getNewUuid(self._meta_data["platform"])
+            env.set_organization(uuid_conversion_table.getNewUuid(env.get_organization()))
+        elif(isinstance(self._res_object, Host)):
+            host = self._res_object
+            host.set_distribution(uuid_conversion_table.getNewUuid(host.get_distribution()))
+            host.set_environment(uuid_conversion_table.getNewUuid(host.get_environment()))
+            host.set_organization(uuid_conversion_table.getNewUuid(host.get_organization()))
+            host.set_platform(uuid_conversion_table.getNewUuid(host.get_platform()))
         else:
-            print "Unsupported resource type", self._resource_type
+            raise SyncException("Unsupported resource type")
 
     def display(self):
         super(ResourceAction, self).display()
-        print "ResType:", self._resource_type
+        print "Resource:", self._res_object.__class__.__name__
 
 class UpdateResource(ResourceAction):
-    def __init__(self, is_fast_forward, client, resource_type, meta_data):
-        super(UpdateResource, self).__init__(is_fast_forward, resource_type,
-                                             meta_data)
-        self._client = client
+    def __init__(self, is_fast_forward, res_object):
+        super(UpdateResource, self).__init__(is_fast_forward, res_object)
 
     def executeAction(self, uuid_conversion_table):
-        old_uuid = self._meta_data["uuid"]
+        old_uuid = self._res_object.get_uuid()
         self._update_meta_data(uuid_conversion_table)
-        parameters = {}
-        if(self._resource_type == "hosts"):
-            parameters["force"] = "true"
-        new_uuid = self._client.update(self._resource_type + "/" + self._meta_data["uuid"],
-                            self._meta_data, parameters)["uuid"]
+
+        if(isinstance(self._res_object, Host)):
+            self._res_object.commit(True)
+        else:
+            self._res_object.commit(False)
+
+        new_uuid = self._res_object.get_uuid()
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
     def display(self):
         super(UpdateResource, self).display()
-        print "Update resource "+self._meta_data["name"]
+        print "Summary: Update resource "+self._res_object.get_name()
 
 class CreateResource(ResourceAction):
-    def __init__(self, is_fast_forward, client, resource_type, meta_data):
-        super(CreateResource, self).__init__(is_fast_forward, resource_type, meta_data)
-        self._client = client
+    def __init__(self, is_fast_forward, res_object):
+        super(CreateResource, self).__init__(is_fast_forward, res_object)
 
     def executeAction(self, uuid_conversion_table):
-        old_uuid = self._meta_data["uuid"]
+        old_uuid = self._res_object.get_uuid()
         self._update_meta_data(uuid_conversion_table)
-        new_uuid = self._client.create(self._resource_type, self._meta_data)["uuid"]
+        self._res_object.create()
+        new_uuid = self._res_object.get_uuid()
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
     def display(self):
-        super(CreateResource).display(self)
-        print "Create resource "+self._meta_data["name"]
+        super(CreateResource, self).display()
+        print "Summary: Create resource "+self._res_object.get_name()
 
 class ActionsQueue:
     def __init__(self):
@@ -193,5 +164,6 @@ class ActionsQueue:
 
     def display(self):
         for a in self._actions:
-            print "------------------------------------------------------------"
+            print "-"*80
             a.display()
+        print "-"*80

@@ -25,7 +25,7 @@ def register(keyword, controller):
     else:
         controllers[keyword] = controller
 
-def dispatch(keyword, argv):
+def dispatch(keyword, api, argv):
     '''
     Dispatch the request to the controller associated with the keyword. Raise an
     exception if no matching controller is found.
@@ -33,7 +33,7 @@ def dispatch(keyword, argv):
 
     global controllers
     if controllers.has_key(keyword):
-        controllers[keyword].run(argv)
+        controllers[keyword].run(api, argv)
     else:
         raise ControllerException("I'm sorry Sir, I don't understand what you mean by " + keyword)
 

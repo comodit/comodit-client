@@ -9,58 +9,41 @@
 
 from cortex_client.util import globals
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import NotFoundException, MissingException
-from cortex_client.rest.client import Client
+from cortex_client.control.exceptions import NotFoundException
 
 class EnvironmentsController(ResourceController):
 
-    _resource = "environments"
     _template = "environment.json"
 
     def __init__(self):
         super(EnvironmentsController, self ).__init__()
 
-    def _list(self, argv):
+    def get_collection(self):
+        return self._api.get_environment_collection()
+
+    def _get_resources(self, argv):
         options = globals.options
+        parameters = {}
 
         # Validate input parameters
+        org_uuid = None
         if options.org_uuid:
-            uuid = options.org_uuid
-        elif options.org_path:
-            path = options.org_path
-            uuid = self._resolv(path)
-            if not uuid: raise NotFoundException(path)
-        elif options.org and options.uuid:
-            uuid = options.org
-        elif options.org:
-            path = options.org
-            uuid = self._resolv(path)
-            if not uuid: raise NotFoundException(path)
-        else:
-            uuid = None
+            org_uuid = options.org_uuid
+        elif options.env_path:
+            path = options.env_path
+            org_uuid = self._api.get_directory().get_organization_uuid(path)
+            if not org_uuid: raise NotFoundException(path)
+        elif options.env and options.uuid:
+            org_uuid = options.env
+        elif options.env:
+            path = options.env
+            org_uuid = self._api.get_directory().get_organization_uuid(path)
+            if not org_uuid: raise NotFoundException(path)
 
-        if uuid: self._parameters = {"organizationId":uuid}
+        if(org_uuid):
+            parameters["organizationId"] = org_uuid
 
-        super(EnvironmentsController, self)._list(argv)
-
-    def _resolv(self, path):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/organization/" + path)
-        if result.has_key('uuid') : return result['uuid']
-
-    def _render(self, item, detailed=False):
-        if not detailed:
-            print item['uuid'], item['name']
-        else:
-            print "Name:", item['name']
-            print "UUUID:", item['uuid']
-            if item.has_key('description'):
-                print "Description:", item['description']
-            if item.has_key('settings'):
-                print "Settings:"
-                for setting in item['settings']:
-                    print "    %-30s: %s" % (setting['key'], setting['value'])
+        return super(EnvironmentsController, self)._get_resources(argv, parameters)
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

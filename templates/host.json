@@ -5,8 +5,8 @@
    "distribution": "<uuid of a distribution>",
    "applications": [
      "<UUID of an application>"
-   ]
-   "platform" : "<UUID of a platform>"
+   ],
+   "platform" : "<UUID of a platform>",
    "settings": [
      {
        "key": "<k>",

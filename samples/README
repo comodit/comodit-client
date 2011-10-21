@@ -1,0 +1,14 @@
+This folder contains scripts illustrating the use of Python API and data files
+associated to these scripts. Below a short description of each script:
+
+create_provision_delete.py
+============================
+
+Full example including creation and deletion of:
+- application
+- distribution
+- organization/environment
+- platform
+- host
+
+In addition, host provisioning is also presented.

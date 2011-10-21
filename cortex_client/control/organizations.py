@@ -7,31 +7,17 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from cortex_client.util import globals
 from cortex_client.control.resource import ResourceController
-from cortex_client.rest.client import Client
 
 class OrganizationsController(ResourceController):
 
-    _resource = "organizations"
     _template = "organization.json"
 
     def __init__(self):
         super(OrganizationsController, self ).__init__()
 
-    def _render(self, item, detailed=False):
-        print item['uuid'], item['name']
-
-        if detailed:
-            if item.has_key('description'):
-                print "   ", item['description']
-
-
-    def _resolv(self, path):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/organization/" + path)
-        if result.has_key('uuid') : return result['uuid']
+    def get_collection(self):
+        return self._api.get_organization_collection()
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

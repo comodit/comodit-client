@@ -16,8 +16,9 @@ class AbstractController(object):
         self._actions = {}
         self._default_action = lambda x : self._error("No default action defined", -1)
 
-    def run(self, argv):
+    def run(self, api, argv):
         '''Execute the action (first argument in argv with other arguments) from this controller'''
+        self._api = api
         self._pre(argv)
 
         if len(argv) == 0:
@@ -30,6 +31,7 @@ class AbstractController(object):
                 raise ControllerException("Pardon Monsieur ? I'm not sure I understand your request")
 
         self._post(argv)
+        self._api = None
 
     def _pre(self, argv):
         pass

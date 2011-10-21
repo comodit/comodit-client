@@ -8,33 +8,16 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.rest.client import Client
-from cortex_client.util import globals
-
 
 class PlatformsController(ResourceController):
 
-    _resource = "platforms"
     _template = "platform.json"
 
     def __init__(self):
         super(PlatformsController, self ).__init__()
 
-    def _render(self, item, detailed=False):
-        if not detailed:
-            print item['uuid'], item['name']
-        else:
-            print "Name:", item['name']
-            print "UUID:", item['uuid']
-            if item.has_key('description'): print "Description:", item['description']
-            if item.has_key('driver'): print "Driver:", item['driver']
-
-
-    def _resolv(self, path):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/platform/" + path)
-        if result.has_key('uuid') : return result['uuid']
+    def get_collection(self):
+        return self._api.get_platform_collection()
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

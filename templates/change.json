@@ -1,4 +1,12 @@
 {
-	"action":"<what you want to do",
-	"target":"<uuid of target node>"
+    "action":"<install_application |
+               uninstall_application |
+               add_setting |
+               delete_setting |
+               update_setting>",
+    "target":"<uuid of target host (*_application, add_setting) or setting
+              (delete_setting, update_setting)>",
+    "key":"<key of setting (add_setting)>",
+    "value":"<new value for setting (add_setting, update_setting)>",
+    "application":"<uuid of application (*_application)>"
 }

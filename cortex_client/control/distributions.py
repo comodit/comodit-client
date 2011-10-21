@@ -8,34 +8,16 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.rest.client import Client
-from cortex_client.util import globals
-
 
 class DistributionsController(ResourceController):
 
-    _resource = "distributions"
     _template = "distribution.json"
 
     def __init__(self):
         super(DistributionsController, self ).__init__()
 
-    def _render(self, item, detailed=False):
-        if not detailed:
-            print item['uuid'], item['name']
-        else:
-            print "Name:", item['name']
-            if item.has_key('description'): print "Description:", item['description']
-            print "UUID:", item['uuid']
-            if item.has_key('url'): print "Url:", item['url']
-            if item.has_key('initrd'): print "Initrd:", item['initrd']
-            if item.has_key('vmlinuz'): print "Vmlinuz:", item['vmlinuz']
-
-    def _resolv(self, path):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/distribution/" + path)
-        if result.has_key('uuid') : return result['uuid']
+    def get_collection(self):
+        return self._api.get_distribution_collection()
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.
