@@ -25,13 +25,13 @@ class ChangesController(ResourceController):
         change_req.apply_request()
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perform on this resource.
 
 Actions:
     list              List all change requests available to the user
-    show [uuid]       Show the details of a change request
+    show <uuid>       Show the details of a change request
     add               Add a change request
-    update [uuid]     Update a change request
-    delete [uuid]     Delete a change request
-    apply [uuid]      Apply a change request
+    update <uuid>     Update a change request
+    delete <uuid>     Delete a change request
+    apply <uuid>      Apply a change request
 '''

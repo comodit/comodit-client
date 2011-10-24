@@ -38,13 +38,13 @@ class HostsController(ResourceController):
             env_uuid = options.env_uuid
         elif options.env_path:
             path = options.env_path
-            env_uuid = self._api.get_directory().get_environment_uuid(path)
+            env_uuid = self._api.get_directory().get_environment_uuid_from_path(path)
             if not env_uuid: raise NotFoundException(path)
         elif options.env and options.uuid:
             env_uuid = options.env
         elif options.env:
             path = options.env
-            env_uuid = self._api.get_directory().get_environment_uuid(path)
+            env_uuid = self._api.get_directory().get_environment_uuid_from_path(path)
             if not env_uuid: raise NotFoundException(path)
 
         if(env_uuid):
@@ -93,7 +93,7 @@ class HostsController(ResourceController):
         host.poweroff()
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perform on this resource.
 
 Actions:
     list [--env <id> | --env-path <path> | --env-uuid <uuid>]

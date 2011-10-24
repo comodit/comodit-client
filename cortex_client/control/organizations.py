@@ -20,12 +20,12 @@ class OrganizationsController(ResourceController):
         return self._api.get_organization_collection()
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perform on this resource.
 
 Actions:
     list            List all organizations visible to the user
-    show [id]       Show the details of an organization
+    show <id>       Show the details of an organization
     add             Add an organization
-    update [id]     Update an organization
-    delete [id]     Delete an organization
+    update <id>     Update an organization
+    delete <id>     Delete an organization
 '''

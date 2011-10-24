@@ -20,12 +20,12 @@ class ApplicationsController(ResourceController):
         return self._api.get_application_collection()
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perform on this resource.
 
 Actions:
     list            List all application profiles available to the user
-    show [id]       Show the details of an application profile
+    show <id>       Show the details of an application profile
     add             Add an application profile
-    update [id]     Update an application profile
-    delete [id]     Delete an application profile
+    update <id>     Update an application profile
+    delete <id>     Delete an application profile
 '''

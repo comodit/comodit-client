@@ -29,6 +29,7 @@ import sys
 import control.router
 from config import Config, ConfigException
 from api.api import CortexApi
+from api.exceptions import PythonApiException
 
 def run(argv):
     control.router.register(["users"], UsersController())
@@ -105,7 +106,9 @@ def _dispatch(resource, args, api):
     except ArgumentException as e:
         print e.msg     
     except ApiException as e:
-        print "Error (%s): %s" % (e.code, e.message)          
+        print "Error (%s): %s" % (e.code, e.message)
+    except PythonApiException as e:
+        print e.message
     except NotModifiedException:
         print "Command was canceled since you did not save the file"       
     except Exception:

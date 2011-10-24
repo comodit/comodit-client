@@ -20,12 +20,12 @@ class PlatformsController(ResourceController):
         return self._api.get_platform_collection()
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perform on this resource.
 
 Actions:
     list            List all platforms available to the user
-    show [id]       Show the details of a platform
+    show <id>       Show the details of a platform
     add             Add a platform
-    update [id]     Update a platform
-    delete [id]     Delete a platform
+    update <id>     Update a platform
+    delete <id>     Delete a platform
 '''

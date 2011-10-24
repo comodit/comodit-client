@@ -29,14 +29,14 @@ class EnvironmentsController(ResourceController):
         org_uuid = None
         if options.org_uuid:
             org_uuid = options.org_uuid
-        elif options.env_path:
+        elif options.org_path:
             path = options.env_path
             org_uuid = self._api.get_directory().get_organization_uuid(path)
             if not org_uuid: raise NotFoundException(path)
-        elif options.env and options.uuid:
+        elif options.org and options.uuid:
             org_uuid = options.env
-        elif options.env:
-            path = options.env
+        elif options.org:
+            path = options.org
             org_uuid = self._api.get_directory().get_organization_uuid(path)
             if not org_uuid: raise NotFoundException(path)
 
@@ -46,12 +46,13 @@ class EnvironmentsController(ResourceController):
         return super(EnvironmentsController, self)._get_resources(argv, parameters)
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource.
+        print '''You must provide an action to perform on this resource.
 
 Actions:
-    list --org [id]    List all environments within an organization
-    show [id]          Show the details of an environment
-    add                Add an environment
-    update [id]        Update an environment
-    delete [id]        Delete an environment
+    list [--org <id> | --org-uuid <uuid> | --org-path <path>]
+                    List all environments, possibly within a given organization
+    show <id>       Show the details of an environment
+    add             Add an environment
+    update <id>     Update an environment
+    delete <id>     Delete an environment
 '''

@@ -82,16 +82,16 @@ class FilesController(ResourceController):
         file_res.commit()
 
     def _help(self, argv):
-        print '''You must provide an action to perfom.
+        print '''You must provide an action to perform.
 
 Actions:
-    list                   List all files available to the user
-    show <uuid>            Show the details of a file
-    add  <path>            Create a new file with given content
-    update <uuid>          Update the details of a file
-    delete <uuid>          Delete a file
-    read <uuid>            Fetch the content of a file
-    write <uuid>           Update given content (use --file) to an existing file
+    list                       List all files available to the user
+    show <uuid>                Show the details of a file
+    add  <path>                Create a new file
+    update <uuid>              Update the details of a file
+    delete <uuid>              Delete a file
+    read <uuid>                Fetch the content of a file
+    write <uuid> --file <path> Update an existing file's content
 
 A file is completely described by its details and its content. Details include a
 file name as well as a list of parameters. When creating a new file (add),

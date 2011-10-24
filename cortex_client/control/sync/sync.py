@@ -38,7 +38,6 @@ class SyncController(AbstractController):
             raise SyncException(self._root+" already exists.")
 
         self._ensureFolders()
-        self._dumpFiles()
         self._dumpApplications()
         self._dumpDistributions()
         self._dumpOrganizations()
@@ -61,7 +60,6 @@ class SyncController(AbstractController):
         self._readRemoteEntities()
 
         self._actions = ActionsQueue()
-        self._pushFiles()
         self._pushApplications()
         self._pushDistributions()
         self._pushPlatforms()
@@ -106,7 +104,7 @@ class SyncController(AbstractController):
             self._remote_platforms[plat.get_name()] = plat
 
     def _help(self, argv):
-        print """You must provide an action to perfom.
+        print """You must provide an action to perform.
 
 Actions:
     pull            Retrieves data from cortex server (local data are overwrit-
@@ -116,7 +114,6 @@ Actions:
 """
 
     def _ensureFolders(self):
-        path.ensure(os.path.join(self._root, "files"))
         path.ensure(os.path.join(self._root, "applications"))
         path.ensure(os.path.join(self._root, "distributions"))
         path.ensure(os.path.join(self._root, "organizations"))
@@ -132,24 +129,22 @@ Actions:
         else:
             self._actions.addAction(CreateTemplateAction(True, f))
 
-    def _pushFiles(self):
-        if(not os.path.exists(self._root + "/files")):
-            return
-
-        files_folder = os.path.join(self._root, "files")
-        files_list = os.listdir(files_folder)
-        for f in files_list:
-            self._pushTemplate(os.path.join(files_folder, f))
-
     def _pushApplications(self):
         if(not os.path.exists(self._root + "/applications")):
             return
 
-        app_folder = os.path.join(self._root, "applications")
-        apps_list = os.listdir(app_folder)
+        apps_folder = os.path.join(self._root, "applications")
+        apps_list = os.listdir(apps_folder)
         for app_name in apps_list:
             app = self._api.new_application()
-            app.load(os.path.join(app_folder, app_name))
+            app_folder = os.path.join(apps_folder, app_name)
+            app.load(app_folder)
+
+            file_list = app.get_files()
+            for f in file_list:
+                template_folder = os.path.join(app_folder, f.get_name())
+                self._pushTemplate(template_folder)
+
             self._pushResource(app, self._remote_applications)
 
     def _getUniqueName(self, base_name, names_dict):
@@ -179,12 +174,6 @@ Actions:
         else:
             self._actions.addAction(CreateResource(True, local_res))
 
-    def _dumpFiles(self):
-        files = self._api.get_file_collection().get_resources()
-        files_folder = os.path.join(self._root, "files")
-        for f in files:
-            f.dump(os.path.join(files_folder, f.get_uuid()))
-
     def _dumpApplications(self):
         apps = self._api.get_application_collection().get_resources()
         apps_folder = os.path.join(self._root, "applications")
@@ -192,22 +181,36 @@ Actions:
             app_folder = os.path.join(apps_folder, a.get_name())
             a.dump(app_folder)
 
+            file_list = a.get_files()
+            for f in file_list:
+                template = self._api.get_file_collection().get_resource(f.get_template_uuid())
+                template.dump(os.path.join(app_folder, f.get_name()))
+
     def _pushDistributions(self):
         if(not os.path.exists(self._root + "/distributions")):
             return
 
-        dist_folder = os.path.join(self._root, "distributions")
-        dists_list = os.listdir(dist_folder)
+        dists_folder = os.path.join(self._root, "distributions")
+        dists_list = os.listdir(dists_folder)
         for dist_name in dists_list:
             dist = self._api.new_distribution()
-            dist.load(os.path.join(dist_folder, dist_name))
+            dist_folder = os.path.join(dists_folder, dist_name)
+            dist.load(dist_folder)
+
+            ks_folder = os.path.join(dist_folder, "kickstart")
+            self._pushTemplate(ks_folder)
+
             self._pushResource(dist, self._remote_distributions)
 
     def _dumpDistributions(self):
         dists = self._api.get_distribution_collection().get_resources()
         dists_folder = os.path.join(self._root, "distributions")
         for d in dists:
-            d.dump(os.path.join(dists_folder, d.get_name()))
+            dist_folder = os.path.join(dists_folder, d.get_name())
+            d.dump(dist_folder)
+
+            ks_template = self._api.get_file_collection().get_resource(d.get_kickstart())
+            ks_template.dump(os.path.join(dist_folder, "kickstart"))
 
     def _dumpOrganizations(self):
         orgs = self._api.get_organization_collection().get_resources()
