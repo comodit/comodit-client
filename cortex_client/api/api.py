@@ -1,5 +1,6 @@
 from cortex_client.rest.client import Client
 from directory import Directory
+from rendering_service import RenderingService
 from application_collection import ApplicationCollection
 from change_request_collection import ChangeRequestCollection
 from distribution_collection import DistributionCollection
@@ -23,6 +24,7 @@ class CortexApi(object):
     def __init__(self, endpoint, username, password):
         self._client = Client(endpoint, username, password)
         self._directory = Directory(self)
+        self._rendering = RenderingService(self)
 
         self._appl_collection = ApplicationCollection(self)
         self._chan_collection = ChangeRequestCollection(self)
@@ -39,6 +41,9 @@ class CortexApi(object):
 
     def get_directory(self):
         return self._directory
+
+    def get_rendering_service(self):
+        return self._rendering
 
     def get_application_collection(self):
         return self._appl_collection

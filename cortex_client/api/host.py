@@ -1,6 +1,6 @@
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
-from cortex_client.util.json_wrapper import JsonWrapper
+from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from exceptions import PythonApiException
 
 class Setting(JsonWrapper):
@@ -80,8 +80,8 @@ class Host(Resource):
     def add_setting(self, setting):
         self._add_to_list_field("settings", setting)
 
-    def get_appliations(self):
-        return self._get_list_field("applications", SettingFactory())
+    def get_applications(self):
+        return self._get_list_field("applications", StringFactory())
 
     def set_applications(self, applications):
         self._set_list_field("applications", applications)

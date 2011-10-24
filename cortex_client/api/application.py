@@ -50,7 +50,7 @@ class ApplicationFile(ApplicationResource):
         return self._get_field("group")
 
     def get_mode(self):
-        return self._get_field("mode")
+        return int(self._get_field("mode"), 8)
 
     def get_path(self):
         return self._get_field("path")

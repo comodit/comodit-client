@@ -20,6 +20,8 @@ from control.hosts import HostsController
 from control.organizations import OrganizationsController
 from control.sync.sync import SyncController
 from control.users import UsersController
+from control.rendering import RenderingController
+
 from rest.exceptions import ApiException
 from util import globals
 from util.editor import NotModifiedException
@@ -32,6 +34,7 @@ from api.api import CortexApi
 from api.exceptions import PythonApiException
 
 def run(argv):
+    # resources
     control.router.register(["users"], UsersController())
     control.router.register(["pf",  "platforms"], PlatformsController())
     control.router.register(["app",  "applications"], ApplicationsController())
@@ -42,11 +45,15 @@ def run(argv):
     control.router.register(["sync"], SyncController())
     control.router.register(["cr", "changes"], ChangesController());
     control.router.register(["files"], FilesController());
+
+    # services
+    control.router.register(["rendering"], RenderingController());
+
     _parse(argv)
 
 def _parse(argv):
 
-    usage = "usage: %prog resource [command] [options]"
+    usage = "usage: %prog (resource | service) [command] [options]"
     parser = optparse.OptionParser(usage)
 
     try:
@@ -137,4 +144,7 @@ Resources:
     environments        Environment defined within an organization
     hosts               Host defined within an environment
     changes             Change requests
-''' 
+
+Services:
+    rendering           Rendering of templates
+'''
