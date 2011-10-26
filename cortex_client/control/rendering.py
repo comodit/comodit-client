@@ -101,8 +101,18 @@ class RenderingController(AbstractController):
                 owner_id = pwd.getpwnam(owner)[2]
                 group = f.get_group()
                 group_id = grp.getgrnam(group)[2]
-                os.chmod(output_file, mode)
-                os.chown(output_file, owner_id, group_id)
+
+                if not options.skip_chmod:
+                    try:
+                        os.chmod(output_file, mode)
+                    except OSError, e:
+                        raise ControllerException("Could not set permissions on file " + output_file + ": " + e.strerror)
+
+                if not options.skip_chown:
+                    try:
+                        os.chown(output_file, owner_id, group_id)
+                    except OSError, e:
+                        raise ControllerException("Could not set ownership on file " + output_file + ": " + e.strerror)
 
     def _help(self, argv):
         print '''You must provide an action to perform.
@@ -112,10 +122,11 @@ Actions:
                     Prints a rendered file.
     kickstart <host uuid or path>
                     Prints a rendered kickstart.
-    tree <host uuid or path> <output directory>
+    tree <host uuid or path> <output directory> [--skip-chown] [--skip-chmod]
                     Outputs all files associated to a particular host to a
                     given directory. Note that if a file c has path /a/b/c and
                     output directory's path is /d/e/, the file will be written
                     to /d/e/a/b/c. File c will have proper permissions and
-                    ownership.
+                    ownership unless it is asked not to do so (--skip-chown
+                    and --skip-chmod flags).
 '''
