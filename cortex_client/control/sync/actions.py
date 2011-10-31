@@ -1,10 +1,3 @@
-__all__= ["ActionsQueue",
-          "UuidConversionTable",
-          "CreateResource",
-          "UpdateResource",
-          "UpdateTemplateAction",
-          "CreateTemplateAction"]
-
 from exceptions import SyncException
 
 from cortex_client.api.application import Application
@@ -54,7 +47,7 @@ class UpdateTemplateAction(TemplateAction):
 
     def display(self):
         super(UpdateTemplateAction, self).display()
-        print "Summary: Update template "+self._file_object.get_name()
+        print "Summary: Update template " + self._file_object.get_name()
 
 class CreateTemplateAction(TemplateAction):
     def __init__(self, is_fast_forward, file_object):
@@ -67,8 +60,8 @@ class CreateTemplateAction(TemplateAction):
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
     def display(self):
-        super(CreateTemplateAction).display()
-        print "Summary: Create template "+self._file_object.get_name()
+        super(CreateTemplateAction, self).display()
+        print "Summary: Create template " + self._file_object.get_name()
 
 class ResourceAction(Action):
     def __init__(self, is_fast_forward, res_object):
@@ -128,7 +121,7 @@ class UpdateResource(ResourceAction):
 
     def display(self):
         super(UpdateResource, self).display()
-        print "Summary: Update resource "+self._res_object.get_name()
+        print "Summary: Update resource " + self._res_object.get_name()
 
 class CreateResource(ResourceAction):
     def __init__(self, is_fast_forward, res_object):
@@ -143,7 +136,7 @@ class CreateResource(ResourceAction):
 
     def display(self):
         super(CreateResource, self).display()
-        print "Summary: Create resource "+self._res_object.get_name()
+        print "Summary: Create resource " + self._res_object.get_name()
 
 class ActionsQueue:
     def __init__(self):

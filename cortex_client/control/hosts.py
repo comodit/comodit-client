@@ -16,14 +16,15 @@ class HostsController(ResourceController):
     _template = "host.json"
 
     def __init__(self):
-        super(HostsController, self ).__init__()
-        self._register(["s", "state"], self._state)
+        super(HostsController, self).__init__()
         self._register(["provision"], self._provision)
         self._register(["start"], self._start)
         self._register(["pause"], self._pause)
         self._register(["resume"], self._resume)
         self._register(["shutdown"], self._shutdown)
         self._register(["poweroff"], self._poweroff)
+        self._register(["settings"], self._settings)
+        self._register(["properties"], self._properties)
 
     def get_collection(self):
         return self._api.get_host_collection()
@@ -52,20 +53,19 @@ class HostsController(ResourceController):
 
         return super(HostsController, self)._get_resources(argv, parameters)
 
-    def _state(self, argv):
-        options = globals.options
+    def _settings(self, argv):
         host = self._get_resource(argv)
+        host.show_settings()
 
-        if options.raw:
-            host.get_state().show(as_json = True)
-        else:
-            host.get_state().show()
+    def _properties(self, argv):
+        host = self._get_resource(argv)
+        host.show_properties()
 
     def _delete(self, argv):
         host = self._get_resource(argv)
 
-        if (prompt.confirm(prompt="Delete " + host.get_name() + " ?", resp=False)) :
-            delete_vm = prompt.confirm(prompt="Delete VM also ?", resp=False)
+        if (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
+            delete_vm = prompt.confirm(prompt = "Delete VM also ?", resp = False)
             host.delete(delete_vm)
 
     def _provision(self, argv):
@@ -99,7 +99,9 @@ Actions:
     list [--env <id> | --env-path <path> | --env-uuid <uuid>]
                        List all hosts, optionally within an environment
     show <id>          Show the details of a host
-    state <id>         Show the state of a host
+    settings <id>      Show the settings of a host
+    properties <id>    Show the properties of a host (including IP address and
+                       host name)
     add                Add an host
     update <id>        Update a host
     delete <id>        Delete a host

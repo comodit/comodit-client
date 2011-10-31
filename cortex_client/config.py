@@ -1,24 +1,43 @@
+"""
+Cortex client configuration file parsing.
+"""
+
 import os
 
 import ConfigParser
 
 def singleton(cls):
-    """ Define the config singleton decorator
+    """
+    Config singleton decorator
     """
     instances = {}
     def getinstance():
+        """
+        Returns singleton's unique instance.
+        @return: A reference
+        """
         if cls not in instances:
             instances[cls] = cls()
         return instances[cls]
     return getinstance
 
 class ConfigException(Exception):
+    """
+    Configuration exception.
+    """
     def __init__(self, message):
+        """
+        Creates a ConfigException instance.
+        @param message: A message
+        @type message: String
+        """
         self.msg = message
 
 @singleton
 class Config(object):
-    _instance = None
+    """
+    Cortex client's configuration.
+    """
 
     _default_config = {
         "client": {
@@ -27,8 +46,14 @@ class Config(object):
             "password": "secret"
             }
         }
+    """
+    Default configuration values
+    """
 
     def __init__(self):
+        """
+        Creates a Config instance.
+        """
         # load the configuration file path
         config_path = self._get_config_path()
         if not config_path:
@@ -44,6 +69,11 @@ class Config(object):
             raise IOError("No templates directory found")
 
     def _check_config(self):
+        """
+        Checks if configuration file could be parsed.
+        Missing parameters are taken from default values.
+        """
+
         if(self.config is None):
             raise ConfigException("Unable to parse config file")
 

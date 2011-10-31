@@ -8,3 +8,4 @@ dist
 lib/
 cortex.*/
 rpmbuild/SPECS/cortex-client.spec
+epydoc-html/

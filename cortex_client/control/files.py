@@ -35,7 +35,7 @@ class FilesController(ResourceController):
         content_file_name = argv[0]
 
         if(not os.path.exists(content_file_name)):
-            raise ArgumentException("Given file does not exist: "+content_file_name)
+            raise ArgumentException("Given file does not exist: " + content_file_name)
 
         options = globals.options
         if options.filename:
@@ -61,7 +61,6 @@ class FilesController(ResourceController):
 
         file_content = file_res.get_content()
 
-        # Display the result
         for line in file_content:
             print line,
         print "-"*80
@@ -74,7 +73,7 @@ class FilesController(ResourceController):
         content_file_name = options.filename
 
         if(not os.path.exists(content_file_name)):
-            raise ArgumentException("Given file does not exist: "+content_file_name)
+            raise ArgumentException("Given file does not exist: " + content_file_name)
 
         file_res = self._get_resource(argv)
 
