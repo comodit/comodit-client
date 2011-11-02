@@ -41,6 +41,9 @@ class Config(object):
 
     _default_config = {
         "client": {
+            "default_profile": "default"
+            },
+        "default": {
             "api": "http://localhost:8000/api",
             "username": "admin",
             "password": "secret"
@@ -63,27 +66,84 @@ class Config(object):
             self.config = self._get_config_dict(config_path)
             self._check_config()
 
+        default_profile_name = self.config["client"]["default_profile"]
+        self.default_profile = self.config[default_profile_name]
+
         # set templates directory
         self.templates_path = self._get_templates_path()
         if not self.templates_path:
             raise IOError("No templates directory found")
 
+    def get_default_profile_name(self):
+        """
+        Provides default profile's name.
+        @return: A profile's name
+        @rtype: String
+        """
+        return self.config["client"]["default_profile"]
+
+    def get_default_api(self):
+        """
+        Provides default profile's API URL.
+        @return: A URL
+        @rtype: String
+        """
+        return self.default_profile["api"]
+
+    def get_default_username(self):
+        """
+        Provides default profile's user name.
+        @return: A user name
+        @rtype: String
+        """
+        return self.default_profile["username"]
+
+    def get_default_password(self):
+        """
+        Provides default profile's password.
+        @return: A password
+        @rtype: String
+        """
+        return self.default_profile["password"]
+
+    def get_profile(self, name):
+        """
+        Provides properties associated to given profile.
+        @param name: A profile's name
+        @type name: String
+        """
+        return self.config[name]
+
     def _check_config(self):
         """
-        Checks if configuration file could be parsed.
-        Missing parameters are taken from default values.
+        Checks if configuration file could be parsed and contains valid
+        data.
         """
 
         if(self.config is None):
             raise ConfigException("Unable to parse config file")
 
-        if(not self.config.has_key("client")):
-            self.config["client"]= {}
+        if not self.config.has_key("client"):
+            raise ConfigException("No client section defined")
 
-        config_fields = ["api", "username", "password"]
-        for field in config_fields:
-            if(not self.config["client"].has_key(field)):
-                self.config["client"][field] = self._default_config["client"][field]
+        if not self.config["client"].has_key("default_profile"):
+            raise ConfigException("No default_profile property defined in client section")
+
+        default_profile = self.config["client"]["default_profile"]
+        default_profile_exists = False
+        for section in self.config:
+            if section == "client":
+                continue # client section's content has already been checked
+
+            section_content = self.config[section]
+            for prop in ("api", "username", "password"):
+                if not section_content.has_key(prop):
+                    raise ConfigException(section + " section lacks '" + prop + "' property")
+            if section == default_profile:
+                default_profile_exists = True
+
+        if not default_profile_exists:
+            raise ConfigException("Default profile is not defined")
 
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :
@@ -121,19 +181,25 @@ class Config(object):
         example :
 
         [client]
+        default_profile = default
+        
+        [default]
         username = foologin
         password = foopass
         api      = url
 
         becomes :
 
-          {
-            'client': {
-              'username': 'foologin',
-              'password': 'foopass'
-              'api': 'url'
+        {
+            "client": {
+                "default_profile": "default"
+            },
+            "default": {
+                "api": "http://localhost:8000/api",
+                "username": "admin",
+                "password": "secret"
             }
-          }
+        }
 
         """
         self.config_parser = ConfigParser.ConfigParser()

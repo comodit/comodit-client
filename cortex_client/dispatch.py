@@ -79,10 +79,11 @@ def _parse(argv):
     parser.add_option("--skip-chown", dest = "skip_chown", help = "Path to the parent environment", action = "store_true", default = False)
     parser.add_option("--skip-chmod", dest = "skip_chmod", help = "UUID of the parent environment", action = "store_true", default = False)
 
-    parser.add_option("--api", dest = "api", help = "endpoint for the API", default = config.config["client"]["api"])
-    parser.add_option("--user", dest = "username", help = "username on cortex server", default = config.config["client"]["username"])
-    parser.add_option("--pass", dest = "password", help = "password on cortex server", default = config.config["client"]["password"])
+    parser.add_option("--api", dest = "api", help = "endpoint for the API", default = None)
+    parser.add_option("--user", dest = "username", help = "username on cortex server", default = None)
+    parser.add_option("--pass", dest = "password", help = "password on cortex server", default = None)
     parser.add_option("--templates", dest = "templates_path", help = "directory containing JSON templates", default = config.templates_path)
+    parser.add_option("--profile", dest = "profile_name", help = "Name of profile to use", default = config.get_default_profile_name())
 
     parser.add_option("--quiet", dest = "verbose", help = "don't print status messages to stdout", action = "store_false", default = True)
     parser.add_option("--force", dest = "force", help = "bypass change management and update everything", action = "store_true", default = False)
@@ -100,8 +101,25 @@ def _parse(argv):
         print_resources()
         exit(-1)
 
-    api = CortexApi(globals.options.api, globals.options.username,
-                    globals.options.password)
+    # Use profile data to configure server API connector. Options provided
+    # on command-line have priority.
+    profile = config.get_profile(globals.options.profile_name)
+    if globals.options.api:
+        api = globals.options.api
+    else:
+        api = profile["api"]
+
+    if globals.options.username:
+        username = globals.options.username
+    else:
+        username = profile["username"]
+
+    if globals.options.password:
+        password = globals.options.password
+    else:
+        password = profile["password"]
+
+    api = CortexApi(api, username, password)
 
     _dispatch(args[0], args[1:], api)
 
