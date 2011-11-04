@@ -148,6 +148,47 @@ class SettingFactory(object):
         return Setting(json_data)
 
 
+class InstanceInfo(JsonWrapper):
+    """
+    Runtime host instance information.
+    """
+
+    def get_state(self):
+        """
+        Provides the state of the instance.
+        @return: Instance's state
+        @rtype: String
+        """
+        return self._get_field("state")
+
+    def get_platform_hostname(self):
+        """
+        Provides instance's platform host name.
+        @return: A platform state
+        @rtype: String
+        """
+        return self._get_field("platformHostName")
+
+    def get_vnc_port(self):
+        """
+        Provides VNC port of the instance
+        @return: A port
+        @rtype: Integer
+        """
+        return int(self._get_field("vncPort"))
+
+    def show(self, indent = 0):
+        """
+        Prints instance's information to standard output in a user-friendly way.
+        
+        @param indent: The number of spaces to put in front of each displayed
+        line.
+        @type indent: Integer
+        """
+        print " "*indent, "State:", self.get_state()
+        print " "*indent, "Platform host name:", self.get_platform_hostname()
+        print " "*indent, "VNC port:", self.get_vnc_port()
+
 class Host(Resource):
     """
     A host. A host is part of an environment and has settings and properties
@@ -330,7 +371,7 @@ class Host(Resource):
         """
         if(delete_vm):
             try:
-                self._api.get_client().update("hosts/" + self.get_uuid() + "/_delete",
+                self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_delete",
                                               decode = False)
             except ApiException, e:
                 if(e.code == 400):
@@ -346,6 +387,19 @@ class Host(Resource):
         @rtype: String
         """
         return self._get_field("state")
+
+    def get_instance_info(self):
+        """
+        Provides host's instance information.
+        @return: Host's instance information.
+        @rtype: L{InstanceInfo}
+        @raise PythonApiException: If host was not yet provisioned
+        """
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must first be provisioned")
+
+        info_json = self._api.get_client().read("hosts/" + self.get_uuid() + "/VM/state")
+        return InstanceInfo(info_json)
 
     def get_identifier(self):
         """
@@ -417,7 +471,7 @@ class Host(Resource):
         Starts host.
         @raise PythonApiException: If host could not be started.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_start", decode = False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_start", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -426,7 +480,7 @@ class Host(Resource):
         Pauses host.
         @raise PythonApiException: If host could not be paused.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_pause", decode = False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_pause", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -435,7 +489,7 @@ class Host(Resource):
         Resumes host's execution (after pause).
         @raise PythonApiException: If host's execution could not be resumed.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_resume", decode = False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_resume", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -444,7 +498,7 @@ class Host(Resource):
         Shutdowns host.
         @raise PythonApiException: If host could not be shutdown.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_stop", decode = False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_stop", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -454,7 +508,7 @@ class Host(Resource):
         @raise PythonApiException: If host could not be powered-off.
         """
         try:
-            result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_off", decode = False)
+            result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_off", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:

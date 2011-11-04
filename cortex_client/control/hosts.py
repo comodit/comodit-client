@@ -10,6 +10,7 @@
 from cortex_client.util import globals, prompt
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException
+from cortex_client.api.exceptions import PythonApiException
 
 class HostsController(ResourceController):
 
@@ -25,6 +26,7 @@ class HostsController(ResourceController):
         self._register(["poweroff"], self._poweroff)
         self._register(["settings"], self._settings)
         self._register(["properties"], self._properties)
+        self._register(["info"], self._info)
 
     def get_collection(self):
         return self._api.get_host_collection()
@@ -92,6 +94,14 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
         host.poweroff()
 
+    def _info(self, argv):
+        host = self._get_resource(argv)
+        try:
+            info = host.get_instance_info()
+            info.show()
+        except PythonApiException, e:
+            print e.message
+
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
 
@@ -102,6 +112,7 @@ Actions:
     settings <id>      Show the settings of a host
     properties <id>    Show the properties of a host (including IP address and
                        host name)
+    info <id>          Show information about host's instance
     add                Add an host
     update <id>        Update a host
     delete <id>        Delete a host
