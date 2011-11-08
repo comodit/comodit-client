@@ -108,16 +108,19 @@ def _parse(argv):
         api = globals.options.api
     else:
         api = profile["api"]
+        globals.options.api = api
 
     if globals.options.username:
         username = globals.options.username
     else:
         username = profile["username"]
+        globals.options.username = username
 
     if globals.options.password:
         password = globals.options.password
     else:
         password = profile["password"]
+        globals.options.password = password
 
     api = CortexApi(api, username, password)
 

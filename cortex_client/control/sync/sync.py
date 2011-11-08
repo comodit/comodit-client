@@ -11,7 +11,7 @@ import os
 
 from cortex_client.util import globals, path
 from cortex_client.control.abstract import AbstractController
-from cortex_client.control.exceptions import MissingException
+from cortex_client.control.exceptions import MissingException, ArgumentException
 from cortex_client.rest.exceptions import ApiException
 
 from actions import *
@@ -20,7 +20,7 @@ from exceptions import SyncException
 class SyncController(AbstractController):
 
     def __init__(self):
-        super(SyncController, self ).__init__()
+        super(SyncController, self).__init__()
         self._register(["pull"], self._pull)
         self._register(["push"], self._push)
         self._register(["h", "help"], self._help)
@@ -31,11 +31,19 @@ class SyncController(AbstractController):
         if not self._options.username:
             raise MissingException("Pull requires a username to be defined")
 
-        self._root = "cortex." + self._options.username
+        if len(argv) > 1:
+            raise ArgumentException("Pull takes no or one argument")
+
+        # Set output folder
+        if len(argv) == 1:
+            self._root = argv[0]
+        else:
+            # No output folder given
+            self._root = "cortex." + self._options.username
 
         # Ensures local repository does not contain stale data
-        if(os.path.exists(self._root)):
-            raise SyncException(self._root+" already exists.")
+        if(os.path.exists(self._root) and len(os.listdir(self._root)) > 0):
+            raise SyncException(self._root + " already exists and is not empty.")
 
         self._ensureFolders()
         self._dumpApplications()
@@ -55,7 +63,15 @@ class SyncController(AbstractController):
         if not self._options.username:
             raise MissingException("Push requires a username")
 
-        self._root = "cortex." + self._options.username
+        if len(argv) > 1:
+            raise ArgumentException("Pull takes no or one argument")
+
+        # Set source folder
+        if len(argv) == 1:
+            self._root = argv[0]
+        else:
+            # No source folder given
+            self._root = "cortex." + self._options.username
 
         self._readRemoteEntities()
 
@@ -87,7 +103,7 @@ class SyncController(AbstractController):
         self._remote_distributions = {}
         for dist in dist_list:
             self._remote_distributions[dist.get_name()] = dist
-                
+
         host_list = self._api.get_host_collection().get_resources()
         self._remote_hosts = {}
         for host in host_list:
@@ -107,9 +123,9 @@ class SyncController(AbstractController):
         print """You must provide an action to perform.
 
 Actions:
-    pull            Retrieves data from cortex server (local data are overwrit-
+    pull [path]     Retrieves data from cortex server (local data are overwrit-
                     ten)
-    push            Updates data on cortex server (remote data may be overwrit-
+    push [path]     Updates data on cortex server (remote data may be overwrit-
                     ten if --force option is set)
 """
 
