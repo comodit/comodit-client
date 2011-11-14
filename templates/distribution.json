@@ -1,8 +1,18 @@
 {
     "name":"my-distro",
     "description":"A linux distribution",
-    "url":"http://example.com/public/centos/5.5/os/i386/",
     "initrd":"/var/lib/cortex/dist/my-distro/initrd.img",
     "vmlinuz":"/var/lib/cortex/dist/my-distro/vmlinuz",
-    "kickstart": "<UUID of kickstart template>"
+    "kickstart":
+    {
+        "name": "<file name>",
+        "parameters": [
+            {
+                "key": "<a key>",
+                "value": "<a value>",
+                "name": "<a name>",
+                "description": "<a description>"
+            }
+        ]
+    }
 }

@@ -7,6 +7,7 @@ Distribution module.
 """
 
 from resource import Resource
+from file import File
 
 class Distribution(Resource):
     """
@@ -28,37 +29,33 @@ class Distribution(Resource):
         super(Distribution, self).set_api(api)
         self._set_collection(api.get_distribution_collection())
 
+    def _get_kickstart_path(self):
+        return "distributions/" + self.get_uuid() + "/kickstart"
+
     def get_kickstart(self):
         """
         Provides the UUID of kickstart's template.
         @return: Kickstart's template (UUID)
-        @rtype: String
+        @rtype: L{File}
         """
-        return self._get_field("kickstart")
+        data = self._get_field("kickstart")
+        if data is None:
+            return None
+        return File(json_data = data)
 
     def set_kickstart(self, kickstart):
         """
         Sets the UUID of kickstart's template.
-        @param kickstart: Kickstart's template (UUID)
-        @type kickstart: String
+        @param kickstart: Kickstart's template
+        @type kickstart: L{File}
         """
-        return self._set_field("kickstart", kickstart)
+        self._set_field("kickstart", kickstart)
 
-    def get_url(self):
-        """
-        Provides base URL to distribution's repository.
-        @return: An URL
-        @rtype: String
-        """
-        return self._get_field("url")
+    def set_kickstart_content(self, path):
+        self._api.get_client().upload_to_exising_file_with_path(path, self._resource + "/" + self.get_uuid() + "/kickstart")
 
-    def set_url(self, url):
-        """
-        Sets the base URL to distribution's repository.
-        @param url: An URL
-        @type url: String
-        """
-        return self._set_field("url", url)
+    def get_kickstart_content(self):
+        return self._api.get_client().read(self._get_kickstart_path(), decode = False)
 
     def get_initrd(self):
         """
@@ -110,8 +107,10 @@ class Distribution(Resource):
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
-        print " "*indent, "Kickstart:", self.get_kickstart()
-        print " "*indent, "URL:", self.get_url()
+        kickstart = self.get_kickstart()
+        if kickstart:
+            print " "*indent, "Kickstart:"
+            kickstart.show(indent = indent + 2)
         print " "*indent, "Initrd:", self.get_initrd()
         print " "*indent, "Vmlinuz:", self.get_vmlinuz()
         print " "*indent, "Owner:", self.get_owner()

@@ -404,8 +404,8 @@ class Host(Resource):
         @rtype: L{InstanceInfo}
         @raise PythonApiException: If host was not yet provisioned
         """
-        if self.get_state() != "PROVISIONED":
-            raise PythonApiException("Host must first be provisioned")
+        if self.get_state() == "DEFINED":
+            raise PythonApiException("Host must first be provision(ed|ing)")
 
         info_json = self._api.get_client().read("hosts/" + self.get_uuid() + "/VM/state")
         return InstanceInfo(info_json)
@@ -473,7 +473,7 @@ class Host(Resource):
             client.update("provisioner/_provision",
                       parameters = {"hostId":uuid}, decode = False)
         except ApiException, e:
-            raise PythonApiException("Unable to provision host", e)
+            raise PythonApiException("Unable to provision host: " + e.message)
 
     def start(self):
         """
@@ -521,4 +521,4 @@ class Host(Resource):
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:
-            raise PythonApiException("Unable to poweroff host", e)
+            raise PythonApiException("Unable to poweroff host: " + e.message)

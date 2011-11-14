@@ -8,6 +8,7 @@ Application module.
 
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
+from file import File
 
 class ApplicationResource(JsonWrapper):
     """
@@ -170,21 +171,22 @@ class ApplicationFile(ApplicationResource):
         """
         return self._get_field("path")
 
-    def get_template_uuid(self):
+    def get_template(self):
         """
-        Provides this file's template UUID.
-        @return: A UUID
-        @rtype: String
+        Provides this file's template.
+        @return: A template
+        @rtype: L{File}
         """
-        return self._get_field("template")
+        data = self._get_field("template")
+        return File(data)
 
-    def set_template_uuid(self, uuid):
+    def set_template(self, template):
         """
         Sets this file's template UUID.
-        @param uuid: A UUID
-        @type uuid: String
+        @param template: A template
+        @type template: L{File}
         """
-        self._set_field("template", uuid)
+        self._set_field("template", template.get_json())
 
     def show(self, indent = 0):
         """
@@ -200,7 +202,10 @@ class ApplicationFile(ApplicationResource):
         print " "*(indent + 2), "group:", self.get_group()
         print " "*(indent + 2), "mode:", self.get_mode()
         print " "*(indent + 2), "path:", self.get_path()
-        print " "*(indent + 2), "template:", self.get_template_uuid()
+        template = self.get_template()
+        if template:
+            print " "*(indent + 2), "template:"
+            template.show(indent + 4)
 
 
 class ApplicationFileFactory(object):
@@ -511,6 +516,15 @@ class Application(Resource):
         @rtype: Integer
         """
         return int(self._get_field("version"))
+
+    def _get_file_path(self, name):
+        return self._resource + "/" + self.get_uuid() + "/files/" + name
+
+    def set_file_content(self, file_name, path):
+        self._api.get_client().upload_to_exising_file_with_path(path, self._get_file_path(file_name))
+
+    def get_file_content(self, file_name):
+        return self._api.get_client().read(self._get_file_path(file_name), decode = False)
 
     def _show(self, indent = 0):
         """

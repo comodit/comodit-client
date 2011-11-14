@@ -7,20 +7,30 @@
       ],
      "services":
       [
-      	{
-      		"name":"service",
-      		"enabled":true
-      	}
+          {
+              "name":"service",
+              "enabled":true
+          }
       ],
      "files":
       [
-      	{
-      		"name":"myfile",
-      		"path":"/path/to/file",
-      		"owner":"root",
-      		"group":"root",
-      		"mode":"644",
-      		"template":"<UUID of file template>",
-      	}
+          {
+              "name":"myfile",
+              "path":"/path/to/file",
+              "owner":"root",
+              "group":"root",
+              "mode":"644",
+              "template": {
+                "name": "<file name>",
+                "parameters": [
+                    {
+                        "key": "<a key>",
+                        "value": "<a value>",
+                        "name": "<a name>",
+                        "description": "<a description>"
+                    }
+                ]
+            }
+          }
       ]
 }

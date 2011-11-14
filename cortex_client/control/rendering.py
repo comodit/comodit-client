@@ -96,7 +96,7 @@ class RenderingController(AbstractController):
                     fd.write(content.read())
 
                 # Set permissions
-                mode = f.get_mode()
+                mode = int(f.get_mode(), 8)
                 owner = f.get_owner()
                 owner_id = pwd.getpwnam(owner)[2]
                 group = f.get_group()

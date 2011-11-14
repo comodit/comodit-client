@@ -22,7 +22,7 @@ class ResourceNotFoundException(PythonApiException):
         @param identifier: The identifier of the resource.
         @type identifier: String
         """
-        super(ResourceNotFoundException, self).__init__("Resource not found: "+identifier)
+        super(ResourceNotFoundException, self).__init__("Resource not found: " + identifier)
 
 class Collection(object):
     """
@@ -77,7 +77,7 @@ class Collection(object):
                                                    resource.get_json())
         except ApiException, e:
             raise PythonApiException("Could not create resource " +
-                                     resource.get_name(), e)
+                                     resource.get_name() + ": " + e.message)
         resource.set_json(result)
 
     def get_resources(self, parameters = {}):
@@ -135,7 +135,7 @@ class Collection(object):
             if e.code == 404:
                 raise ResourceNotFoundException(uuid, e)
             else:
-                raise PythonApiException("Could not get resource "+uuid, e)
+                raise PythonApiException("Could not get resource " + uuid, e)
         return self._new_resource(result)
 
     def get_resource_from_path(self, identifier):
@@ -157,7 +157,7 @@ class Collection(object):
             if e.code == 404:
                 raise ResourceNotFoundException(identifier)
             else:
-                raise PythonApiException("Could not get resource "+identifier, e)
+                raise PythonApiException("Could not get resource " + identifier, e)
 
     def get_uuid(self, identifier):
         """

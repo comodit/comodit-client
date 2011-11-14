@@ -10,7 +10,7 @@ class PythonApiException(Exception):
     """
     Base class for exceptions raised by API calls.
     """
-    def __init__(self, message, cause = None):
+    def __init__(self, message):
         """
         Creates a PythonApiException instance.
         
@@ -20,7 +20,6 @@ class PythonApiException(Exception):
         @type cause: Exception
         """
         super(PythonApiException, self).__init__(message)
-        self.cause = cause
 
 class NotFoundException(PythonApiException):
     """

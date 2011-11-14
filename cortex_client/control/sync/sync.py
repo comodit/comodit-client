@@ -15,7 +15,6 @@ from cortex_client.control.exceptions import MissingException, ArgumentException
 from cortex_client.rest.exceptions import ApiException
 
 from actions import *
-from exceptions import SyncException
 
 class SyncController(AbstractController):
 
@@ -89,11 +88,6 @@ class SyncController(AbstractController):
             self._actions.display()
 
     def _readRemoteEntities(self):
-        file_list = self._api.get_file_collection().get_resources()
-        self._remote_files = {}
-        for f in file_list:
-            self._remote_files[f.get_uuid()] = f
-
         app_list = self._api.get_application_collection().get_resources()
         self._remote_applications = {}
         for app in app_list:
@@ -135,15 +129,11 @@ Actions:
         path.ensure(os.path.join(self._root, "organizations"))
         path.ensure(os.path.join(self._root, "platforms"))
 
-    def _pushTemplate(self, src_folder):
-        f = self._api.new_file()
-        f.load(src_folder)
+    def _pushKickstartTemplate(self, src_file, dist):
+        self._actions.addAction(UploadKickstart(src_file, dist))
 
-        local_uuid = f.get_uuid()
-        if(self._remote_files.has_key(local_uuid)):
-            self._actions.addAction(UpdateTemplateAction(False, f))
-        else:
-            self._actions.addAction(CreateTemplateAction(True, f))
+    def _pushApplicationFileTemplate(self, src_file, app, name):
+        self._actions.addAction(UploadApplicationFileResource(src_file, app, name))
 
     def _pushApplications(self):
         if(not os.path.exists(self._root + "/applications")):
@@ -156,12 +146,14 @@ Actions:
             app_folder = os.path.join(apps_folder, app_name)
             app.load(app_folder)
 
+            self._pushResource(app, self._remote_applications)
+
+            # Push files' content
             file_list = app.get_files()
             for f in file_list:
-                template_folder = os.path.join(app_folder, f.get_name())
-                self._pushTemplate(template_folder)
-
-            self._pushResource(app, self._remote_applications)
+                file_name = f.get_name()
+                content_file = os.path.join(app_folder, "files", file_name)
+                self._pushApplicationFileTemplate(content_file, app, file_name)
 
     def _getUniqueName(self, base_name, names_dict):
         if(not names_dict.has_key(base_name)):
@@ -197,10 +189,14 @@ Actions:
             app_folder = os.path.join(apps_folder, a.get_name())
             a.dump(app_folder)
 
+            # Dump files' content to disk
+            files_folder = os.path.join(app_folder, "files")
+            path.ensure(files_folder)
             file_list = a.get_files()
             for f in file_list:
-                template = self._api.get_file_collection().get_resource(f.get_template_uuid())
-                template.dump(os.path.join(app_folder, f.get_name()))
+                file_name = f.get_name()
+                with open(os.path.join(files_folder, file_name), "w") as f:
+                    f.write(a.get_file_content(file_name).read())
 
     def _pushDistributions(self):
         if(not os.path.exists(self._root + "/distributions")):
@@ -213,10 +209,10 @@ Actions:
             dist_folder = os.path.join(dists_folder, dist_name)
             dist.load(dist_folder)
 
-            ks_folder = os.path.join(dist_folder, "kickstart")
-            self._pushTemplate(ks_folder)
-
             self._pushResource(dist, self._remote_distributions)
+
+            ks_content = os.path.join(dist_folder, "kickstart")
+            self._pushKickstartTemplate(ks_content, dist)
 
     def _dumpDistributions(self):
         dists = self._api.get_distribution_collection().get_resources()
@@ -225,8 +221,9 @@ Actions:
             dist_folder = os.path.join(dists_folder, d.get_name())
             d.dump(dist_folder)
 
-            ks_template = self._api.get_file_collection().get_resource(d.get_kickstart())
-            ks_template.dump(os.path.join(dist_folder, "kickstart"))
+            # Dump kickstart's content to disk
+            with open(os.path.join(dist_folder, "kickstart"), "w") as f:
+                f.write(d.get_kickstart_content().read())
 
     def _dumpOrganizations(self):
         orgs = self._api.get_organization_collection().get_resources()

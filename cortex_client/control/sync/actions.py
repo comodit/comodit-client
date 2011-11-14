@@ -27,41 +27,43 @@ class Action(object):
     def executeAction(self, uuid_conversion_table):
         raise NotImplementedError
 
+    def get_summary(self):
+        raise NotImplementedError
+
     def display(self):
         print "Fast-forward:", self._is_fast_forward
+        print "Summary: " + self.get_summary()
 
-class TemplateAction(Action):
-    def __init__(self, is_fast_forward, file_object):
-        super(TemplateAction, self).__init__(is_fast_forward)
-        self._file_object = file_object
+class UploadContentAction(Action):
+    def __init__(self, src_file):
+        super(UploadContentAction, self).__init__(True)
+        self._src_file = src_file
 
-class UpdateTemplateAction(TemplateAction):
-    def __init__(self, is_fast_forward, file_object):
-        super(UpdateTemplateAction, self).__init__(is_fast_forward, file_object)
+    def get_summary(self):
+        return "Upload file " + self._src_file
 
-    def executeAction(self, uuid_conversion_table):
-        old_uuid = self._file_object.get_uuid()
-        self._file_object.commit()
-        new_uuid = self._file_object.get_uuid()
-        uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
+class UploadKickstart(UploadContentAction):
+    def __init__(self, src_file, dist):
+        super(UploadKickstart, self).__init__(src_file)
+        self._dist = dist
 
-    def display(self):
-        super(UpdateTemplateAction, self).display()
-        print "Summary: Update template " + self._file_object.get_name()
-
-class CreateTemplateAction(TemplateAction):
-    def __init__(self, is_fast_forward, file_object):
-        super(CreateTemplateAction, self).__init__(is_fast_forward, file_object)
+    def get_summary(self):
+        return "Upload kickstart to distribution " + self._dist.get_name()
 
     def executeAction(self, uuid_conversion_table):
-        old_uuid = self._file_object.get_uuid()
-        self._file_object.create()
-        new_uuid = self._file_object.get_uuid()
-        uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
+        self._dist.set_kickstart_content(self._src_file)
 
-    def display(self):
-        super(CreateTemplateAction, self).display()
-        print "Summary: Create template " + self._file_object.get_name()
+class UploadApplicationFileResource(UploadContentAction):
+    def __init__(self, src_file, app, name):
+        super(UploadApplicationFileResource, self).__init__(src_file)
+        self._name = name
+        self._app = app
+
+    def get_summary(self):
+        return "Upload application file " + self._name + " to " + self._app.get_name()
+
+    def executeAction(self, uuid_conversion_table):
+        self._app.set_file_content(self._name, self._src_file)
 
 class ResourceAction(Action):
     def __init__(self, is_fast_forward, res_object):
@@ -70,17 +72,9 @@ class ResourceAction(Action):
 
     def _update_meta_data(self, uuid_conversion_table):
         if(isinstance(self._res_object, Application)):
-            app = self._res_object
-
-            # Update templates' UUID
-            app_files = app.get_files()
-            for app_file in app_files:
-                app_file.set_template_uuid(uuid_conversion_table.getNewUuid(app_file.get_template_uuid()))
+            pass
         elif(isinstance(self._res_object, Distribution)):
-            dist = self._res_object
-
-            # Update kickstart UUID
-            dist.set_kickstart(uuid_conversion_table.getNewUuid(dist.get_kickstart()))
+            pass
         elif(isinstance(self._res_object, Platform)):
             pass
         elif(isinstance(self._res_object, Organization)):
@@ -119,9 +113,8 @@ class UpdateResource(ResourceAction):
         new_uuid = self._res_object.get_uuid()
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
-    def display(self):
-        super(UpdateResource, self).display()
-        print "Summary: Update resource " + self._res_object.get_name()
+    def get_summary(self):
+        return "Update resource " + self._res_object.get_name()
 
 class CreateResource(ResourceAction):
     def __init__(self, is_fast_forward, res_object):
@@ -134,9 +127,8 @@ class CreateResource(ResourceAction):
         new_uuid = self._res_object.get_uuid()
         uuid_conversion_table.putUuidPair(old_uuid, new_uuid)
 
-    def display(self):
-        super(CreateResource, self).display()
-        print "Summary: Create resource " + self._res_object.get_name()
+    def get_summary(self):
+        return "Create resource " + self._res_object.get_name()
 
 class ActionsQueue:
     def __init__(self):
@@ -153,7 +145,10 @@ class ActionsQueue:
 
     def executeActions(self, uuid_conversion_table):
         for a in self._actions:
+            print "-"*80
+            print "Executing '" + a.get_summary() + "'"
             a.executeAction(uuid_conversion_table)
+        print "-"*80
 
     def display(self):
         for a in self._actions:

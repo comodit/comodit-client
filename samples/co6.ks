@@ -12,15 +12,13 @@ text
 network --bootproto=dhcp --device=eth0
 
 # Use the following installation channels
-url --url=${_url}
+url --url=http://oak.${zone}.guardis.be/public/centos/6.0/os/${vm_base_arch}/
 repo --name=updates --baseurl=http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/
 repo --name=epel --baseurl=http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/
 
-repo --name=comodit-unstable --baseurl=http://devel.bruxelles.guardis.be/public/comodit-unstable/centos/6/${vm_arch}/
 repo --name=comodit --baseurl=http://devel.bruxelles.guardis.be/public/comodit/centos/6/${vm_arch}/
-
 <#if enable_trunk="true">
-repo --name=comodit-trunk --baseurl=http://devel.bruxelles.guardis.be/public/comodit-trunk/centos/6/${vm_arch}/
+repo --name=comodit-dev --baseurl=http://devel.bruxelles.guardis.be/public/comodit-dev/centos/6/${vm_arch}/
 </#if>
 
 # Do not configure the X Window System
@@ -111,7 +109,7 @@ cat << EOF > /etc/synapse/synapse.conf
 
 [rabbitmq]
 type = amqp
-host = cortex-trunk.angleur.guardis.be
+host = mahogany.angleur.guardis.be
 queue = vm.${_hostid}
 exchange = status
 username = guest

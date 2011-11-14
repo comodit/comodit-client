@@ -6,11 +6,6 @@ File module.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-import os
-
-from cortex_client.util import path
-from resource import Resource
-from exceptions import PythonApiException
 from cortex_client.util.json_wrapper import JsonWrapper
 
 class Parameter(JsonWrapper):
@@ -109,13 +104,13 @@ class ParameterFactory(object):
         return Parameter(json_data)
 
 
-class File(Resource):
+class File(JsonWrapper):
     """
     A file template. A template is the representation of a parametrized file.
     A template may be rendered after values are given to its parameters (see
     L{RenderingService}).
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
@@ -123,19 +118,24 @@ class File(Resource):
         @type json_data: dict, list or String
         """
         super(File, self).__init__(json_data)
-        self._content_to_upload = None
-        if(api):
-            self.set_api(api)
 
-    def set_api(self, api):
-        super(File, self).set_api(api)
-        self._set_collection(api.get_file_collection())
+    def get_name(self):
+        """
+        Provides the name of this resource or None if it is not yet set.
+        
+        @return: The name of this resource.
+        @rtype: String
+        """
+        return self._get_field("name")
 
-    def get_description(self):
-        raise NotImplementedError
+    def set_name(self, name):
+        """
+        Sets the name of this resource.
 
-    def set_description(self, description):
-        raise NotImplementedError
+        @param name: The new name
+        @type name: String
+        """
+        self._set_field("name", name)
 
     def get_parameters(self):
         """
@@ -161,89 +161,9 @@ class File(Resource):
         """
         self._add_to_list_field("parameters", parameter)
 
-    def get_content(self):
-        """
-        Provides template's content. Content may be read from a file object.
-        @return: A file object to template's content
-        @rtype: A file object
-        """
-        content = self._api.get_client().read(self._resource + "/" +
-                                              self.get_uuid(), decode = False)
-        return content
-
-    def set_content(self, file_name):
-        """
-        Sets template's content. Content is read from a given file. Note that
-        templates content is not directly updated on cortex server. Commit must
-        be called for this.
-        @param file_name: The path to new content's file
-        @rtype: String
-        """
-        self._content_to_upload = file_name
-
-    def create(self, force = False):
-        if not self._content_to_upload:
-            raise PythonApiException("File has no content")
-
-        template_file_name = self._content_to_upload
-        if not os.path.exists(template_file_name):
-            raise PythonApiException("File " + template_file_name + " does not exist.")
-
-        uuid = self._api.get_client().upload_new_file(template_file_name)
-
-        parameters = {}
-        if force: parameters["force"] = "true"
-
-        self.set_json(self._api.get_client().update(self._resource + "/" + uuid + "/_meta",
-                                      self.get_json(), parameters))
-        self._content_to_upload = None
-
-    def _show(self, indent = 0):
-        print " "*indent, "UUID:", self.get_uuid()
+    def show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Parameters:"
         parameters = self.get_parameters()
         for p in parameters:
             p.show(indent + 2)
-
-    def _commit_meta(self, force):
-        """
-        Commits template's meta-data only.
-        @param force: If true, force parameter is used
-        @type force: Boolean
-        """
-        parameters = {}
-        if(force):
-            parameters["force"] = "true"
-        self.set_json(self._api.get_client().update(self._resource + "/" +
-                                                    self.get_uuid() + "/_meta",
-                                                    self.get_json(),
-                                                    parameters))
-
-    def _commit_content(self, force):
-        """
-        Commits template's content only.
-        @param force: If true, force parameter is used
-        @type force: Boolean
-        """
-        if(self._content_to_upload):
-            self._api.get_client().upload_to_exising_file(self._content_to_upload,
-                                                          self.get_uuid())
-            self._content_to_upload = None
-
-    def update(self):
-        self.set_json(self._client.read(self._resource + "/" + self.get_uuid() + "/_meta"))
-
-    def commit(self, force = False):
-        self._commit_content(force)
-        self._commit_meta(force)
-
-    def dump(self, dest_folder):
-        path.ensure(dest_folder)
-        with open(os.path.join(dest_folder, self.get_name()), 'w') as f:
-            f.write(self.get_content().read())
-        self.dump_json(os.path.join(dest_folder, "definition.json"))
-
-    def load(self, input_folder):
-        self.load_json(os.path.join(input_folder, "definition.json"))
-        self.set_content(os.path.join(input_folder, self.get_name()))
