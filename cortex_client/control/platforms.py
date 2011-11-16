@@ -14,7 +14,7 @@ class PlatformsController(ResourceController):
     _template = "platform.json"
 
     def __init__(self):
-        super(PlatformsController, self ).__init__()
+        super(PlatformsController, self).__init__()
 
     def get_collection(self):
         return self._api.get_platform_collection()

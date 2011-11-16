@@ -23,11 +23,22 @@ class SyncController(AbstractController):
         super(SyncController, self).__init__()
         self._register(["pull"], self._pull)
         self._register(["push"], self._push)
-        self._register(["h", "help"], self._help)
+        self._register(["help"], self._help)
         self._default_action = self._help
+
+    def _request_dir_competion(self):
+        exit(2)
+
+    def _print_pull_completions(self, param_num, argv):
+        if param_num == 0:
+            self._request_dir_competion()
 
     def _pull(self, argv):
         self._options = globals.options
+        if self._options.param_completions >= 0:
+            self._print_pull_completions(self._options.param_completions, argv)
+            return
+
         if not self._options.username:
             raise MissingException("Pull requires a username to be defined")
 
@@ -51,6 +62,10 @@ class SyncController(AbstractController):
         self._dumpOrganizations()
         self._dumpPlatforms()
 
+    def _print_push_completions(self, param_num, argv):
+        if param_num == 0:
+            self._request_dir_competion()
+
     def _push(self, argv):
         """
         Pushes local data to cortex server. Data may include applications,
@@ -60,6 +75,10 @@ class SyncController(AbstractController):
         push data.
         """
         self._options = globals.options
+        if self._options.param_completions >= 0:
+            self._print_push_completions(self._options.param_completions, argv)
+            return
+
         if not self._options.username:
             raise MissingException("Push requires a username")
 

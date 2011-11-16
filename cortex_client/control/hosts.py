@@ -18,15 +18,15 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self).__init__()
-        self._register(["provision"], self._provision)
-        self._register(["start"], self._start)
-        self._register(["pause"], self._pause)
-        self._register(["resume"], self._resume)
-        self._register(["shutdown"], self._shutdown)
-        self._register(["poweroff"], self._poweroff)
-        self._register(["settings"], self._settings)
-        self._register(["properties"], self._properties)
-        self._register(["info"], self._info)
+        self._register(["provision"], self._provision, self._print_show_completions)
+        self._register(["start"], self._start, self._print_show_completions)
+        self._register(["pause"], self._pause, self._print_show_completions)
+        self._register(["resume"], self._resume, self._print_show_completions)
+        self._register(["shutdown"], self._shutdown, self._print_show_completions)
+        self._register(["poweroff"], self._poweroff, self._print_show_completions)
+        self._register(["settings"], self._settings, self._print_show_completions)
+        self._register(["properties"], self._properties, self._print_show_completions)
+        self._register(["info"], self._info, self._print_show_completions)
 
     def get_collection(self):
         return self._api.get_host_collection()

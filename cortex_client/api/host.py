@@ -345,7 +345,11 @@ class Host(Resource):
         @return: Host's applications.
         @rtype: list of L{Application}
         """
-        return self._get_list_field("applications", StringFactory())
+        app_uuids = self._get_list_field("applications", StringFactory())
+        apps = []
+        for uuid in app_uuids:
+            apps.append(self._api.get_application_collection().get_resource(uuid))
+        return apps
 
     def set_applications(self, applications):
         """
@@ -354,7 +358,10 @@ class Host(Resource):
         @param applications: Host's applications.
         @type applications: list of L{Application}
         """
-        self._set_list_field("applications", applications)
+        self._set_list_field("applications", [])
+        for app in applications:
+            uuid = app.get_uuid()
+            self._add_to_list_field("applications", uuid)
 
     def add_application(self, application):
         """
@@ -363,7 +370,7 @@ class Host(Resource):
         @param application: An application
         @type application: L{Application}
         """
-        self._add_to_list_field("applications", application)
+        self._add_to_list_field("applications", application.get_uuid())
 
     def get_version(self):
         """

@@ -5,7 +5,7 @@ RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
 COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
 
 NAME=cortex-client
-TAR_CONTENT="cortex_client templates conf setup.py cortex-client"
+TAR_CONTENT="cortex_client templates conf setup.py cortex-client scripts/completions.sh"
 PLATFORMS=(epel-6-i386 fedora-14-i386 fedora-15-i386)
 
 cd `dirname $0`

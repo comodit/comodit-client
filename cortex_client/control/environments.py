@@ -16,7 +16,7 @@ class EnvironmentsController(ResourceController):
     _template = "environment.json"
 
     def __init__(self):
-        super(EnvironmentsController, self ).__init__()
+        super(EnvironmentsController, self).__init__()
 
     def get_collection(self):
         return self._api.get_environment_collection()

@@ -37,3 +37,7 @@ def dispatch(keyword, api, argv):
     else:
         raise ControllerException("I'm sorry Sir, I don't understand what you mean by " + keyword)
 
+def print_keywords():
+    global controllers
+    for k in controllers.keys():
+        print k

@@ -14,8 +14,8 @@ class ChangesController(ResourceController):
     _template = "change.json"
 
     def __init__(self):
-        super(ChangesController, self ).__init__()
-        self._register(["apply"], self._apply)
+        super(ChangesController, self).__init__()
+        self._register(["apply"], self._apply, self._print_show_completions)
 
     def get_collection(self):
         return self._api.get_change_request_collection()
@@ -23,6 +23,19 @@ class ChangesController(ResourceController):
     def _apply(self, argv):
         change_req = self._get_resource(argv)
         change_req.apply_request()
+
+    def _print_identifiers(self, argv):
+        resources_list = self._get_resources(argv)
+
+        if len(argv) > 0:
+            # Check if completions are available
+            id = argv[0]
+            for res in resources_list:
+                if id == res.get_uuid():
+                    return
+
+        for r in resources_list:
+            print r.get_uuid()
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.

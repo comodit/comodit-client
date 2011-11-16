@@ -36,14 +36,14 @@ from api.exceptions import PythonApiException
 def run(argv):
     # resources
     control.router.register(["users"], UsersController())
-    control.router.register(["pf", "platforms"], PlatformsController())
-    control.router.register(["app", "applications"], ApplicationsController())
-    control.router.register(["dist", "distributions"], DistributionsController())
-    control.router.register(["org", "organizations"], OrganizationsController())
-    control.router.register(["env", "environments"], EnvironmentsController())
-    control.router.register(["host", "hosts"], HostsController())
+    control.router.register(["platforms"], PlatformsController())
+    control.router.register(["applications"], ApplicationsController())
+    control.router.register(["distributions"], DistributionsController())
+    control.router.register(["organizations"], OrganizationsController())
+    control.router.register(["environments"], EnvironmentsController())
+    control.router.register(["hosts"], HostsController())
     control.router.register(["sync"], SyncController())
-    control.router.register(["cr", "changes"], ChangesController());
+    control.router.register(["changes"], ChangesController());
     control.router.register(["files"], FilesController());
 
     # services
@@ -90,10 +90,26 @@ def _parse(argv):
     parser.add_option("--debug", dest = "debug", help = "display debug information", action = "store_true", default = False)
     parser.add_option("--version", dest = "version", help = "display version information", action = "store_true", default = False)
 
+    parser.add_option("--options", dest = "show_options", help = "display options", action = "store_true", default = False)
+    parser.add_option("--resources", dest = "show_resources", help = "display resources", action = "store_true", default = False)
+    parser.add_option("--completions", dest = "param_completions", type = "int", help = "parameter to complete", default = -1)
+
     (globals.options, args) = parser.parse_args()
 
     if globals.options.version:
         print "Cortex command line client, version " + VERSION + ", released on " + RELEASE + "."
+        exit(0)
+
+    if globals.options.show_options:
+        for o in parser.option_list:
+            for so in o._short_opts:
+                print so
+            for lo in o._long_opts:
+                print lo
+        exit(0)
+
+    if globals.options.show_resources:
+        control.router.print_keywords()
         exit(0)
 
     if (len(args) == 0):
