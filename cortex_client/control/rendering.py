@@ -18,14 +18,9 @@ class RenderingController(AbstractController):
         resources_list = self._api.get_host_collection().get_resources()
 
         if len(argv) > 0:
-            # Check if completions are available
-            id = argv[0]
-            for res in resources_list:
-                if id == res.get_identifier():
-                    return
-
-        for r in resources_list:
-            print r.get_identifier()
+            self._print_resource_identifiers(resources_list, argv[0])
+        else:
+            self._print_resource_identifiers(resources_list)
 
     def _get_host(self, id):
         if(globals.options.uuid):
@@ -34,42 +29,38 @@ class RenderingController(AbstractController):
             return self._api.get_host_collection().get_resource_from_path(id)
 
     def _print_applications(self, argv):
-        host = self._get_host(argv[0])
-
-        app_list = host.get_applications()
-        if len(argv) > 1:
-            # Check if completions are available
-            app = argv[1]
-            for res in app_list:
-                if app == res.get_identifier():
-                    return
-
-        for r in app_list:
-            print r.get_identifier()
+        if len(argv) > 0:
+            host = self._get_host(argv[0])
+            if host:
+                apps = host.get_applications()
+                for a in apps:
+                    self._print_escaped_name(a.get_name())
 
     def _get_application(self, host_id, app_name):
         host = self._get_host(host_id)
         app_list = host.get_applications()
         the_app = None
         for app in app_list:
-            if app.get_name() == app_name:
+            if self._equals_identifiers(app.get_name(), app_name):
                 the_app = app
                 break
         return the_app
 
     def _print_files(self, argv):
         app = self._get_application(argv[0], argv[1])
+        if app is None:
+            return
 
         file_list = app.get_files()
         if len(argv) > 2:
             # Check if completions are available
             file_name = argv[2]
             for f in file_list:
-                if file_name == f.get_name():
+                if self._equals_identifiers(file_name, f.get_name()):
                     return
 
         for r in file_list:
-            print r.get_name()
+            self._print_escaped_name(r.get_name())
 
     def _print_app_file_completions(self, param_num, argv):
         if param_num == 0:
@@ -96,7 +87,7 @@ class RenderingController(AbstractController):
         host = self._api.get_host_collection().get_resource(host_uuid)
         app_found = False
         for app in host.get_applications():
-            if(app.get_name() == app_name):
+            if self._equals_identifiers(app.get_name(), app_name):
                 app_found = True
                 break
 

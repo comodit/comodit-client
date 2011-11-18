@@ -7,7 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import json, os
+import json, os, sys
 
 from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
@@ -43,14 +43,9 @@ class ResourceController(AbstractController):
         resources_list = self._get_resources(argv)
 
         if len(argv) > 0:
-            # Check if completions are available
-            id = argv[0]
-            for res in resources_list:
-                if id == res.get_identifier():
-                    return
-
-        for r in resources_list:
-            print r.get_identifier()
+            self._print_resource_identifiers(resources_list, argv[0])
+        else:
+            self._print_resource_identifiers(resources_list)
 
     def _print_show_completions(self, param_num, argv):
         if(param_num == 0):
@@ -90,7 +85,8 @@ class ResourceController(AbstractController):
         res.show(as_json = options.raw)
 
     def _print_update_completions(self, param_num, argv):
-        pass
+        if(param_num == 0):
+            self._print_identifiers(argv)
 
     def _update(self, argv):
         options = globals.options

@@ -151,11 +151,11 @@ class JsonWrapper(object):
         """
         return self.__json_data
 
-    def print_json(self):
+    def print_json(self, sort_keys = True, indent = 4):
         """
         Prints JSON representation of this object's state.
         """
-        print json.dumps(self.__json_data)
+        print json.dumps(self.__json_data, sort_keys = sort_keys, indent = indent)
 
     def dump_json(self, output_file, sort_keys = True, indent = 4):
         """

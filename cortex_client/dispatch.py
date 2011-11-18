@@ -51,6 +51,35 @@ def run(argv):
 
     _parse(argv)
 
+def _get_all_options(parser):
+    options = []
+    for o in parser.option_list:
+        for so in o._short_opts:
+            options.append(so)
+        for lo in o._long_opts:
+            options.append(lo)
+    return options
+
+def _get_value_options(parser):
+    # TODO : automatically detect value options
+    options = [
+                "-f", "--file",
+                "-j", "--json",
+                "--org",
+                "--org-path",
+                "--org-uuid",
+                "--env",
+                "--env-path",
+                "--env-uuid",
+                "--api",
+                "--user",
+                "--pass",
+                "--templates",
+                "--profile",
+                "--completions"
+                ]
+    return options
+
 def _parse(argv):
 
     usage = "usage: %prog (resource | service) [command] [options]"
@@ -91,6 +120,7 @@ def _parse(argv):
     parser.add_option("--version", dest = "version", help = "display version information", action = "store_true", default = False)
 
     parser.add_option("--options", dest = "show_options", help = "display options", action = "store_true", default = False)
+    parser.add_option("--options-with-value", dest = "show_options_with_value", help = "display options", action = "store_true", default = False)
     parser.add_option("--resources", dest = "show_resources", help = "display resources", action = "store_true", default = False)
     parser.add_option("--completions", dest = "param_completions", type = "int", help = "parameter to complete", default = -1)
 
@@ -101,11 +131,13 @@ def _parse(argv):
         exit(0)
 
     if globals.options.show_options:
-        for o in parser.option_list:
-            for so in o._short_opts:
-                print so
-            for lo in o._long_opts:
-                print lo
+        for o in _get_all_options(parser):
+            print o
+        exit(0)
+
+    if globals.options.show_options_with_value:
+        for o in _get_value_options(parser):
+            print o
         exit(0)
 
     if globals.options.show_resources:

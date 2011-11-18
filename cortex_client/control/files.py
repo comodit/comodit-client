@@ -112,8 +112,6 @@ class FilesController(ResourceController):
         file_res.commit()
 
     def _help(self, argv):
-        if(globals.options.param_completions >= 0):
-            return
         print '''You must provide an action to perform.
 
 Actions:
