@@ -20,7 +20,3 @@ class UsersController(RootResourceController):
 
     def get_collection(self, argv):
         return self._api.users()
-
-    def _prune_json_update(self, json_wrapper):
-        super(UsersController, self)._prune_json_update(json_wrapper)
-        json_wrapper._del_field("username")
