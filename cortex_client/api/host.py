@@ -256,10 +256,16 @@ class Task(JsonWrapper):
     def get_status(self):
         return self._get_field("status")
 
+    def get_error(self):
+        return self._get_field("error")
+
     def show(self, indent = 0):
         print " "*indent, "Number:", self.get_order_num()
         print " "*indent, "Description:", self.get_description()
         print " "*indent, "Status:", self.get_status()
+
+        if self.get_status() == "ERROR":
+            print " "*indent, "Error: '" + self.get_error() + "'"
 
 class TaskFactory(object):
     def new_object(self, json_data):
