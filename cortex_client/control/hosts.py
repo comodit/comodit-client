@@ -43,6 +43,7 @@ class HostsController(ResourceController):
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_resource_completions)
         self._register(["changes"], self._changes, self._print_resource_completions)
+        self._register(["all-changes"], self._all_changes, self._print_resource_completions)
         self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
         self._register(["audit"], self._audit.audit, self._print_resource_completions)
         self._register(["vnc"], self._vnc, self._print_resource_completions)
@@ -146,6 +147,16 @@ class HostsController(ResourceController):
 
         host = self._get_resource(argv)
         changes = host.get_changes()
+        print "Changes:"
+        for c in changes:
+            c.show()
+
+    def _all_changes(self, argv):
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        host = self._get_resource(argv)
+        changes = host.get_changes(show_processed = True)
         print "Changes:"
         for c in changes:
             c.show()

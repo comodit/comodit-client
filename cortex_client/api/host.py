@@ -247,6 +247,9 @@ class Task(JsonWrapper):
     def __init__(self, json_data = None):
         super(Task, self).__init__(json_data)
 
+    def get_order_num(self):
+        return int(self._get_field("orderNum"))
+
     def get_description(self):
         return self._get_field("description")
 
@@ -254,6 +257,7 @@ class Task(JsonWrapper):
         return self._get_field("status")
 
     def show(self, indent = 0):
+        print " "*indent, "Number:", self.get_order_num()
         print " "*indent, "Description:", self.get_description()
         print " "*indent, "Status:", self.get_status()
 
@@ -266,6 +270,9 @@ class Change(JsonWrapper):
     def __init__(self, json_data = None):
         super(Change, self).__init__(json_data)
 
+    def get_order_num(self):
+        return int(self._get_field("orderNum"))
+
     def get_description(self):
         return self._get_field("description")
 
@@ -273,6 +280,7 @@ class Change(JsonWrapper):
         return self._get_list_field("tasks", TaskFactory())
 
     def show(self, indent = 0):
+        print " "*indent, "Number:", self.get_order_num()
         print " "*indent, "Description:", self.get_description()
         print " "*indent, "Tasks:"
         tasks = self.get_tasks()
@@ -526,12 +534,13 @@ class Host(Configurable):
     def distribution(self):
         return DistributionContextCollection(self._get_api(), self._get_path() + "distribution/")
 
-    def get_changes(self):
+    def get_changes(self, show_processed = False):
         if self.get_state() != "PROVISIONED":
             raise PythonApiException("Host must be provisioned")
 
         try:
-            json_changes = self._get_client().read(self._get_path() + "changes/")
+            json_changes = self._get_client().read(self._get_path() + "changes/",
+                                                   {"show_processed" : "true" if show_processed else "false"})
             changes = []
             if json_changes["count"] == "0":
                 return changes
