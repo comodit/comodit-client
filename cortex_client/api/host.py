@@ -556,6 +556,11 @@ class Host(Configurable):
             raise PythonApiException("Host must be provisioned")
         self._get_client().delete(self._get_path() + "changes/")
 
+    def clear_change(self, order_num):
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must be provisioned")
+        self._get_client().delete(self._get_path() + "changes/" + str(order_num))
+
     def audit_logs(self):
         return AuditCollection(self._get_path() + "audit/", self._get_api())
 

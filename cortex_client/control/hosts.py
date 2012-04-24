@@ -44,6 +44,7 @@ class HostsController(ResourceController):
         self._register(["clone"], self._clone, self._print_resource_completions)
         self._register(["changes"], self._changes, self._print_resource_completions)
         self._register(["all-changes"], self._all_changes, self._print_resource_completions)
+        self._register(["clear-change"], self._clear_change, self._clear_change_completions)
         self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
         self._register(["audit"], self._audit.audit, self._print_resource_completions)
         self._register(["vnc"], self._vnc, self._print_resource_completions)
@@ -58,6 +59,8 @@ class HostsController(ResourceController):
         self._register_action_doc(self._render_tree_doc())
         self._register_action_doc(self._clone_doc())
         self._register_action_doc(self._changes_doc())
+        self._register_action_doc(self._all_changes_doc())
+        self._register_action_doc(self._clear_change_doc())
         self._register_action_doc(self._clear_changes_doc())
         self._register_action_doc(self._audit.audit_doc())
         self._register_action_doc(self._vnc_doc())
@@ -151,6 +154,10 @@ class HostsController(ResourceController):
         for c in changes:
             c.show()
 
+    def _changes_doc(self):
+        return ActionDoc("changes", "<org_name> <env_name> <res_name>", """
+        Display pending changes of a given host.""")
+
     def _all_changes(self, argv):
         if len(argv) != 3:
             raise MissingException("This action takes 3 arguments")
@@ -161,9 +168,30 @@ class HostsController(ResourceController):
         for c in changes:
             c.show()
 
-    def _changes_doc(self):
-        return ActionDoc("changes", "<org_name> <env_name> <res_name>", """
-        Display pending changes of a given host.""")
+    def _all_changes_doc(self):
+        return ActionDoc("all-changes", "<org_name> <env_name> <res_name>", """
+        Display all changes of a given host.""")
+
+    def _clear_change(self, argv):
+        if len(argv) != 4:
+            raise MissingException("This action takes 4 arguments")
+
+        host = self._get_resource(argv)
+        order_num = int(argv[3])
+        host.clear_change(order_num)
+
+    def _clear_change_completions(self, param_num, argv):
+        if param_num < 3:
+            self._print_resource_completions(param_num, argv)
+        elif len(argv) > 2 and param_num == 3:
+            host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
+            changes = host.get_changes(show_processed = True)
+            for c in changes:
+                print c.get_order_num()
+
+    def _clear_change_doc(self):
+        return ActionDoc("clear-change", "<org_name> <env_name> <res_name> <number>", """
+        Clear a change from a given host.""")
 
     def _clear_changes(self, argv):
         if len(argv) != 3:
