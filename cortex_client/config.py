@@ -148,17 +148,17 @@ class Config(object):
 
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :
-        1) <current_directory>/conf/cortex-client.conf
-        2) ~/.cortexrc
-        3) /etc/cortex/cortex-client.conf
+        1) <current_directory>/conf/comodit-client.conf
+        2) ~/.comoditrc
+        3) /etc/comodit-client/comodit-client.conf
 
         elsewhere : return None
         """
-        config_name = "cortex-client.conf"
+        config_name = "comodit-client.conf"
 
         curdir_path = os.curdir + "/conf/" + config_name
-        user_path = os.path.expanduser("~") + "/.cortexrc"
-        etc_path = "/etc/cortex/" + config_name
+        user_path = os.path.expanduser("~") + "/.comoditrc"
+        etc_path = "/etc/comodit-client/" + config_name
 
         for loc in curdir_path, user_path, etc_path:
             if os.path.isfile(loc):
@@ -168,8 +168,8 @@ class Config(object):
 
     def _get_templates_path(self):
         curdir_path = os.curdir + "/templates"
-        user_path = os.path.expanduser("~") + "/.cortex/templates"
-        etc_path = "/usr/share/cortex-client/templates/"
+        user_path = os.path.expanduser("~") + "/.comodit/templates"
+        etc_path = "/usr/share/comodit-client/templates/"
 
         for loc in curdir_path, user_path, etc_path:
             if os.path.isdir(loc):

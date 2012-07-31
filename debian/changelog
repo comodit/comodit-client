@@ -1,3 +1,9 @@
+comodit-client (1.2.dev-22) stable; urgency=low
+
+  * Bumped version.
+
+ -- Gerard Dethier <gerard.dethier@comodit.com>  Mon, 30 Jul 2012 16:23:24 +0200
+
 cortex-client (1.1.dev-15) unstable; urgency=low
 
   * Bumped version.

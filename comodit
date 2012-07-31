@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# cortex | A command line client for cortex-server
+# comodit | A command line client for ComodIT
 
 import sys
 

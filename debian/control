@@ -1,4 +1,4 @@
-Source: cortex-client
+Source: comodit-client
 Section: shells
 Priority: optional
 Maintainer: Gerard Dethier <gerard.dethier@comodit.com>
@@ -6,13 +6,14 @@ Build-Depends: debhelper (>=8.0.0~), python-support (>= 0.6), cdbs (>= 0.4.49), 
 XS-Python-Version: >=2.6
 Standards-Version: 3.9.1.0
 
-Package: python-cortex-client
+Package: comodit-client
 Architecture: all
 Homepage: http://www.github.com/guardis/cortex-client
 XB-Python-Version: ${python:Versions}
 Depends: ${misc:Depends}, ${python:Depends}, python-pycurl, python-argparse
-Description: Cortex command line client and python library
- Cortex automates the management of an Information System through the entire
+Replaces: cortex-client
+Description: ComodIT command line client and python library
+ ComodIT automates the management of an Information System through the entire
  lifecycle. Integrating in particular the management of virtual machines
  (though an hypervisor), the provisioning, the configuration management,
  auditing and monitoring.

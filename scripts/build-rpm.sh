@@ -1,9 +1,9 @@
 #!/bin/bash
 
-NAME="cortex-client"
-SPEC_FILE_NAME="cortex-client"
+NAME="comodit-client"
+SPEC_FILE_NAME="comodit-client"
 PLATFORMS="epel-6-i386 fedora-16-i386 fedora-17-i386"
-TAR_CONTENT="cortex_client templates setup.py cortex auto_completion/cortex doc/cortex.1 README rpmbuild/etc"
+TAR_CONTENT="cortex_client templates setup.py comodit auto_completion/comodit doc/comodit.1 README rpmbuild/etc"
 
 cd `dirname $0`
 cd ..

@@ -6,6 +6,6 @@ build
 dist
 *.egg-info
 lib/
-rpmbuild/SPECS/cortex-client.spec
+rpmbuild/SPECS/comodit-client.spec
 epydoc-html/
 conf/

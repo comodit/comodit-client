@@ -35,7 +35,7 @@ except ImportError:
     pass
 
 setup(
-    name = 'cortex-client',
+    name = 'comodit-client',
     description = 'ComodIT command line client and python library.',
     long_description = read('README'),
     version = VERSION + "-" + RELEASE,
@@ -45,7 +45,7 @@ setup(
     license = 'MIT',
     packages = find_packages(),
     scripts = [
-        'cortex'
+        'comodit'
     ],
     include_package_data = True,
     # Here's the list of usable classifiers:
@@ -60,8 +60,8 @@ setup(
     ],
     install_requires = requires,
     data_files = [
-        ('/etc/bash_completion.d/', ['auto_completion/cortex']),
-        ('/usr/share/cortex-client/templates', get_template_files()),
-        ('/etc/cortex/', ['rpmbuild/etc/cortex/cortex-client.conf'])
+        ('/etc/bash_completion.d/', ['auto_completion/comodit']),
+        ('/usr/share/comodit-client/templates', get_template_files()),
+        ('/etc/comodit-client/', ['rpmbuild/etc/comodit-client/comodit-client.conf'])
     ],
 )

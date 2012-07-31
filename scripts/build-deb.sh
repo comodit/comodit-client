@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NAME="cortex-client"
-TMP_DIR=/tmp/cortex-client
+NAME="comodit-client"
+TMP_DIR=/tmp/comodit-client
 
 cd `dirname $0`
 cd ..

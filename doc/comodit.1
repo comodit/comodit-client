@@ -1,5 +1,5 @@
 '\" t
-.\"     Title: cortex
+.\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
 .\"      Date: 07/04/2012
@@ -7,7 +7,7 @@
 .\"    Source: Guardis
 .\"  Language: English
 .\"
-.TH "CORTEX" "1" "07/04/2012" "Guardis" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "07/04/2012" "Guardis" "Command Line User Interface"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,10 +28,10 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-cortex \- ComodIT command\-line interface
+comodit \- ComodIT command\-line interface
 .SH "SYNOPSIS"
-.HP \w'/usr/bin/cortex\ 'u
-/usr/bin/cortex [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {resource} [sub\-resources\ \&...] {action} [\&...]
+.HP \w'/usr/bin/comodit\ 'u
+/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {resource} [sub\-resources\ \&...] {action} [\&...]
 .SH "DESCRIPTION"
 .PP
 ComodIT is a global, integrated and centralized platform that eases the management of Linux systems and cloud provisioning (i\&.e\&. the instantiation of ready\-to\-use VMs)\&.
@@ -818,13 +818,13 @@ Prints version information\&.
 .PP
 Client reads connection informations from a configuration file\&. Following files are parsed (files are listed in increasing order of priority):
 .RS 4
-\&./conf/cortex\-client\&.conf
+\&./conf/comodit\-client\&.conf
 .RE
 .RS 4
-~/\&.cortexrc
+~/\&.comoditrc
 .RE
 .RS 4
-/etc/cortex/cortex\-client\&.conf
+/etc/comodit\-client/comodit\-client\&.conf
 .RE
 .PP
 A configuration file should contain one or serveral profiles\&. A profile is the URL of a ComodIT server\*(Aqs API, a user name and a password\&. Option \-\-profile can be used to select a particular profile\&. The configuration file also contains the profile to use by default, when no profile is selected\&.
@@ -864,7 +864,7 @@ Following command shows the list of organizations the user has access to (i\&.e\
  
 .RE
 .RS 4
-cortex organizations list
+comodit organizations list
 .RE
 .SS "Show a resource\*(Aqs details"
 .PP
@@ -873,7 +873,7 @@ Following command shows the details of a distribution DIST from organization ORG
  
 .RE
 .RS 4
-cortex distributions show ORG DIST
+comodit distributions show ORG DIST
 .RE
 .SS "Provision a host"
 .PP
@@ -882,7 +882,7 @@ Following command provisions host HOST part of environment ENV from organization
  
 .RE
 .RS 4
-cortex hosts provision ORG ENV HOST
+comodit hosts provision ORG ENV HOST
 .RE
 .SS "Handle a host\*(Aqs instance"
 .PP
@@ -891,7 +891,7 @@ Following command starts the instance (i\&.e\&. VM) associated to host HOST part
  
 .RE
 .RS 4
-cortex hosts instance start ORG ENV HOST
+comodit hosts instance start ORG ENV HOST
 .RE
 .SH "AUTHORS"
 .PP

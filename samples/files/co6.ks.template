@@ -94,7 +94,7 @@ yum
 sudo
 
 # For configuration management
-synapse-agent
+comodit-agent
 
 # User specific packages
 <#list _applications.packages as _pack>
