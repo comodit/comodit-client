@@ -9,6 +9,7 @@ I{pulled} locally (downloaded from the server).
 import os, json, types
 
 from comodit_client.api.collection import EntityNotFoundException
+from collections import OrderedDict
 
 
 class SyncException(Exception):
@@ -496,7 +497,7 @@ class SyncEngine(object):
         """
 
         remote_json = remote_res.get_json()
-        local_json = json.load(open(self._deffile_path, "r"))
+        local_json = json.load(open(self._deffile_path, "r"), object_pairs_hook=OrderedDict)
 
         diffs = self._diff(remote_json, local_json, True, RemoteFileProvider(remote_res), LocalFileProvider(self._folder_path))
         if dry_run:
@@ -516,7 +517,7 @@ class SyncEngine(object):
         """
 
         remote_json = remote_res.get_json()
-        local_json = json.load(open(self._deffile_path, "r"))
+        local_json = json.load(open(self._deffile_path, "r"), object_pairs_hook=OrderedDict)
 
         diffs = self._diff(local_json, remote_json, False, LocalFileProvider(self._folder_path), RemoteFileProvider(remote_res))
         if dry_run:

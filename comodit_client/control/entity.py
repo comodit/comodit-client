@@ -14,6 +14,7 @@ from comodit_client.control.abstract import AbstractController
 from comodit_client.util import prompt
 from comodit_client.util.editor import edit_text
 from comodit_client.control.doc import ActionDoc
+from collections import OrderedDict
 
 
 class EntityController(AbstractController):
@@ -88,16 +89,14 @@ class EntityController(AbstractController):
 
         if options.filename:
             with open(options.filename, 'r') as f:
-                item = json.load(f)
+                item = json.load(f, object_pairs_hook=OrderedDict)
         elif options.json:
-            item = json.loads(options.json)
+            item = json.loads(options.json, object_pairs_hook=OrderedDict)
         else :
             template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
-            # template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             self._complete_template(argv, template_json)
             updated = edit_text(json.dumps(template_json, indent = 4))
-            # updated = re.sub(r'#.*$', "", updated)
-            item = json.loads(updated)
+            item = json.loads(updated, object_pairs_hook=OrderedDict)
 
         res = self.get_collection(argv)._new(item)
         parameters = {}
@@ -127,16 +126,14 @@ class EntityController(AbstractController):
         options = self._config.options
         if options.filename:
             with open(options.filename, 'r') as f:
-                item = json.load(f)
+                item = json.load(f, object_pairs_hook=OrderedDict)
         elif options.json:
-            item = json.loads(options.json)
+            item = json.loads(options.json, object_pairs_hook=OrderedDict)
         elif len(argv) > 0:
             # Edit the entity
-            original = json.dumps(res.get_json(), sort_keys = True, indent = 4)
-            # original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
+            original = res.get_real_json(indent = 4)
             updated = edit_text(original)
-            # updated = re.sub(r'#.*$', "", updated)
-            item = json.loads(updated)
+            item = json.loads(updated, object_pairs_hook=OrderedDict)
 
         # Check if name has changed
         if item.has_key("name"):

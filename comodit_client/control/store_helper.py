@@ -5,6 +5,7 @@ from comodit_client.api.exceptions import PythonApiException
 from comodit_client.config import Config
 from comodit_client.control.exceptions import ControllerException
 from comodit_client.util.editor import edit_text
+from collections import OrderedDict
 
 class StoreHelper(object):
     def __init__(self, ctrl, content_type):
@@ -106,7 +107,7 @@ class StoreHelper(object):
         except PythonApiException:
             raise ControllerException("Unable to retrieve entity from store, maybe you forgot to use --org option?")
         updated = edit_text(json.dumps(pub.authorized, indent = 4))
-        pub.update_authorized(json.loads(updated))
+        pub.update_authorized(json.loads(updated, object_pairs_hook=OrderedDict))
 
     def _update_authorized_doc(self):
         return ActionDoc("update-authorized", "<UUID>", """

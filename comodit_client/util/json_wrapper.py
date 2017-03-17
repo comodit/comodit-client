@@ -4,6 +4,7 @@ JsonWrapper class module.
 """
 
 import json, os
+from collections import OrderedDict
 
 class JsonWrapper(object):
     """
@@ -148,25 +149,32 @@ class JsonWrapper(object):
         """
         return self._json_data
 
-    def print_json(self, sort_keys = True, indent = 4):
+    def get_real_json(self, indent = 4):
+        """
+        Provides the JSON representation of this object's state.
+
+        @return: JSON representation of this object's state
+        @rtype: string
+        """
+        return json.dumps(self._json_data, indent = indent)
+
+    def print_json(self, indent = 4):
         """
         Prints JSON representation of this object's state.
         """
-        print json.dumps(self._json_data, sort_keys = sort_keys, indent = indent)
+        print(self.get_real_json())
 
-    def dump_json(self, output_file, sort_keys = True, indent = 4):
+    def dump_json(self, output_file, indent = 4):
         """
         Writes JSON representation of this object's state to given file.
 
         @param output_file: path to output file
         @type output_file: String
-        @param sort_keys: If True, JSON fields are sorted by key.
-        @type sort_keys: Boolean
         @param indent: Number of spaces per indent
         @type indent: Integer
         """
         with open(output_file, 'w') as f:
-            json.dump(self._json_data, f, sort_keys = sort_keys, indent = indent)
+            json.dump(self._json_data, f, indent = indent)
 
     def load_json(self, input_file):
         """
@@ -176,4 +184,7 @@ class JsonWrapper(object):
         @type input_file: String
         """
         with open(os.path.join(input_file), 'r') as f:
-            self._json_data = json.load(f)
+            self._json_data = self._load_from_file_and_keep_key_order(f)
+
+    def _load_from_file_and_keep_key_order(self, f):
+        return json.load(f, object_pairs_hook=OrderedDict)

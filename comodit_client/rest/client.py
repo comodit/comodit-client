@@ -12,6 +12,7 @@ import comodit_client.util.fileupload as fileupload
 from urllib2 import HTTPError
 from comodit_client.util import urllibx
 from comodit_client.rest.exceptions import ApiException
+from collections import OrderedDict
 
 
 class HttpClient(object):
@@ -39,18 +40,21 @@ class HttpClient(object):
         raw = self._urlopen(req)
         if decode:
             try:
-                return json.load(raw)
+                return self._decode_and_keep_key_order(raw)
             except:
                 raise ApiException("Could not decode response: " + raw.read(), 0)
         else:
             return raw
+
+    def _decode_and_keep_key_order(self, json_string):
+        return json.load(json_string, object_pairs_hook=OrderedDict)
 
     def read(self, entity, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
         req = self._new_request(url, "GET")
         raw = self._urlopen(req)
         if decode:
-            return json.load(raw)
+            return self._decode_and_keep_key_order(raw)
         else:
             return raw
 
@@ -65,7 +69,7 @@ class HttpClient(object):
             req.add_header("Content-Length", 0)
         raw = self._urlopen(req)
         if decode:
-            return json.load(raw)
+            return self._decode_and_keep_key_order(raw)
         else:
             return raw
 
