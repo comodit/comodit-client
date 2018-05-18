@@ -34,6 +34,7 @@ from .control.organizations import OrganizationsController
 from .control.platforms import PlatformsController
 from .rest.exceptions import ApiException
 from .util.editor import NotModifiedException
+from .control.jobs import JobsController
 import comodit_client.version as version
 
 
@@ -46,6 +47,7 @@ def run(argv):
     router.register(["organizations"], OrganizationsController())
     router.register(["environments"], EnvironmentsController())
     router.register(["hosts"], HostsController())
+    router.register(["jobs"], JobsController())
     router.register(["app-store"], AppStoreController())
     router.register(["dist-store"], DistStoreController())
     router.register(["application_keys"], ApplicationKeysController())

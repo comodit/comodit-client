@@ -328,6 +328,18 @@ class Client(object):
 
         return self.__get_unresolved_org(org_name).environments()
 
+    def jobs(self, org_name):
+        """
+        Instantiates the collection of jobs associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{JobCollection}
+        """
+
+        return self.__get_unresolved_org(org_name).jobs()
+
     def __get_unresolved_env(self, org_name, name):
         return self.environments(org_name).new(name)
 
