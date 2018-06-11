@@ -17,6 +17,8 @@ from comodit_client.control.groups import GroupsController
 from comodit_client.control.root_entity import RootEntityController
 from comodit_client.control.settings import OrganizationSettingsController
 from . import completions
+from comodit_client.control.notification_log import NotificationLogHelper
+
 
 
 class OrganizationsController(RootEntityController):
@@ -26,18 +28,21 @@ class OrganizationsController(RootEntityController):
     def __init__(self):
         super(OrganizationsController, self).__init__()
         self._audit = AuditHelper(self, "<res_name>")
-
+        self._notificationLog = NotificationLogHelper(self, "<res_name>")
+        
         # actions
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
         self._register(["reset-secret"], self._reset_secret, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
+        self._register(["notification"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register_action_doc(self._audit.audit_doc())
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
         self._register_action_doc(self._reset_secret_doc())
         self._register_action_doc(self._audit.audit_doc())
+        self._register_action_doc(self._notificationLog.notification_log_doc())
 
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())

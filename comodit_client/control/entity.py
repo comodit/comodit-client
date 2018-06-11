@@ -49,14 +49,14 @@ class EntityController(AbstractController):
 
     def _list(self, argv):
         parameters = self._get_list_parameters(argv)
-        entities_list = self._list_entities(argv, parameters = parameters)
+        entities_list = self._list_entities(argv, parameters=parameters)
         if self._config.options.raw:
-            print(json.dumps([entity.get_json() for entity in entities_list], indent = 4))
+            print(json.dumps([entity.get_json() for entity in entities_list], indent=4))
         else:
             if len(entities_list) == 0:
                 print(self._str_empty)
             else:
-                for e in sorted(entities_list, key = self._sort_key()):
+                for e in sorted(entities_list, key=self._sort_key()):
                     print(self._label(e))
 
     def _sort_key(self):
@@ -65,7 +65,7 @@ class EntityController(AbstractController):
     def _label(self, entity):
         return entity.label
 
-    def _print_identifiers(self, collection, parameters = {}):
+    def _print_identifiers(self, collection, parameters={}):
         completions.print_entity_identifiers(collection.list(parameters))
 
     def _print_collection_completions(self, param_num, argv):
@@ -79,12 +79,12 @@ class EntityController(AbstractController):
 
     def _show(self, argv):
         parameters = self._get_show_parameters(argv)
-        res = self._get_entity(argv, parameters = parameters)
+        res = self._get_entity(argv, parameters=parameters)
 
         # Display the result
         options = self._config.options
         if options.raw:
-            res.show(as_json = True)
+            res.show(as_json=True)
         else:
             res.show()
 
@@ -102,7 +102,7 @@ class EntityController(AbstractController):
         else :
             template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
             self._complete_template(argv, template_json)
-            updated = edit_text(json.dumps(template_json, indent = 4))
+            updated = edit_text(json.dumps(template_json, indent=4))
             item = json.loads(updated, object_pairs_hook=OrderedDict)
 
         res = self.get_collection(argv)._new(item)
@@ -115,8 +115,8 @@ class EntityController(AbstractController):
             parameters["test"] = "true"
         if options.flavor != None:
             parameters["flavor"] = options.flavor
-        res.create(parameters = parameters)
-        res.show(as_json = options.raw)
+        res.create(parameters=parameters)
+        res.show(as_json=options.raw)
 
     def _prune_json_update(self, json_wrapper):
         json_wrapper._del_field("uuid")
@@ -142,21 +142,21 @@ class EntityController(AbstractController):
         # Update entity
         res.set_json(item)
         res.update(self._config.options.force)
-        res.show(as_json = self._config.options.raw)
+        res.show(as_json=self._config.options.raw)
 
     def _delete(self, argv):
         res = self._get_entity(argv)
-        if self._config.options.force or (prompt.confirm(prompt = "Delete " + res.name + " ?", resp = False)) :
+        if self._config.options.force or (prompt.confirm(prompt="Delete " + res.name + " ?", resp=False)) :
             res.delete()
 
     def _help(self, argv):
         self._print_doc()
 
-    def _get_entity(self, argv, parameters = {}):
-        return self.get_collection(argv).get(self._get_name_argument(argv), parameters = parameters)
+    def _get_entity(self, argv, parameters={}):
+        return self.get_collection(argv).get(self._get_name_argument(argv), parameters=parameters)
 
-    def _list_entities(self, argv, parameters = {}):
-        return self.get_collection(argv).list(parameters = parameters)
+    def _list_entities(self, argv, parameters={}):
+        return self.get_collection(argv).list(parameters=parameters)
 
     def get_collection(self, argv):
         raise NotImplementedError

@@ -20,6 +20,7 @@ from comodit_client.api.purchased import PurchasedCollection
 from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.application_key import ApplicationKeyCollection
 from comodit_client.api.job import JobCollection
+from comodit_client.api.notificationLog import NotificationLogCollection
 
 
 class User(JsonWrapper):
@@ -439,6 +440,16 @@ class Organization(HasSettings):
         """
 
         return AuditLogCollection(self.client, self.url + "audit/")
+    
+    def notification_logs(self):
+        """
+        Instantiates the collection of notification logs associated to this organization.
+       
+        @return: The collection of notification logs associated to this organization.
+        @rtype: L{NotificationLogCollection}
+        """
+
+        return NotificationLogCollection(self.client, self.url + "notification/")
 
     def purchased_apps(self):
         """

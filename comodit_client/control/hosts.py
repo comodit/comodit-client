@@ -26,6 +26,7 @@ from comodit_client.control.live import LiveController
 from comodit_client.control.settings import HostSettingsController
 from comodit_client.control.tree_rendering import TreeRenderer
 from comodit_client.util import prompt
+from comodit_client.control.notification_log import NotificationLogHelper
 
 
 class HostsController(EntityController):
@@ -35,7 +36,8 @@ class HostsController(EntityController):
     def __init__(self):
         super(HostsController, self).__init__()
         self._audit = AuditHelper(self, "<org_name> <env_name> <res_name>")
-
+        self._notificationLog = NotificationLogHelper(self, "<org_name> <env_name> <res_name>")
+        
         # subcontrollers
         self._register_subcontroller(["settings"], HostSettingsController())
         self._register_subcontroller(["instance"], InstancesController())
@@ -52,6 +54,7 @@ class HostsController(EntityController):
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
+        self._register(["notification"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register(["vnc"], self._vnc, self._print_entity_completions)
 
         self._doc = "Hosts handling."
@@ -64,6 +67,7 @@ class HostsController(EntityController):
         self._register_action_doc(self._render_tree_doc())
         self._register_action_doc(self._clone_doc())
         self._register_action_doc(self._audit.audit_doc())
+        self._register_action_doc(self._notificationLog.notification_log_doc())
         self._register_action_doc(self._vnc_doc())
 
     def get_collection(self, argv):

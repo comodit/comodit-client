@@ -12,6 +12,7 @@ from comodit_client.api.settings import HasSettings
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.audit import AuditLogCollection
+from comodit_client.api.notificationLog import NotificationLogCollection
 
 
 class EnvironmentCollection(Collection):
@@ -140,6 +141,18 @@ class Environment(HasSettings):
         """
 
         return AuditLogCollection(self.client, self.url + "audit/")
+    
+    def notification_logs(self):
+        """
+        Instantiates the collection of notification logs associated to this environment.
+        The notification log refer to the environment itself as well as to all hosts
+        and their contexts.
+
+        @return: The collection of notification logs associated to this environment.
+        @rtype: L{NotificationLogCollection}
+        """
+
+        return NotificationLogCollection(self.client, self.url + "notification/")
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)

@@ -84,7 +84,7 @@ class Job(Entity):
     @property
     def date(self):
         """
-        The date of job.
+        The execution date of job.
 
         @rtype: string
         """

@@ -10,6 +10,7 @@
 from comodit_client.control.organization_entity import OrganizationEntityController
 from comodit_client.control.settings import EnvironmentSettingsController
 from comodit_client.control.audit import AuditHelper
+from comodit_client.control.notification_log import NotificationLogHelper
 
 class EnvironmentsController(OrganizationEntityController):
 
@@ -18,13 +19,18 @@ class EnvironmentsController(OrganizationEntityController):
     def __init__(self):
         super(EnvironmentsController, self).__init__()
         self._audit = AuditHelper(self, "<org_name> <res_name>")
-
+        
         # subcontrollers
         self._register_subcontroller(["settings"], EnvironmentSettingsController())
 
         # actions
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
         self._register_action_doc(self._audit.audit_doc())
+        
+        self._notificationLog = NotificationLogHelper(self, "<org_name> <res_name>")
+        self._register(["notification"], self._notificationLog.notification_log, self._print_entity_completions)
+        self._register_action_doc(self._notificationLog.notification_log_doc())
+
 
         self._doc = "Environments handling."
 
