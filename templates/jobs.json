@@ -1,6 +1,6 @@
 {
-    "name":"prod",
-    "description":"The production job",
+    "name":"name job",
+    "description":"description job",
     "enabled":"true",
     "input":"organizations/Demo/environments/test/hosts/voila",
     "action":"DELETE_HOST",

@@ -21,7 +21,7 @@ from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.application_key import ApplicationKeyCollection
 from comodit_client.api.job import JobCollection
 from comodit_client.api.notificationLog import NotificationLogCollection
-
+from comodit_client.api.notification import NotificationCollection
 
 class User(JsonWrapper):
     """
@@ -360,6 +360,15 @@ class Organization(HasSettings):
         """
 
         return JobCollection(self.client, self.url + "jobs/")
+    
+    def notifications(self):
+        """
+        Instantiates the collection of notifications associated to this organization.
+
+        @return: The collection of notifications associated to this organization.
+        @rtype: L{NotificationCollection}
+        """
+        return NotificationCollection(self.client, self.url + "notifications/")
 
     def get_environment(self, name):
         """

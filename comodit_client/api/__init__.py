@@ -339,6 +339,18 @@ class Client(object):
         """
 
         return self.__get_unresolved_org(org_name).jobs()
+    
+    def notifications(self, org_name):
+        """
+        Instantiates the collection of notifications associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{NotificationCollection}
+        """
+
+        return self.__get_unresolved_org(org_name).notifications()
 
     def __get_unresolved_env(self, org_name, name):
         return self.environments(org_name).new(name)

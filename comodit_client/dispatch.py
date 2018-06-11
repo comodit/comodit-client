@@ -35,6 +35,7 @@ from .control.platforms import PlatformsController
 from .rest.exceptions import ApiException
 from .util.editor import NotModifiedException
 from .control.jobs import JobsController
+from .control.notifications import NotificationsController
 import comodit_client.version as version
 
 
@@ -51,7 +52,8 @@ def run(argv):
     router.register(["app-store"], AppStoreController())
     router.register(["dist-store"], DistStoreController())
     router.register(["application_keys"], ApplicationKeysController())
-
+    router.register(["notifications"], NotificationsController())
+    
     _parse(argv)
 
 def _get_all_options(parser):
