@@ -56,7 +56,7 @@ class JobCollection(Collection):
 
 class Job(Entity):
     """
-    Job entity representation. An job is an action to execute on host, settings. It's
+    Job entity representation. A job is an action to execute on host, settings. It's
     possible to execute a job at Date or by cron.
 
     """
