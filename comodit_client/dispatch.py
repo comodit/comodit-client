@@ -93,7 +93,6 @@ Available entities:
     environments      Environment defined within an organization
     hosts             Host defined within an environment
     flavors           Available flavors when creating a distribution
-    application_keys  Temporary access tokens related to an organization
 """)
 
     parser.add_argument("entity", help = "An entity")
