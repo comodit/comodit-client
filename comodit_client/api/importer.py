@@ -17,6 +17,8 @@ from comodit_client.api.distribution import Distribution
 from comodit_client.api.environment import Environment
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.host import Host, Instance
+from comodit_client.api.notification import Notification
+from comodit_client.api.job import Job
 from comodit_client.api.organization import Organization
 from comodit_client.api.platform import Platform
 
@@ -209,6 +211,34 @@ class Import(object):
             for host_name in hosts_list:
                 host_folder = os.path.join(hosts_folder, host_name)
                 self.import_host(env, host_folder, skip_conflict_detection=not env_already_exists)
+                
+    def import_jobs(self, org, job_folder, skip_conflict_detection=False):
+        """
+        Imports a job from a local folder into a given organization.
+
+        @param org: The target organization.
+        @type org: L{Organization}
+        @param job_folder: Path to directory containing job's definition.
+        @type job_folder: string
+        """
+
+        job = Job(org.jobs(), None)
+        job.load(job_folder)
+        job_already_exists = self._import_entity_and_detect_conflict(job, "job", skip_conflict_detection=skip_conflict_detection)
+
+    def import_notifications(self, org, notification_folder, skip_conflict_detection=False):
+        """
+        Imports a job from a local folder into a given organization.
+
+        @param org: The target organization.
+        @type org: L{Organization}
+        @param notification_folder: Path to directory containing job's definition.
+        @type notification_folder: string
+        """
+
+        notification = Notification(org.notifications(), None)
+        notification.load(notification_folder)
+        notification_already_exists = self._import_entity_and_detect_conflict(notification, "notification", skip_conflict_detection=skip_conflict_detection)
 
     def import_host(self, env, host_folder, skip_conflict_detection=False):
         """
@@ -293,6 +323,16 @@ class Import(object):
         if os.path.exists(envs_folder):
             for env in os.listdir(envs_folder):
                 self.import_environment(org, os.path.join(envs_folder, env), skip_conflict_detection=not organization_already_exists)
+                
+        jobs_folder = os.path.join(org_folder, "jobs")
+        if os.path.exists(jobs_folder):
+            for job in os.listdir(jobs_folder):
+                self.import_jobs(org, os.path.join(jobs_folder,job), skip_conflict_detection=not organization_already_exists)
+                
+        notifications_folder = os.path.join(org_folder, "notification-channels")
+        if os.path.exists(notifications_folder):
+            for notification in os.listdir(notifications_folder):
+                self.import_notifications(org, os.path.join(notifications_folder,notification), skip_conflict_detection=not organization_already_exists)
 
     def display_queue(self, show_only_conflicts = True):
         """

@@ -54,7 +54,7 @@ class HostsController(EntityController):
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
-        self._register(["notification"], self._notificationLog.notification_log, self._print_entity_completions)
+        self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register(["vnc"], self._vnc, self._print_entity_completions)
 
         self._doc = "Hosts handling."

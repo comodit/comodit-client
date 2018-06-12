@@ -18,7 +18,9 @@ from comodit_client.control.root_entity import RootEntityController
 from comodit_client.control.settings import OrganizationSettingsController
 from . import completions
 from comodit_client.control.notification_log import NotificationLogHelper
-
+from comodit_client.control.jobs import JobsController
+from comodit_client.control.notifications import NotificationsController
+from comodit_client.control.application_keys import ApplicationKeysController
 
 
 class OrganizationsController(RootEntityController):
@@ -35,7 +37,7 @@ class OrganizationsController(RootEntityController):
         self._register(["export"], self._export, self._print_export_completions)
         self._register(["reset-secret"], self._reset_secret, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
-        self._register(["notification"], self._notificationLog.notification_log, self._print_entity_completions)
+        self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register_action_doc(self._audit.audit_doc())
 
         self._register_action_doc(self._export_doc())
@@ -47,6 +49,10 @@ class OrganizationsController(RootEntityController):
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
         self._register_subcontroller(["groups"], GroupsController())
+        self._register_subcontroller(["jobs"], JobsController())
+        self._register_subcontroller(["notification-channels"], NotificationsController())
+        self._register_subcontroller(["application-keys"], ApplicationKeysController())
+        
 
         self._doc = "Organizations handling."
 

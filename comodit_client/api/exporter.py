@@ -14,6 +14,7 @@ from comodit_client.api.host import Host
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.path import ensure
 import six
+from boto.mturk import notification
 
 
 class ExportException(Exception):
@@ -134,6 +135,30 @@ class Export(object):
         hosts_folder = os.path.join(path, "hosts")
         for host in env.hosts():
             self.export_host(host, os.path.join(hosts_folder, host.name))
+            
+    def export_job(self, job, path):
+        """
+        Exports a job to a local folder.
+
+        @param job: The job to export.
+        @type job: L{Job}
+        @param path: Path to local directory.
+        @type path: string
+        """
+
+        self._export_entity(job, path)
+
+    def export_notification(self, notification, path):
+        """
+        Exports a jobnotificationto a local folder.
+
+        @param notification: The notification to export.
+        @type notification: L{Notification}
+        @param path: Path to local directory.
+        @type path: string
+        """
+
+        self._export_entity(notification, path)
 
     def export_host(self, host, path):
         """
@@ -198,3 +223,9 @@ class Export(object):
 
         for env in org.environments():
             self.export_environment(env, os.path.join(path, "environments", env.name))
+            
+        for job in org.jobs():
+            self.export_job(job, os.path.join(path, "jobs", job.name))
+        
+        for notification in org.notifications():
+            self.export_notification(notification, os.path.join(path, "notification-channels", notification.name))

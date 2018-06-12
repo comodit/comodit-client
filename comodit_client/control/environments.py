@@ -28,7 +28,7 @@ class EnvironmentsController(OrganizationEntityController):
         self._register_action_doc(self._audit.audit_doc())
         
         self._notificationLog = NotificationLogHelper(self, "<org_name> <res_name>")
-        self._register(["notification"], self._notificationLog.notification_log, self._print_entity_completions)
+        self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register_action_doc(self._notificationLog.notification_log_doc())
 
 

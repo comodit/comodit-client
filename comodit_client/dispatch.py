@@ -17,14 +17,13 @@ import traceback
 
 from comodit_client.api.exporter import ExportException
 from comodit_client.api.importer import ImportException
-from comodit_client.control.application_keys import ApplicationKeysController
 from comodit_client.control.store import AppStoreController, DistStoreController
 
 from .api import Client
 from .api.exceptions import PythonApiException
 from .config import Config, ConfigException
 from .control import router
-from .control.applications import ApplicationsController
+from comodit_client.control.applications import ApplicationsController
 from .control.distributions import DistributionsController
 from .control.environments import EnvironmentsController
 from .control.exceptions import ControllerException, ArgumentException
@@ -34,8 +33,6 @@ from .control.organizations import OrganizationsController
 from .control.platforms import PlatformsController
 from .rest.exceptions import ApiException
 from .util.editor import NotModifiedException
-from .control.jobs import JobsController
-from .control.notifications import NotificationsController
 import comodit_client.version as version
 
 
@@ -48,11 +45,8 @@ def run(argv):
     router.register(["organizations"], OrganizationsController())
     router.register(["environments"], EnvironmentsController())
     router.register(["hosts"], HostsController())
-    router.register(["jobs"], JobsController())
     router.register(["app-store"], AppStoreController())
     router.register(["dist-store"], DistStoreController())
-    router.register(["application_keys"], ApplicationKeysController())
-    router.register(["notifications"], NotificationsController())
     
     _parse(argv)
 
