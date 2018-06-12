@@ -49,7 +49,7 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 1. Add ComodIT repository by executing the following command:
 
     - On CentOS 7 `rpm -ivh http://dl.comodit.com/pub/centos/7/x86_64/comodit-release-7-0.el7.noarch.rpm`
-    - On Fedora 27: `rpm -ivh http://dl.comodit.com/pub/fedora/27/x86_64/comodit-release-1-0.fc27.noarch.rpm`
+    - On Fedora 28: `rpm -ivh http://dl.comodit.com/pub/fedora/28/x86_64/comodit-release-1-0.fc28.noarch.rpm`
 
 2. Install client with command `yum install comodit-client`.
 
