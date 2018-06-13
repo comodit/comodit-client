@@ -14,7 +14,6 @@ from comodit_client.api.host import Host
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.path import ensure
 import six
-from boto.mturk import notification
 
 
 class ExportException(Exception):
