@@ -89,9 +89,45 @@ class Notification(Entity):
         """
 
         return self._get_field("value")
+
+    @property
+    def notifiables(self):
+        """
+        List of notifiable notification.
+
+        @rtype: list of notifiable L{Notifiable}
+        """
+
+        return self._get_list_field("notifiableViews", lambda x: Notifiable(x))
     
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)
         print(" "*indent, "Value:", self.value)
         print(" "*indent, "Organization:", self.organization)
+        for n in self.notifiables:
+            n.show(indent + 2)
+
+
+class Notifiable(JsonWrapper):
+    """
+        active notification type
+    """
+
+    @property
+    def description(self):
+        return self._get_field("description")
+
+    @property
+    def actionType(self):
+        return self._get_field("actionType")
+    
+    @property
+    def active(self):
+        return self._get_field("active")
+
+    def show(self, indent = 0):
+        print(" "*indent, "description:", self.description)
+        print(" "*indent, "actionType:", self.actionType)
+        print(" "*indent, "active:", self.active)
+
         

@@ -1,5 +1,46 @@
 {
-	"channel":"Slack",
-	"value":"{\"webHookUrl\":\"value\"}",
-	"organization":"organizationName"
-}
+    "channel": "myChannel",
+    "value": "{\"webHookUrl\":\"value\"}",
+    "notifiableViews": [
+      {
+        "actionType": "triggerCustomAction",
+        "active": false,
+        "description": "Custom actions"
+      },
+      {
+        "actionType": "KILL_FREE_INSTANCE",
+        "active": true,
+        "description": "Free instance is killed"
+      },
+      {
+        "actionType": "compOk",
+        "active": true,
+        "description": "Host is compliant"
+      },
+      {
+        "actionType": "compError",
+        "active": true,
+        "description": "Host is not compliant"
+      },
+      {
+        "actionType": "provisioned",
+        "active": true,
+        "description": "Host is provisioned"
+      },
+      {
+        "actionType": "execute",
+        "active": false,
+        "description": "Instance actions"
+      },
+      {
+        "actionType": "NOTIFY_ERROR",
+        "active": true,
+        "description": "Job error"
+      },
+      {
+        "actionType": "AGENT_MESSAGE",
+        "active": false,
+        "description": "Message from agent"
+      }
+    ]
+  }
