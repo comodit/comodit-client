@@ -22,6 +22,8 @@ from comodit_client.api.application_key import ApplicationKeyCollection
 from comodit_client.api.job import JobCollection
 from comodit_client.api.notificationLog import NotificationLogCollection
 from comodit_client.api.notification import NotificationCollection
+from comodit_client.api.agentLog import AgentLogCollection
+from comodit_client.api.otherLog import OtherLogCollection
 
 class User(JsonWrapper):
     """
@@ -459,6 +461,26 @@ class Organization(HasSettings):
         """
 
         return NotificationLogCollection(self.client, self.url + "notification/")
+
+    def agent_logs(self):
+        """
+        Instantiates the collection of agent logs associated to this organization.
+       
+        @return: The collection of agent logs associated to this organization.
+        @rtype: L{AgentLogCollection}
+        """
+
+        return AgentLogCollection(self.client, self.url + "agent/")
+
+    def other_logs(self):
+        """
+        Instantiates the collection of other logs associated to this organization.
+       
+        @return: The collection of other logs associated to this organization.
+        @rtype: L{OtherLogCollection}
+        """
+
+        return OtherLogCollection(self.client, self.url + "other/")
 
     def purchased_apps(self):
         """

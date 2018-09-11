@@ -27,6 +27,8 @@ from comodit_client.control.settings import HostSettingsController
 from comodit_client.control.tree_rendering import TreeRenderer
 from comodit_client.util import prompt
 from comodit_client.control.notification_log import NotificationLogHelper
+from comodit_client.control.log import OtherLogHelper
+from comodit_client.control.log import AgentLogHelper
 
 
 class HostsController(EntityController):
@@ -37,6 +39,8 @@ class HostsController(EntityController):
         super(HostsController, self).__init__()
         self._audit = AuditHelper(self, "<org_name> <env_name> <res_name>")
         self._notificationLog = NotificationLogHelper(self, "<org_name> <env_name> <res_name>")
+        self._agentLog = AgentLogHelper(self, "<org_name> <env_name> <res_name>")
+        self._otherLog = OtherLogHelper(self, "<org_name> <env_name> <res_name>")
         
         # subcontrollers
         self._register_subcontroller(["settings"], HostSettingsController())
@@ -55,6 +59,8 @@ class HostsController(EntityController):
         self._register(["clone"], self._clone, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
         self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
+        self._register(["agents"], self._agentLog.agent_log, self._print_entity_completions)
+        self._register(["others"], self._otherLog.other_log, self._print_entity_completions)
         self._register(["vnc"], self._vnc, self._print_entity_completions)
 
         self._doc = "Hosts handling."

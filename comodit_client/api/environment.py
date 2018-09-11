@@ -13,6 +13,9 @@ from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.audit import AuditLogCollection
 from comodit_client.api.notificationLog import NotificationLogCollection
+from comodit_client.api.agentLog import AgentLogCollection
+from comodit_client.api.otherLog import OtherLogCollection
+
 
 
 class EnvironmentCollection(Collection):
@@ -153,6 +156,30 @@ class Environment(HasSettings):
         """
 
         return NotificationLogCollection(self.client, self.url + "notification/")
+
+    def agent_logs(self):
+        """
+        Instantiates the collection of agent logs associated to this environment.
+        The agent log refer to the environment itself as well as to all hosts
+        and their contexts.
+
+        @return: The collection of agent logs associated to this environment.
+        @rtype: L{AgentLogCollection}
+        """
+
+        return AgentLogCollection(self.client, self.url + "agent/")
+
+    def other_logs(self):
+        """
+        Instantiates the collection of other logs associated to this environment.
+        The other log refer to the environment itself as well as to all hosts
+        and their contexts.
+
+        @return: The collection of other logs associated to this environment.
+        @rtype: L{OtherLogCollection}
+        """
+
+        return OtherLogCollection(self.client, self.url + "other/")
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)

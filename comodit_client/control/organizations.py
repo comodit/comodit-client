@@ -21,6 +21,8 @@ from comodit_client.control.notification_log import NotificationLogHelper
 from comodit_client.control.jobs import JobsController
 from comodit_client.control.notifications import NotificationsController
 from comodit_client.control.application_keys import ApplicationKeysController
+from comodit_client.control.log import OtherLogHelper
+from comodit_client.control.log import AgentLogHelper
 
 
 class OrganizationsController(RootEntityController):
@@ -31,21 +33,27 @@ class OrganizationsController(RootEntityController):
         super(OrganizationsController, self).__init__()
         self._audit = AuditHelper(self, "<res_name>")
         self._notificationLog = NotificationLogHelper(self, "<res_name>")
-        
+        self._agentLog = AgentLogHelper(self, "<res_name>")
+        self._otherLog = OtherLogHelper(self, "<res_name>")
+
         # actions
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
         self._register(["reset-secret"], self._reset_secret, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
         self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
-        self._register_action_doc(self._audit.audit_doc())
+        self._register(["agents"], self._agentLog.agent_log, self._print_entity_completions)
+        self._register(["others"], self._otherLog.other_log, self._print_entity_completions)
 
+        self._register_action_doc(self._audit.audit_doc())
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
         self._register_action_doc(self._reset_secret_doc())
         self._register_action_doc(self._audit.audit_doc())
         self._register_action_doc(self._notificationLog.notification_log_doc())
-
+        self._register_action_doc(self._agentLog.agent_log_doc())
+        self._register_action_doc(self._otherLog.other_log_doc())
+        
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
         self._register_subcontroller(["groups"], GroupsController())

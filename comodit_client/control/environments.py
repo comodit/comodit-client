@@ -11,6 +11,8 @@ from comodit_client.control.organization_entity import OrganizationEntityControl
 from comodit_client.control.settings import EnvironmentSettingsController
 from comodit_client.control.audit import AuditHelper
 from comodit_client.control.notification_log import NotificationLogHelper
+from comodit_client.control.log import OtherLogHelper
+from comodit_client.control.log import AgentLogHelper
 
 class EnvironmentsController(OrganizationEntityController):
 
@@ -30,7 +32,15 @@ class EnvironmentsController(OrganizationEntityController):
         self._notificationLog = NotificationLogHelper(self, "<org_name> <res_name>")
         self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register_action_doc(self._notificationLog.notification_log_doc())
-
+        
+        self._agentLog = AgentLogHelper(self, "<org_name> <res_name>")
+        self._register(["agents"], self._agentLog.agent_log, self._print_entity_completions)
+        self._register_action_doc(self._agentLog.agent_log_doc())
+        
+        self._otherLog = OtherLogHelper(self, "<org_name> <res_name>")
+        self._register(["others"], self._otherLog.other_log, self._print_entity_completions)
+        self._register_action_doc(self._otherLog.other_log_doc())
+        
 
         self._doc = "Environments handling."
 
