@@ -58,9 +58,9 @@ class HostsController(EntityController):
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_entity_completions)
         self._register(["audit"], self._audit.audit, self._print_entity_completions)
-        self._register(["notifications"], self._notificationLog.notification_log, self._print_entity_completions)
-        self._register(["agents"], self._agentLog.agent_log, self._print_entity_completions)
-        self._register(["others"], self._otherLog.other_log, self._print_entity_completions)
+        self._register(["notification-logs"], self._notificationLog.notification_log, self._print_entity_completions)
+        self._register(["agent-logs"], self._agentLog.agent_log, self._print_entity_completions)
+        self._register(["other-logs"], self._otherLog.other_log, self._print_entity_completions)
         self._register(["vnc"], self._vnc, self._print_entity_completions)
 
         self._doc = "Hosts handling."
@@ -74,6 +74,8 @@ class HostsController(EntityController):
         self._register_action_doc(self._clone_doc())
         self._register_action_doc(self._audit.audit_doc())
         self._register_action_doc(self._notificationLog.notification_log_doc())
+        self._register_action_doc(self._agentLog.agent_log_doc())
+        self._register_action_doc(self._otherLog.other_log_doc())
         self._register_action_doc(self._vnc_doc())
 
     def get_collection(self, argv):
