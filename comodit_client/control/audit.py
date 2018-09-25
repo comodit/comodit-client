@@ -15,9 +15,9 @@ class AuditHelper(object):
 
         # Display the result
         for log in logs:
-            user = log.initiator_full_name
+            user = log.user_full_name
             if user is None or user == "":
-                user = log.initiator_username
+                user = log.username
             print(log.timestamp, log.message, "by", user)
 
     def audit_doc(self):

@@ -923,9 +923,9 @@ class Audits(ContainerOnlyItem):
     def _set_parent(self, parent):
         self._collection = parent.audit_logs()
         for log in self._collection:
-            user = log.initiator_full_name
+            user = log.user_full_name
             if user is None or user == "":
-                user = log.initiator_username
+                user = log.username
             self._leaves.append('{0} {1} by {2}'.format(log.timestamp, log.message, user))
 
 

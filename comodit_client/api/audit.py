@@ -39,24 +39,24 @@ class AuditLog(JsonWrapper):
         return self._get_field("message")
 
     @property
-    def initiator_username(self):
+    def username(self):
         """
         User's username.
 
         @rtype: string
         """
 
-        return self._get_field("initiatorUsername")
+        return self._get_field("username")
 
     @property
-    def initiator_full_name(self):
+    def user_full_name(self):
         """
         User's full name.
 
         @rtype: string
         """
 
-        return self._get_field("initiatorFullName")
+        return self._get_field("userFullName")
 
 
 class AuditLogCollection(Collection):
