@@ -369,6 +369,8 @@ class Client(object):
 
         return self.environments(org_name).get(name)
 
+    def get_environment_setting_impact(self, org_name, env_name, setting_key):
+        return self.environments(org_name).get(env_name).impact(setting_key)
 
     # Hosts helpers
 
