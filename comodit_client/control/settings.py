@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from builtins import str
 from builtins import object
 from . import completions
+import json
 
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException, ControllerException
@@ -259,7 +260,7 @@ class EnvironmentSettingsController(EntityController):
     def _impact(self, argv):
         res = self._client.get_environment(argv[0], argv[1]).impact(argv[2])
         if self._config.options.raw:
-            print(json.dumps([entity.get_json() for entity in entities_list], indent=4))
+            print(json.dumps(res.get_json(), indent=4))            
         else:
             res.show()        
     
