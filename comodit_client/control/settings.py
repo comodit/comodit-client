@@ -209,7 +209,7 @@ class HostSettingsController(EntityController):
             res.show()        
     
     def _impact_doc(self):
-        return ActionDoc("impact", "<org_name> <env_name> <setting_name>", """
+        return ActionDoc("impact", "<org_name> <env_name> <host_name> <setting_name>", """
         Impact analysis if setting change.""")
 
 
@@ -244,12 +244,6 @@ class EnvironmentSettingsController(EntityController):
             raise ArgumentException("An organization and an environment must be provided");
 
         return self._client.get_environment(argv[0], argv[1]).settings()
-
-    def get_setting_impact_env(self, argv):
-        if len(argv) < 3:
-            raise ArgumentException("An organization, an environment and setting key must be provided");
-
-        return self._client.get_environment_setting_impact(argv[0], argv[1], argv[2])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -403,6 +397,9 @@ class OrganizationSettingsController(EntityController):
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
 
+        self._register(["impact"], self._impact, self._print_entity_completions)
+        self._register_action_doc(self._impact_doc())
+
     def _get_name_argument(self, argv):
         if len(argv) < 2:
             raise ArgumentException("An organization and a setting name must be provided");
@@ -433,6 +430,18 @@ class OrganizationSettingsController(EntityController):
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
         Add, update or delete Settings.""")
+
+
+    def _impact(self, argv):
+        res = self._client.get_organization(argv[0]).impact(argv[1])
+        if self._config.options.raw:
+            print(json.dumps(res.get_json(), indent=4))            
+        else:
+            res.show()        
+    
+    def _impact_doc(self):
+        return ActionDoc("impact", "<org_name>", """
+        Impact analysis if setting change.""")
 
 
 class ChangeHandler(object):
