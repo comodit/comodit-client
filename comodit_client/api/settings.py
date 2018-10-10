@@ -194,9 +194,9 @@ class SettingImpact(Entity):
     @property
     def settingHandlerContexts(self):
         """
-        List of operation's arguments.
+        List of setting with handler.
 
-        @rtype: list of arguments L{Argument}
+        @rtype: list of arguments L{SettingHandlerContext}
         """
 
         return self._get_list_field("settingHandlerContexts", lambda x: SettingHandlerContext(x))
@@ -204,10 +204,10 @@ class SettingImpact(Entity):
     @settingHandlerContexts.setter
     def argumsettingHandlerContextsents(self, settingHandlerContexts):
         """
-        Sets list of operation's arguments.
+        Sets list of setting with handler.
 
-        @param groups: New list of job's arguments.
-        @type groups: list of Arguments
+        @param groups: New list of setting with handler.
+        @type groups: list of SettingHandlerContext
         """
 
         return self._set_list_field("settingHandlerContexts", settingHandlerContexts)
@@ -215,10 +215,22 @@ class SettingImpact(Entity):
 
     @property
     def otherResources(self):
+        """
+        Sets list of setting without handler.
+
+        @param groups: New list of setting without handler.
+        @type groups: list of String
+        """
         return self._get_list_field("otherResources")
 
     @otherResources.setter
     def otherResources(self, otherResources):
+        """
+        Sets list of setting without handler.
+
+        @param groups: New list of setting without handler.
+        @type groups: list of String
+        """
         return self._set_list_field("otherResources", otherResources)
 
     def show(self, indent = 0):
@@ -238,12 +250,17 @@ class SettingImpactCollection(Collection):
 class SettingHandlerContext(JsonWrapper):
     @property
     def application(self):
+        """
+        application name
+
+        @rtype: String
+        """
         return self._get_field("application")
     
     @application.setter
     def application(self, application):
         """
-        Sets argument's application.
+        Sets application name.
         """
 
         self._set_field("application", application.get_json())
@@ -251,9 +268,9 @@ class SettingHandlerContext(JsonWrapper):
     @property
     def hosts(self):
         """
-        List of operation's arguments.
+        List of hosts with handler or setting isn't define
 
-        @rtype: list of arguments L{Argument}
+        @rtype: list of arguments L{HostSettingContext}
         """
 
         return self._get_list_field("hosts", lambda x: HostSettingContext(x))
@@ -261,7 +278,7 @@ class SettingHandlerContext(JsonWrapper):
     @hosts.setter
     def hosts(self, hosts):
         """
-        Sets list of operation's arguments.
+        Sets list of hosts with handler or setting isn't define
 
         @param groups: New list of job's arguments.
         @type groups: list of Arguments
@@ -271,9 +288,9 @@ class SettingHandlerContext(JsonWrapper):
     @property
     def handlers(self):
         """
-        List of operation's arguments.
+        List of handler
 
-        @rtype: list of arguments L{Argument}
+        @rtype: list of arguments L{HandlerSettingContext}
         """
 
         return self._get_list_field("handlers", lambda x: HandlerSettingContext(x))
@@ -281,10 +298,10 @@ class SettingHandlerContext(JsonWrapper):
     @handlers.setter
     def handlers(self, handlers):
         """
-        Sets list of operation's arguments.
+        Sets list of handler
 
-        @param groups: New list of job's arguments.
-        @type groups: list of Arguments
+        @param groups: New list of handler
+        @type groups: list of HandlerSettingContext
         """
         return self._set_list_field("handlers", handlers)
 
@@ -301,24 +318,34 @@ class SettingHandlerContext(JsonWrapper):
 class HostSettingContext(JsonWrapper):
     @property
     def name(self):
+        """
+        name of host
+
+        @rtype: String
+        """
         return self._get_field("name")
     
     @name.setter
     def name(self, name):
         """
-        Sets argument's application.
+        Sets name of host
         """
 
         self._set_field("name", name.get_json())
         
     @property
     def environment(self):
+        """
+        name of environment where is host
+
+        @rtype: String
+        """
         return self._get_field("environment")
     
     @environment.setter
     def environment(self, environment):
         """
-        Sets argument's application.
+        Sets name of environment
         """
 
         self._set_field("environment", environment.get_json())
@@ -330,9 +357,9 @@ class HandlerSettingContext(JsonWrapper):
     @property
     def do(self):
         """
-        List of operation's arguments.
+        List of actions on Handler.
 
-        @rtype: list of arguments L{Argument}
+        @rtype: list of arguments L{Do}
         """
 
         return self._get_list_field("do", lambda x: Do(x))
@@ -340,10 +367,10 @@ class HandlerSettingContext(JsonWrapper):
     @do.setter
     def do(self, handlers):
         """
-        Sets list of operation's arguments.
+        Sets list of action
 
-        @param groups: New list of job's arguments.
-        @type groups: list of Arguments
+        @param groups: New list of action.
+        @type groups: list of Do
         """
         return self._set_list_field("do", do)
 
@@ -354,24 +381,36 @@ class HandlerSettingContext(JsonWrapper):
 class Do(JsonWrapper):
     @property
     def action(self):
+        """
+        action to do on ressource
+
+        @rtype: String
+        """
         return self._get_field("action")
     
     @action.setter
     def action(self, action):
         """
-        Sets argument's application.
+        Sets action
         """
 
         self._set_field("action", action.get_json())
         
     @property
     def resource(self):
+        """
+        resource name
+
+        @rtype: String
+        """
         return self._get_field("resource")
     
     @resource.setter
     def resource(self, resource):
         """
-        Sets argument's application.
+        Sets resource name
+
+        @rtype: String
         """
 
         self._set_field("resource", resource.get_json())
