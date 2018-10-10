@@ -270,7 +270,7 @@ class SettingHandlerContext(JsonWrapper):
         """
         List of hosts with handler or setting isn't define
 
-        @rtype: list of arguments L{HostSettingContext}
+        @rtype: list of hosts L{HostSettingContext}
         """
 
         return self._get_list_field("hosts", lambda x: HostSettingContext(x))
@@ -280,8 +280,8 @@ class SettingHandlerContext(JsonWrapper):
         """
         Sets list of hosts with handler or setting isn't define
 
-        @param groups: New list of job's arguments.
-        @type groups: list of Arguments
+        @param groups: New list of hosts.
+        @type groups: list of HostSettingContext
         """
         return self._set_list_field("hosts", hosts)
 
@@ -290,7 +290,7 @@ class SettingHandlerContext(JsonWrapper):
         """
         List of handler
 
-        @rtype: list of arguments L{HandlerSettingContext}
+        @rtype: list of handlers L{HandlerSettingContext}
         """
 
         return self._get_list_field("handlers", lambda x: HandlerSettingContext(x))
@@ -359,7 +359,7 @@ class HandlerSettingContext(JsonWrapper):
         """
         List of actions on Handler.
 
-        @rtype: list of arguments L{Do}
+        @rtype: list of actions L{Do}
         """
 
         return self._get_list_field("do", lambda x: Do(x))
