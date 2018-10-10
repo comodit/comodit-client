@@ -196,7 +196,7 @@ class SettingImpact(Entity):
         """
         List of setting with handler.
 
-        @rtype: list of arguments L{SettingHandlerContext}
+        @rtype: list of settingHandlerContexts L{SettingHandlerContext}
         """
 
         return self._get_list_field("settingHandlerContexts", lambda x: SettingHandlerContext(x))
