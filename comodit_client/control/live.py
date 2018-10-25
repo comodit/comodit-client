@@ -25,7 +25,7 @@ class LiveController(AbstractController):
         self._register(["update-service"], self._update_service, self._print_service_completions)
         self._register(["enable-service"], self._enable_service, self._print_service_completions)
         self._register(["disable-service"], self._disable_service, self._print_service_completions)
-        self._register(["install-package"], self._install_package, self._print_package_completions)
+        self._register(["update-package"], self._update_package, self._print_package_completions)
         self._register(["help"], self._help)
         self._default_action = self._help
 
@@ -34,7 +34,7 @@ class LiveController(AbstractController):
         self._register_action_doc(self._update_service_doc())
         self._register_action_doc(self._enable_service_doc())
         self._register_action_doc(self._disable_service_doc())
-        self._register_action_doc(self._install_package_doc())
+        self._register_action_doc(self._update_package_doc())
 
     def _help(self, argv):
         self._print_doc()
@@ -141,15 +141,16 @@ class LiveController(AbstractController):
         return ActionDoc("disable-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
         Disables service on given host.""")
 
-    def _install_package(self, argv):
+    def _update_package(self, argv):
         if len(argv) < 4:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
         app_name = argv[3]
         pkg_name = argv[4]
-        host.live_install_package(app_name, pkg_name)
+        pkg_version = argv[5]
+        host.live_update_package(app_name, pkg_name, pkg_version)
 
-    def _install_package_doc(self):
-        return ActionDoc("install-package", "<org_name> <env_name> <host_name> <app_name> <pkg_name>", """
-        Install package on given host.""")
+    def _update_package_doc(self):
+        return ActionDoc("update-package", "<org_name> <env_name> <host_name> <app_name> <pkg_name> <pkg_version>", """
+        Update package on given host.""")
