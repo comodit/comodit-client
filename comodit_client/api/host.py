@@ -1398,9 +1398,9 @@ class Host(HasSettings):
         @type pkg_version: string
         """
 
-        res = PackageResource(pkg_name, pkg_version)
+        res = PackageResource()
         res.name = pkg_name
-        res.version = pkg_version
+        res.release = pkg_version
 
         self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name, res.get_json(), decode = False)
 
@@ -1472,16 +1472,22 @@ class Host(HasSettings):
                 break
 
 
-class PackageResource(Entity):
-    def __init__(self, pkg_name, pkg_version):
-        self._json_data = {}
-        self.name = pkg_name
-        self.release = pkg_version
+class PackageResource(JsonWrapper):
     
-    @Property
+    @property
     def name(self):
         return self._get_field("name")
+    
+    @name.setter
+    def name(self, name):
+        
+        self._set_field("name", name)
 
-    @Property
+    @property
     def release(self):
         return self._get_field("release")
+    
+    @release.setter
+    def release(self, release):
+        
+        self._set_field("release", release)
