@@ -362,7 +362,8 @@ class Organization(HasSettings):
         """
 
         return JobCollection(self.client, self.url + "jobs/")
-    
+
+    @property
     def notifications(self):
         """
         Instantiates the collection of notifications associated to this organization.

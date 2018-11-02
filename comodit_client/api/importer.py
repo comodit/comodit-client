@@ -226,20 +226,6 @@ class Import(object):
         job.load(job_folder)
         job_already_exists = self._import_entity_and_detect_conflict(job, "job", skip_conflict_detection=skip_conflict_detection)
 
-    def import_notifications(self, org, notification_folder, skip_conflict_detection=False):
-        """
-        Imports a job from a local folder into a given organization.
-
-        @param org: The target organization.
-        @type org: L{Organization}
-        @param notification_folder: Path to directory containing job's definition.
-        @type notification_folder: string
-        """
-
-        notification = Notification(org.notifications(), None)
-        notification.load(notification_folder)
-        notification_already_exists = self._import_entity_and_detect_conflict(notification, "notification", skip_conflict_detection=skip_conflict_detection)
-
     def import_host(self, env, host_folder, skip_conflict_detection=False):
         """
         Imports a host from a local folder into a given environment.
@@ -302,7 +288,7 @@ class Import(object):
         org = Organization(client.organizations(), None)
         org.load(org_folder)
 
-        organization_already_exists = self._import_entity_and_detect_conflict(org, "organization")
+        organization_already_exists = self._import_entity_and_detect_conflict(org, "organization")       
 
         apps_folder = os.path.join(org_folder, "applications")
         if os.path.exists(apps_folder):
