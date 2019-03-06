@@ -9,6 +9,8 @@ from __future__ import absolute_import
 from .collection import Collection
 from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
+from comodit_client.api.exceptions import PythonApiException
+from comodit_client.rest.exceptions import ApiException
 
 
 
@@ -52,7 +54,6 @@ class JobCollection(Collection):
         job = self.new(name, description)
         job.create()
         return job
-
 
 class Job(Entity):
     """
@@ -138,6 +139,13 @@ class Job(Entity):
         print(" "*indent, "cron:", self.cron)
         print(" "*indent, "date:", self.date)
         self.operation._show(indent + 2)
+        
+    def run(self):
+        """
+        Execute job
+        """
+        self._http_client.update(self.url + "/_run", decode = False)
+        
         
 class Operation(JsonWrapper):
     """
