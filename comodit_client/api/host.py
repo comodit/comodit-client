@@ -1331,6 +1331,18 @@ class Host(HasSettings):
         """
 
         self._http_client.update(self.url + "applications/" + app_name + "/files/" + file_name + "/_update", decode = False)
+        
+    def run_orchestration(self, orchestration_name):
+        """
+        Requests the run orchestration on provisioned machine. This may 
+
+        @param app_name: The name of file's application.
+        @type app_name: string
+        @param file_name: The file's name.
+        @type file_name: string
+        """
+        
+        self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = False)
 
     def live_restart_service(self, app_name, svc_name):
         """
