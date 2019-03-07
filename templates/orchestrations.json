@@ -1,0 +1,22 @@
+{
+    "name": "name of orchestration",
+    "description": "description of orchestration",
+    "organization": "organization name",
+    "applicationsOperations": [
+        {
+            "application": "application name",
+            "handler": null,
+            "serviceAction": {
+                "name": "service name",
+                "action": "STOP"
+            },
+            "position": 0
+        },
+        {
+            "application": "application name",
+            "handler": "handler name",
+            "serviceAction": null,
+            "position": 1
+        }
+    ]
+}
