@@ -20,10 +20,10 @@ from comodit_client.api.purchased import PurchasedCollection
 from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.application_key import ApplicationKeyCollection
 from comodit_client.api.job import JobCollection
-from comodit_client.api.notificationLog import NotificationLogCollection
 from comodit_client.api.notification import NotificationCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
+from comodit_client.api.orchestration import OrchestrationCollection
 
 class User(JsonWrapper):
     """
@@ -362,6 +362,16 @@ class Organization(HasSettings):
         """
 
         return JobCollection(self.client, self.url + "jobs/")
+
+    def orchestrations(self):
+        """
+        Instantiates the collection of orchestrations associated to this organization.
+
+        @return: The collection of orchestrations associated to this organization.
+        @rtype: L{OrchestrationCollection}
+        """
+
+        return OrchestrationCollection(self.client, self.url + "orchestrations/")
 
     @property
     def notifications(self):

@@ -88,6 +88,7 @@ from .distribution import Distribution
 from .platform import Platform
 from .environment import Environment
 from .host import Host
+from .orchestration import OrchestrationCollection
 
 
 class Client(object):
@@ -118,7 +119,6 @@ class Client(object):
         self._flavors = FlavorCollection(self)
         self._app_store = AppStoreCollection(self)
         self._dist_store = DistStoreCollection(self)
-
 
     # Flavors helpers
 
@@ -251,8 +251,7 @@ class Client(object):
         """
         return self.applications(org_name).get(name)
 
-
-    # Distributions helpers
+        # Distributions helpers
 
     def distributions(self, org_name):
         """
@@ -340,6 +339,18 @@ class Client(object):
 
         return self.__get_unresolved_org(org_name).jobs()
     
+    def orchestrations(self, org_name):
+        """
+        Instantiates the collection of orchestrations associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{OrchestrationCollection}
+        """
+
+        return self.__get_unresolved_org(org_name).orchestrations()
+
     def notifications(self, org_name):
         """
         Instantiates the collection of notifications associated to named

@@ -29,7 +29,7 @@ from comodit_client.util import prompt
 from comodit_client.control.notification_log import NotificationLogHelper
 from comodit_client.control.log import OtherLogHelper
 from comodit_client.control.log import AgentLogHelper
-
+from comodit_client.control.actions import ActionController
 
 class HostsController(EntityController):
 
@@ -52,6 +52,7 @@ class HostsController(EntityController):
         self._register_subcontroller(["changes"], ChangeController())
         self._register_subcontroller(["alerts"], MonitoringAlertController())
         self._register_subcontroller(["live"], LiveController())
+        self._register_subcontroller(["action"], ActionController())
 
         # actions
         self._register(["provision"], self._provision, self._print_entity_completions)
