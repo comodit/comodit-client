@@ -16,19 +16,16 @@ class ActionController(AbstractController):
 
     def __init__(self):
         super(ActionController, self).__init__()
-        self._doc = "Action management."
+        self._doc = "Action on deployed host."
 
         self._register(["run"], self._run, self._print_host_completions)
-#        self._register(["list"], self._restart_service, self._print_service_completions)
         self._register(["impact"], self._impact, self._print_orchestration_completions)
+
+        self._register(["help"], self._help)
         self._default_action = self._help
 
         self._register_action_doc(self._run_doc())
         self._register_action_doc(self._impact_doc())
-#        self._register_action_doc(self._update_service_doc())
-#        self._register_action_doc(self._enable_service_doc())
-#        self._register_action_doc(self._disable_service_doc())
-#        self._register_action_doc(self._update_package_doc())
 
     def _help(self, argv):
         self._print_doc()
@@ -64,11 +61,7 @@ class ActionController(AbstractController):
             completions.print_entity_identifiers(self._client.organizations().list())
         elif len(argv) > 0 and param_num == 1:
             completions.print_entity_identifiers(self._client.orchestrations(argv[0]).list())
-
-    def _run_doc(self):
-        return ActionDoc("run", "<org_name> <env_name> <host_name> <action_name>", """
-        run action on given host.""")
-        
+    
     def _impact(self, argv):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments")
@@ -77,7 +70,11 @@ class ActionController(AbstractController):
         self._client.orchestrations(argv[0]).get(orch_name).show()
         
     def _impact_doc(self):
-        return ActionDoc("run", "<org_name> <action_name>", """
+        return ActionDoc("impact", "<org_name> <action_name>", """
         get impact action.""")
-   
-    
+
+    def _run_doc(self):
+        return ActionDoc("run", "<org_name> <env_name> <host_name> <action_name>", """
+        run action on given host.""")
+
+            

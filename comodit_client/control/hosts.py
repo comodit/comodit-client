@@ -22,7 +22,6 @@ from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException, MissingException, \
     ControllerException
 from comodit_client.control.instances import InstancesController
-from comodit_client.control.live import LiveController
 from comodit_client.control.settings import HostSettingsController
 from comodit_client.control.tree_rendering import TreeRenderer
 from comodit_client.util import prompt
@@ -51,7 +50,6 @@ class HostsController(EntityController):
         self._register_subcontroller(["compliance"], ComplianceController())
         self._register_subcontroller(["changes"], ChangeController())
         self._register_subcontroller(["alerts"], MonitoringAlertController())
-        self._register_subcontroller(["live"], LiveController())
         self._register_subcontroller(["action"], ActionController())
 
         # actions

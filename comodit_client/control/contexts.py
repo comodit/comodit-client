@@ -17,7 +17,7 @@ from comodit_client.control.settings import ApplicationContextSettingsController
     PlatformContextSettingsController, DistributionContextSettingsController
 
 from . import completions
-
+from .application_action import ApplicationActionController;
 
 class AbstractContextController(EntityController):
     def __init__(self, unregister_update=True):
@@ -56,6 +56,7 @@ class ApplicationContextController(AbstractContextController):
 
         # subcontroller
         self._register_subcontroller(["settings"], ApplicationContextSettingsController())
+        self._register_subcontroller(["actions"], ApplicationActionController())
 
         # actions
         self._register(["install"], self._install, self._print_install_completions)
