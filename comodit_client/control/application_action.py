@@ -31,7 +31,6 @@ class ApplicationActionController(AbstractController):
         self._register(["help"], self._help)
         self._default_action = self._help
 
-#        self._register_action_doc(self._run_doc())
         self._register_action_doc(self._impact_doc())
         self._register_action_doc(self._update_file_doc())
         self._register_action_doc(self._restart_service_doc())

@@ -251,7 +251,7 @@ class Client(object):
         """
         return self.applications(org_name).get(name)
 
-        # Distributions helpers
+    # Distributions helpers
 
     def distributions(self, org_name):
         """

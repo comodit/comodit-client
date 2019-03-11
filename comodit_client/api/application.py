@@ -1170,6 +1170,11 @@ class Application(HasParameters, IsStoreCapable):
         self._add_to_list_field("compatibility", rule)
         
     def show_action(self, key):
+        """
+        Show custom action and handler for the given key
+
+        @param key: key of the custom action
+        """
         for c in self.actions:
             if c.key == key:
                 c.show(2)

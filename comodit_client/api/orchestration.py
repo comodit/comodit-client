@@ -45,7 +45,7 @@ class OrchestrationCollection(Collection):
 
         @param name: The name of new orchestration.
         @type name: string
-        @param description: The description of new joborchestration.
+        @param description: The description of new orchestration.
         @type description: string
         @rtype: L{Orchestration}
         """
@@ -74,7 +74,7 @@ class Orchestration(Entity):
     @property
     def organization(self):
         """
-        The name of the organization owning this job.
+        The name of the organization owning this orchestration.
 
         @rtype: string
         """
@@ -96,7 +96,7 @@ class Orchestration(Entity):
         """
         Sets list of orchestration's applicationOperations.
 
-        @param groups: New list of rchestration's applicationOperations.
+        @param groups: New list of orchestration's applicationOperations.
         @type groups: list of ApplicationOperation
         """
         return self._set_list_field("applicationsOperations", applicationOperations)
