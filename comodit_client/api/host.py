@@ -24,6 +24,7 @@ from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.notificationLog import NotificationLogCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
+from comodit_client.api.orchestration import OrchestrationCollection
 
 
 class HostCollection(Collection):
@@ -1341,7 +1342,17 @@ class Host(HasSettings):
         """
         
         self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = False)
+        
+    def get_orchestrations(self):
+        """
+        Requests to get orchestrations available on host 
+        
+        @return: The collection of orchestrations available on host.
+        @rtype: L{OrchestrationCollection}
 
+        """
+        return OrchestrationCollection(self.client, self.url + "orchestrations")
+        
     def live_restart_service(self, app_name, svc_name):
         """
         Requests the restart of a service on provisioned machine. This may, for

@@ -54,8 +54,9 @@ class ActionController(AbstractController):
         elif len(argv) > 1 and param_num == 2:
             completions.print_entity_identifiers(self._client.hosts(argv[0], argv[1]).list())
         elif len(argv) > 2 and param_num == 3:
-            completions.print_entity_identifiers(self._client.orchestrations(argv[0]).list())
-
+            host = self._get_host(argv)
+            completions.print_entity_identifiers(host.get_orchestrations().list())
+            
     def _print_orchestration_completions(self, param_num, argv):
         if param_num == 0:
             completions.print_entity_identifiers(self._client.organizations().list())
