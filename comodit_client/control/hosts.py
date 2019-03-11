@@ -50,7 +50,7 @@ class HostsController(EntityController):
         self._register_subcontroller(["compliance"], ComplianceController())
         self._register_subcontroller(["changes"], ChangeController())
         self._register_subcontroller(["alerts"], MonitoringAlertController())
-        self._register_subcontroller(["action"], ActionController())
+        self._register_subcontroller(["actions"], ActionController())
 
         # actions
         self._register(["provision"], self._provision, self._print_entity_completions)

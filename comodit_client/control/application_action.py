@@ -18,8 +18,7 @@ class ApplicationActionController(AbstractController):
         super(ApplicationActionController, self).__init__()
         self._doc = "Application action on deployed host."
 
-#        self._register(["run"], self._run, self._print_host_orchestration_completions)
-        self._register(["impact"], self._impact, self._print_orchestration_completions)
+        self._register(["impact"], self._impact, self._print_run_completions)
 
         self._register(["update-file"], self._update_file, self._print_file_completions)
         self._register(["restart-service"], self._restart_service, self._print_service_completions)
@@ -42,20 +41,11 @@ class ApplicationActionController(AbstractController):
         self._register_action_doc(self._update_package_doc())
         self._register_action_doc(self._run_action_doc())
 
-
     def _help(self, argv):
         self._print_doc()
         
     def _get_host(self, argv):
         return self._client.hosts(argv[0], argv[1]).get(argv[2])
-        
-#    def _run(self, argv):
-#        if len(argv) < 4:
-#            raise ArgumentException("Wrong number of arguments")
-#
-#        host = self._get_host(argv)
-#        orch_name = argv[3]
-#        host.run_orchestration(orch_name)
         
     def _run_action(self, argv):
         if len(argv) != 5:
@@ -87,23 +77,6 @@ class ApplicationActionController(AbstractController):
         elif len(argv) > 2 and param_num == 3:
             completions.print_entity_identifiers(self._client.get_host(argv[0], argv[1], argv[2]).applications())
         
-                
-#    def _print_host_orchestration_completions(self, param_num, argv):
-#        if param_num == 0:
-#            completions.print_entity_identifiers(self._client.organizations().list())
-#        elif len(argv) > 0 and param_num == 1:
-#            completions.print_entity_identifiers(self._client.environments(argv[0]).list())
-#        elif len(argv) > 1 and param_num == 2:
-#            completions.print_entity_identifiers(self._client.hosts(argv[0], argv[1]).list())
-#        elif len(argv) > 2 and param_num == 3:
-#            completions.print_entity_identifiers(self._client.orchestrations(argv[0]).list())
-
-    def _print_orchestration_completions(self, param_num, argv):
-        if param_num == 0:
-            completions.print_entity_identifiers(self._client.organizations().list())
-        elif len(argv) > 0 and param_num == 1:
-            completions.print_entity_identifiers(self._client.orchestrations(argv[0]).list())
-            
     def _print_file_completions(self, param_num, argv):
         if param_num < 4:
             self._print_host_completions(param_num, argv)
@@ -128,19 +101,19 @@ class ApplicationActionController(AbstractController):
             for res in app.packages:
                 completions.print_escaped_string(res.name)
 
-#    def _run_doc(self):
-#        return ActionDoc("run", "<org_name> <env_name> <host_name> <action_name>", """
-#        run action on given host.""")
-        
     def _impact(self, argv):
-        if len(argv) < 2:
-            raise ArgumentException("Wrong number of arguments")
+        
+        if len(argv) != 5:
+            raise ArgumentException("Wrong number of arguments");
 
-        orch_name = argv[1]
-        self._client.orchestrations(argv[0]).get(orch_name).show()
+        app_name = argv[3]
+        key = argv[4]
+                
+        application = self._client.get_application(argv[0], app_name)
+        application.show_action(key)
         
     def _impact_doc(self):
-        return ActionDoc("impact", "<org_name> <action_name>", """
+        return ActionDoc("impact", "<org_name> <env_name> <host_name> <app_name> <cmd_key>", """
         get impact action.""")
         
     def _update_file(self, argv):

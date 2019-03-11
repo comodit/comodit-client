@@ -1168,6 +1168,14 @@ class Application(HasParameters, IsStoreCapable):
         """
 
         self._add_to_list_field("compatibility", rule)
+        
+    def show_action(self, key):
+        for c in self.actions:
+            if c.key == key:
+                c.show(2)
+        for h in self.handlers:
+            if any(key in s for s in h.triggers):
+                h.show(4)
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)
