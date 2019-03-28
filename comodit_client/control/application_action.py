@@ -52,15 +52,17 @@ class ApplicationActionController(AbstractController):
 
         host = self._get_host(argv)
         app_name = argv[3]
-        key = argv[4]
+        handler_name = argv[4]
 
-        host.get_application(app_name).run_custom_action(key)
+        host.get_application(app_name).run_handler(handler_name)
 
     def _print_run_completions(self, param_num, argv):
         if param_num < 4:
             self._print_host_completions(param_num, argv)
         elif len(argv) > 3 and param_num == 4:
-            completions.print_entity_identifiers(self._client.get_application(argv[0], argv[3]).actions)
+            app = self._client.get_application(argv[0], argv[3])
+            for res in app.handlers:
+                completions.print_escaped_string(res.name)
         
     def _print_action_completions(self, param_num, argv):
         if param_num < 4:

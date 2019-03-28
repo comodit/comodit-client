@@ -34,7 +34,7 @@ class ApplicationCollection(Collection):
     L{Organization}.
     """
 
-    def _new(self, json_data = None):
+    def _new(self, json_data=None):
         """
         Instantiates a new application object from given state (if any).
 
@@ -45,7 +45,7 @@ class ApplicationCollection(Collection):
 
         return Application(self, json_data)
 
-    def new(self, name, description = ""):
+    def new(self, name, description=""):
         """
         Instantiates a new application object.
 
@@ -61,7 +61,7 @@ class ApplicationCollection(Collection):
         app.description = description
         return app
 
-    def create(self, name, description = ""):
+    def create(self, name, description=""):
         """
         Creates a remote application entity and returns associated local
         object.
@@ -103,7 +103,7 @@ class ApplicationResource(JsonWrapper):
 
         return self._set_field("name", name)
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this resource's state to standard output in a user-friendly way.
 
@@ -151,7 +151,7 @@ class Repository(ApplicationResource):
 
         return self._set_field("location", location)
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this repository's state to standard output in a user-friendly way.
 
@@ -369,7 +369,7 @@ class User(ApplicationResource):
 
         return self._set_field("system", system)
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this user's state to standard output in a user-friendly way.
 
@@ -419,7 +419,7 @@ class Group(ApplicationResource):
 
         return self._set_field("gid", gid)
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this group's state to standard output in a user-friendly way.
 
@@ -459,7 +459,7 @@ class Service(ApplicationResource):
 
         return self._set_field("enabled", enabled)
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this service's state to standard output in a user-friendly way.
 
@@ -553,7 +553,7 @@ class ApplicationFile(FileEntity):
         """
         self._set_field("template", template)
 
-    def _show(self, indent = 0):
+    def _show(self, indent=0):
         """
         Prints this file's state to standard output in a user-friendly way.
 
@@ -578,7 +578,7 @@ class ApplicationFileCollection(Collection):
     Application file resources collection.
     """
 
-    def _new(self, json_data = None):
+    def _new(self, json_data=None):
         """
         Instantiates a new application file resource object.
         
@@ -592,12 +592,6 @@ class ApplicationFileCollection(Collection):
 
 
 class Action(JsonWrapper):
-    """
-    An handler's action.
-
-    @see: L{Handler}
-    """
-
     @property
     def type(self):
         """
@@ -621,7 +615,7 @@ class Action(JsonWrapper):
 
         return self._get_field("resource")
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this action's state to standard output in a user-friendly way.
 
@@ -646,6 +640,36 @@ class Handler(JsonWrapper):
     @see: L{Application}
     """
 
+    @property
+    def name(self):
+        """
+        Resource's name.
+
+        @rtype: string
+        """
+
+        return self._get_field("name")
+
+    @name.setter
+    def name(self, name):
+        """
+        Sets resource's name.
+
+        @type name: string
+        """
+
+        return self._set_field("name", name)
+
+    @property
+    def identifier(self):
+        """
+        Custom action's identifier.
+
+        @rtype: string
+        """
+
+        return self.name
+    
     @property
     def actions(self):
         """
@@ -706,8 +730,8 @@ class Handler(JsonWrapper):
         @type trigger: string
         """
         self._add_to_list_field("on", trigger)
-
-    def show(self, indent = 0):
+        
+    def show(self, indent=0):
         """
         Prints this handler's state to standard output in a user-friendly way.
 
@@ -716,6 +740,7 @@ class Handler(JsonWrapper):
         @type indent: int
         """
 
+        print(" "*indent, "Name:", self.name)
         print(" "*indent, "Actions:")
         actions = self.actions
         for a in actions:
@@ -726,91 +751,8 @@ class Handler(JsonWrapper):
             print(" "*(indent + 2), t)
 
 
-class CustomAction(JsonWrapper):
-    """
-    A custom action's representation.
-    """
-
-    @property
-    def identifier(self):
-        """
-        Custom action's identifier.
-
-        @rtype: string
-        """
-
-        return self.key
-
-    @property
-    def key(self):
-        """
-        Custom action's key.
-
-        @rtype: string
-        """
-
-        return self._get_field("key")
-
-    @key.setter
-    def key(self, key):
-        """
-        Sets custom action's key.
-
-        @param key: The key
-        @type key: string
-        """
-
-        self._set_field("key", key)
-
-    @property
-    def name(self):
-        """
-        Name of this custom action.
-
-        @rtype: string
-        """
-
-        return self._get_field("name")
-
-    @name.setter
-    def name(self, name):
-        """
-        Sets the name of this custom action.
-
-        @param name: Custom action's new name.
-        @type name: string
-        """
-
-        self._set_field("name", name)
-
-    @property
-    def description(self):
-        """
-        The description of this custom action.
-
-        @rtype: string
-        """
-
-        return self._get_field("description")
-
-    @description.setter
-    def description(self, description):
-        """
-        Sets the description of this custom action.
-
-        @param description: The new description.
-        @type description: string
-        """
-
-        self._set_field("description", description)
-
-    def show(self, indent = 0):
-        print(" "*indent, "Name:", self.name)
-        print(" "*indent, "Description:", self.description)
-        print(" "*indent, "Key:", self.key)
-
-
 class CompatibilityRule(JsonWrapper):
+
     @property
     def os_type(self):
         """
@@ -853,7 +795,7 @@ class CompatibilityRule(JsonWrapper):
 
         self._set_field("version", version)
 
-    def show(self, indent = 0):
+    def show(self, indent=0):
         """
         Prints this rule to standard output in a user-friendly way.
 
@@ -1021,45 +963,14 @@ class Application(HasParameters, IsStoreCapable):
         return self.files().get(name)
 
     @property
-    def actions(self):
-        """
-        The custom actions associated to this application.
-
-        @rtype: list of L{CustomAction}
-        """
-
-        return self._get_list_field("actions", lambda x: CustomAction(x))
-
-    @actions.setter
-    def actions(self, actions):
-        """
-        Sets the actions associated to this application.
-
-        @param packages: The new list of packages to associate to this application.
-        @type packages: list of L{CustomAction}
-        """
-
-        self._set_list_field("actions", actions)
-
-    def add_custom_action(self, action):
-        """
-        Adds a custom action to this application.
-
-        @type package: L{CustomAction}
-        """
-
-        self._add_to_list_field("actions", action)
-
-    @property
     def handlers(self):
         """
         The handlers associated to this application.
 
         @rtype: list of L{Handler}
         """
-
         return self._get_list_field("handlers", lambda x: Handler(x))
-
+    
     @handlers.setter
     def handlers(self, handlers):
         """
@@ -1093,7 +1004,7 @@ class Application(HasParameters, IsStoreCapable):
         """
 
         try:
-            result = self._http_client.update(self.url + "_clone", parameters = {"name": clone_name})
+            result = self._http_client.update(self.url + "_clone", parameters={"name": clone_name})
             return Application(self.collection, result)
         except ApiException as e:
             raise PythonApiException("Unable to clone application: " + e.message)
@@ -1169,20 +1080,17 @@ class Application(HasParameters, IsStoreCapable):
 
         self._add_to_list_field("compatibility", rule)
         
-    def show_action(self, key):
+    def show_action(self, name):
         """
-        Show custom action and handler for the given key
+        Show handler for the given name
 
         @param key: key of the custom action
         """
-        for c in self.actions:
-            if c.key == key:
-                c.show(2)
         for h in self.handlers:
-            if any(key in s for s in h.triggers):
-                h.show(4)
-
-    def _show(self, indent = 0):
+            if h.name == name:
+                h.show(2)
+    
+    def _show(self, indent=0):
         print(" "*indent, "Name:", self.name)
         print(" "*indent, "Description:", self.description)
 
@@ -1216,10 +1124,6 @@ class Application(HasParameters, IsStoreCapable):
         repos = self.repositories
         for r in repos:
             r.show(indent + 2)
-        print(" "*indent, "Custom actions:")
-        actions = self.actions
-        for c in actions:
-            c.show(indent + 2)
         print(" "*indent, "Handlers:")
         handlers = self.handlers
         for f in handlers:
