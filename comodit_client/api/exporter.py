@@ -14,6 +14,7 @@ from comodit_client.api.host import Host
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.path import ensure
 import six
+from comodit_client.api import orchestration
 
 
 class ExportException(Exception):
@@ -147,6 +148,18 @@ class Export(object):
 
         self._export_entity(job, path)
 
+    def export_orchestration(self, orchestration, path):
+        """
+        Exports a orchestration to a local folder.
+
+        @param job: The orchestration to export.
+        @type orchestration: L{Orchestration}
+        @param path: Path to local directory.
+        @type path: string
+        """
+
+        self._export_entity(orchestration, path)
+
     def export_notification(self, notification, path):
         """
         Exports a jobnotificationto a local folder.
@@ -222,6 +235,9 @@ class Export(object):
 
         for job in org.jobs():
             self.export_job(job, os.path.join(path, "jobs", job.name))
+
+        for orch in org.orchestrations():
+            self.export_orchestration(orch, os.path.join(path, "orchestrations", orch.name))
 
         for env in org.environments():
             self.export_environment(env, os.path.join(path, "environments", env.name))
