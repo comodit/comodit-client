@@ -169,7 +169,7 @@ class Config(object):
         etc_path = "/etc/comodit-client/" + config_name
 
         for loc in curdir_path, user_path, etc_path:
-            if os.path.isfile(loc):
+            if os.path.isfile(loc) and os.access(loc, os.R_OK):
                 return loc
 
         return None
