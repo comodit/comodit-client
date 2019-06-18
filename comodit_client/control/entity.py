@@ -125,8 +125,21 @@ class EntityController(AbstractController):
     def _update(self, argv):
         # First, get entity
         res = self._get_entity(argv)
-        cur_name = res.name
+        
+        # Check if function exist
+        if "_get_value_argument" in dir(self):
+            value = self._get_value_argument(argv);
+            if value != None and res.schema.multiline != True:
+                # Update entity
+                
+                res.value = value
+                res.update(self._config.options.force)
+                res.show(as_json=self._config.options.raw)
+                exit()
 
+        
+        cur_name = res.name
+        
         # Prune entity fields (all may not be updatable)
         self._prune_json_update(res)
 

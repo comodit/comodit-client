@@ -8,6 +8,32 @@ from comodit_client.api.entity import Entity
 from comodit_client.api.collection import Collection
 from comodit_client.util.json_wrapper import JsonWrapper
 
+
+class Schema(JsonWrapper):
+
+    @property
+    def multiline(self):
+        return self._get_field("multiline")
+
+    @property
+    def schema_type(self):
+        return self._get_field("type")
+
+    
+    @property
+    def secret(self):
+        return self._get_field("secret")
+
+    @property
+    def final(self):
+        return self._get_field("final")
+    
+    def _show(self, indent = 0):
+        print(" "*indent, "Type:", self.schema_type)
+        print(" "*indent, "Multiline:", self.multiline)
+        print(" "*indent, "Final:", self.final)
+        print(" "*indent, "Secret:", self.secret)
+
 class Setting(Entity):
     """
     Base class for all setting representations.
@@ -35,8 +61,14 @@ class Setting(Entity):
     def key(self, key):
         self._set_field("key", key)
 
+    @property
+    def schema(self):
+        return Schema(self._get_field("schema"))
+
     def _show(self, indent = 0):
         print(" "*indent, "Key:", self.key)
+        print(" "*indent, "Schema:")
+        self.schema._show(indent + 2)
 
 
 class SimpleSetting(Setting):

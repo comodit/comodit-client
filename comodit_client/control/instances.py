@@ -68,6 +68,9 @@ class InstancesController(EntityController):
     def _get_name_argument(self, argv):
         return ""
 
+    def _get_value_argument(self, argv):
+        return None
+
     def _properties(self, argv):
         instance = self._get_entity(argv)
         options = self._config.options

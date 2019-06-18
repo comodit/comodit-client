@@ -36,6 +36,12 @@ class OrganizationEntityController(EntityController):
             raise ArgumentException("An organization name must be provided, in addition to entity name");
         return argv[1]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 3:
+            return None
+
+        return argv[2]
+
     def _get_collection(self, org_name):
         raise NotImplementedError
 

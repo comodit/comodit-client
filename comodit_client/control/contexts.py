@@ -90,6 +90,12 @@ class ApplicationContextController(AbstractContextController):
 
         return argv[3]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 5:
+            return None
+
+        return argv[4]
+
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             completions.print_identifiers(self._client.organizations())

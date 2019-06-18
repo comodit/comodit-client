@@ -38,6 +38,12 @@ class HostAbstractSettingsController(EntityController):
 
         return argv[3]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 5:
+            return None
+
+        return argv[4]
+
     def get_collection(self, argv):
         if len(argv) < 3:
             raise ArgumentException("An organization, an environment and a host must be provided");
@@ -112,6 +118,12 @@ class ApplicationContextSettingsController(EntityController):
 
         return argv[4]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 6:
+            return None
+
+        return argv[5]
+
     def get_collection(self, argv):
         if len(argv) < 4:
             raise ArgumentException("An organization, an environment, a host and an application name must be provided");
@@ -171,6 +183,12 @@ class HostSettingsController(EntityController):
             raise ArgumentException("An organization, an environment, a host and a setting name must be provided");
 
         return argv[3]
+
+    def _get_value_argument(self, argv):
+        if len(argv) < 5:
+            return None
+
+        return argv[4]
 
     def get_collection(self, argv):
         if len(argv) < 3:
@@ -239,6 +257,12 @@ class EnvironmentSettingsController(EntityController):
 
         return argv[2]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 4:
+            return None
+
+        return argv[3]
+
     def get_collection(self, argv):
         if len(argv) < 2:
             raise ArgumentException("An organization and an environment must be provided");
@@ -301,6 +325,12 @@ class DistributionSettingsController(EntityController):
 
         return argv[2]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 4:
+            return None
+
+        return argv[3]
+
     def get_collection(self, argv):
         if len(argv) < 2:
             raise ArgumentException("An organization and a distribution must be provided");
@@ -351,6 +381,12 @@ class PlatformSettingsController(EntityController):
             raise ArgumentException("An organization, a platform and a setting name must be provided");
 
         return argv[2]
+
+    def _get_value_argument(self, argv):
+        if len(argv) < 4:
+            return None
+
+        return argv[3]
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -405,6 +441,12 @@ class OrganizationSettingsController(EntityController):
             raise ArgumentException("An organization and a setting name must be provided");
 
         return argv[1]
+
+    def _get_value_argument(self, argv):
+        if len(argv) < 3:
+            return None
+
+        return argv[2]
 
     def get_collection(self, argv):
         if len(argv) < 1:

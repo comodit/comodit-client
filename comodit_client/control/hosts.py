@@ -107,6 +107,12 @@ class HostsController(EntityController):
 
         return argv[2]
 
+    def _get_value_argument(self, argv):
+        if len(argv) < 4:
+            return None
+
+        return argv[3]
+
     def _delete(self, argv):
         host = self._get_entity(argv)
 
