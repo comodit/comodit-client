@@ -419,9 +419,12 @@ class PlatformSettingsController(EntityController):
 class OrganizationSettingsController(EntityController):
 
     _template = "setting.json"
-
+    
+    
     def __init__(self):
         super(OrganizationSettingsController, self).__init__()
+
+        self._parameters = {}
 
         self._doc = "Settings handling."
         self._update_action_doc_params("list", "<org_name>")
@@ -435,6 +438,13 @@ class OrganizationSettingsController(EntityController):
 
         self._register(["impact"], self._impact, self._print_entity_completions)
         self._register_action_doc(self._impact_doc())
+
+        self._register(["list-secret"], self._list_secret, self._print_list_completions)
+        self._register_action_doc(self._list_secret_doc())
+
+        self._register(["list-non-secret"], self._list_non_secret, self._print_list_completions)
+        self._register_action_doc(self._list_non_secret_doc())
+
 
     def _get_name_argument(self, argv):
         if len(argv) < 2:
@@ -453,6 +463,18 @@ class OrganizationSettingsController(EntityController):
             raise ArgumentException("An organization must be provided");
 
         return self._client.get_organization(argv[0]).settings()
+
+    def _list_secret(self, argv):
+        parameters = {}
+        parameters["secret_only"] = True
+
+        self._list(argv, parameters)
+
+    def _list_non_secret(self, argv):
+        parameters = {}
+        parameters["no_secret"] = True
+
+        self._list(argv, parameters)
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -485,6 +507,13 @@ class OrganizationSettingsController(EntityController):
         return ActionDoc("impact", "<org_name>", """
         Impact analysis if setting change.""")
 
+    def _list_secret_doc(self):
+        return ActionDoc("list_secret", "<org_name>", """
+        List secret setting.""")
+    
+    def _list_non_secret_doc(self):
+        return ActionDoc("list_non_secret", "<org_name>", """
+        List non secret setting.""")
 
 class ChangeHandler(object):
 

@@ -47,8 +47,10 @@ class EntityController(AbstractController):
     def _get_list_parameters(self, argv):
         return {}
 
-    def _list(self, argv):
-        parameters = self._get_list_parameters(argv)
+    def _list(self, argv, parameters=None):
+        if parameters is None:
+            parameters = self._get_list_parameters(argv)
+
         entities_list = self._list_entities(argv, parameters=parameters)
         if self._config.options.raw:
             print(json.dumps([entity.get_json() for entity in entities_list], indent=4))
