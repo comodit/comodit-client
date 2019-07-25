@@ -62,13 +62,25 @@ class Setting(Entity):
         self._set_field("key", key)
 
     @property
+    def value(self):
+        """
+        Setting's host.
+
+        @rtype: string
+        """
+
+        return self._get_field("value")
+
+    @property
     def schema(self):
         return Schema(self._get_field("schema"))
 
-    def _show(self, indent = 0):
+    def _show(self, indent = 0, schema=True):
         print(" "*indent, "Key:", self.key)
-        print(" "*indent, "Schema:")
-        self.schema._show(indent + 2)
+        print(" "*indent, "Value:", self.value)
+        if schema:
+            print(" "*indent, "Schema:")
+            self.schema._show(indent + 2)
 
 
 class SimpleSetting(Setting):
@@ -278,6 +290,171 @@ class SettingImpactCollection(Collection):
 
      def _new(self, json_data = None):
         return SettingImpact(self, json_data)
+
+class OrganizationSettingTree(JsonWrapper):
+
+    @property
+    def organization(self):
+        """
+        Setting's organization.
+
+        @rtype: string
+        """
+
+        return self._get_field("organization")
+
+    @property
+    def settings(self):
+        """
+        Setting's organization.
+
+        @rtype: string
+        """
+
+        return self._get_list_field("settings", lambda x: Setting(None, x))
+
+    @property
+    def environments(self):
+        """
+        environment's organization.
+
+        @rtype: EnvironmentSettingTree
+        """
+
+        return self._get_list_field("environments", lambda x: EnvironmentSettingTree(x))
+
+    
+    def show(self, indent=0):
+        print(" "*(indent + 2), "Organization:", self.organization)
+        
+        print(" "*(indent + 2), "Settings:")
+        for s in self.settings:
+            s._show(indent + 4, False)
+        
+        print(" "*(indent + 2), "Environments:")
+        for e in self.environments:
+            e._show(indent + 4)
+
+
+
+class EnvironmentSettingTree(JsonWrapper):
+
+    @property
+    def environment(self):
+        """
+        Setting's environment.
+
+        @rtype: string
+        """
+
+        return self._get_field("environment")
+
+    @property
+    def settings(self):
+        """
+        Setting's environment.
+
+        @rtype: string
+        """
+
+        return self._get_list_field("settings", lambda x: Setting(None, x))
+
+    @property
+    def hosts(self):
+        """
+        host's organization.
+
+        @rtype: HostSettingTree
+        """
+
+        return self._get_list_field("hosts", lambda x: HostSettingTree(x))
+
+    
+    def _show(self, indent=2):
+        print(" "*(indent + 2), "Environment:", self.environment)
+        print(" "*(indent + 2), "Settings:")
+        for s in self.settings:
+            s._show(indent + 4, False)
+
+        print(" "*(indent + 2), "Hosts:")
+        for h in self.hosts:
+            h._show(indent + 4)
+
+class HostSettingTree(JsonWrapper):
+
+    @property
+    def host(self):
+        """
+        Setting's host.
+
+        @rtype: string
+        """
+
+        return self._get_field("host")
+
+    @property
+    def settings(self):
+        """
+        Setting's host.
+
+        @rtype: string
+        """
+
+        return self._get_list_field("settings", lambda x: Setting(None, x))
+
+    @property
+    def applications(self):
+        """
+        applications's host.
+
+        @rtype: ApplicationSettingTree
+        """
+
+        return self._get_list_field("applications", lambda x: ApplicationSettingTree(x))
+
+    
+    def _show(self, indent=2):
+        print(" "*(indent + 2), "Host:", self.host)
+        print(" "*(indent + 2), "Settings:")
+        
+        for s in self.settings:
+            s._show(indent + 4, False)
+
+        if self.applications:
+            print(" "*(indent + 2), "Applications:")
+            for a in self.applications:
+                a._show(indent + 4)
+
+
+class ApplicationSettingTree(JsonWrapper):
+
+    @property
+    def application(self):
+        """
+        Setting's application.
+
+        @rtype: string
+        """
+
+        return self._get_field("application")
+
+    @property
+    def settings(self):
+        """
+        Setting's host.
+
+        @rtype: string
+        """
+
+        return self._get_list_field("settings", lambda x :Setting(None, x))
+
+    def _show(self, indent=2):
+        print(" "*(indent + 2), "Application:", self.application)
+        print(" "*(indent + 2), "Settings:")
+        for s in self.settings:
+            s._show(indent + 4, False)
+        
+
 
 class SettingHandlerContext(JsonWrapper):
     @property
@@ -644,6 +821,21 @@ class HasSettings(Entity):
         """
 
         return SettingCollection(self.client, self.url + "settings/")
+
+    def tree(self, secret=False, no_secret=False, key=None):
+        """
+        Get where setting is defined on each level
+
+        @return: organizationSettingTree.
+        @rtype: L{OrganizationSettingTree}
+        """
+        parameters = {};
+        parameters["secret_only"] = secret
+        parameters["no_secret"] = no_secret
+        parameters["key"] = key        
+
+        json = self.client._http_client.read(self.url+ "tree/settings/", parameters=parameters)
+        return OrganizationSettingTree(json)
 
     def add_setting(self, key, value):
         self.add_simple_setting(key, value)

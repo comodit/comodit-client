@@ -51,6 +51,11 @@ class EntityController(AbstractController):
         if parameters is None:
             parameters = self._get_list_parameters(argv)
 
+        options = self._config.options
+        parameters["secret_only"] = options.secret
+        parameters["no_secret"] = options.non_secret
+        parameters["key"] = options.key
+
         entities_list = self._list_entities(argv, parameters=parameters)
         if self._config.options.raw:
             print(json.dumps([entity.get_json() for entity in entities_list], indent=4))
