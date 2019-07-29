@@ -308,7 +308,7 @@ class OrganizationSettingTree(JsonWrapper):
         """
         Setting's organization.
 
-        @rtype: string
+        @rtype: Setting
         """
 
         return self._get_list_field("settings", lambda x: Setting(None, x))
@@ -328,7 +328,7 @@ class OrganizationSettingTree(JsonWrapper):
         """
         distribution's organization.
 
-        @rtype: DistribtuintSettingTree
+        @rtype: DistributiontSettingTree
         """
 
         return self._get_list_field("distributions", lambda x: DistributionSettingTree(x))
@@ -338,7 +338,7 @@ class OrganizationSettingTree(JsonWrapper):
         """
         platform's organization.
 
-        @rtype: DistribtuintSettingTree
+        @rtype: PlatformSettingTree
         """
 
         return self._get_list_field("platforms", lambda x: PlatformSettingTree(x))
@@ -378,7 +378,7 @@ class EnvironmentSettingTree(JsonWrapper):
     @property
     def environment(self):
         """
-        Setting's environment.
+        Environment name.
 
         @rtype: string
         """
@@ -390,7 +390,7 @@ class EnvironmentSettingTree(JsonWrapper):
         """
         Setting's environment.
 
-        @rtype: string
+        @rtype: Setting
         """
 
         return self._get_list_field("settings", lambda x: Setting(None, x))
@@ -398,7 +398,7 @@ class EnvironmentSettingTree(JsonWrapper):
     @property
     def hosts(self):
         """
-        host's organization.
+        host's environment.
 
         @rtype: HostSettingTree
         """
@@ -433,7 +433,7 @@ class DistributionSettingTree(JsonWrapper):
         """
         Setting's distribution.
 
-        @rtype: string
+        @rtype: Setting
         """
 
         return self._get_list_field("settings", lambda x: Setting(None, x))
@@ -459,9 +459,9 @@ class PlatformSettingTree(JsonWrapper):
     @property
     def settings(self):
         """
-        Setting's environment.
+        Setting's platform.
 
-        @rtype: string
+        @rtype: Setting
         """
 
         return self._get_list_field("settings", lambda x: Setting(None, x))
@@ -489,7 +489,7 @@ class HostSettingTree(JsonWrapper):
         """
         Setting's host.
 
-        @rtype: string
+        @rtype: Setting
         """
 
         return self._get_list_field("settings", lambda x: Setting(None, x))
@@ -509,7 +509,7 @@ class HostSettingTree(JsonWrapper):
         """
         distribution's host.
 
-        @rtype: ApplicationSettingTree
+        @rtype: DistributionSettingTree
         """
 
         return DistributionSettingTree(self._get_field("distribution"))
@@ -533,7 +533,7 @@ class ApplicationSettingTree(JsonWrapper):
     @property
     def application(self):
         """
-        Setting's application.
+        Application name.
 
         @rtype: string
         """
@@ -543,9 +543,9 @@ class ApplicationSettingTree(JsonWrapper):
     @property
     def settings(self):
         """
-        Setting's host.
+        Setting's ApplicationContext.
 
-        @rtype: string
+        @rtype: Setting
         """
 
         return self._get_list_field("settings", lambda x :Setting(None, x))
