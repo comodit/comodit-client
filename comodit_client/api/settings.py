@@ -477,7 +477,7 @@ class HostSettingTree(JsonWrapper):
     @property
     def host(self):
         """
-        Setting's host.
+        Host name.
 
         @rtype: string
         """
