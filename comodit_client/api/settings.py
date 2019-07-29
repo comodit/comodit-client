@@ -296,7 +296,7 @@ class OrganizationSettingTree(JsonWrapper):
     @property
     def organization(self):
         """
-        Setting's organization.
+        Organization name
 
         @rtype: string
         """
@@ -323,7 +323,36 @@ class OrganizationSettingTree(JsonWrapper):
 
         return self._get_list_field("environments", lambda x: EnvironmentSettingTree(x))
 
+    @property
+    def distributions(self):
+        """
+        distribution's organization.
+
+        @rtype: DistribtuintSettingTree
+        """
+
+        return self._get_list_field("distributions", lambda x: DistributionSettingTree(x))
+
+    @property
+    def platforms(self):
+        """
+        platform's organization.
+
+        @rtype: DistribtuintSettingTree
+        """
+
+        return self._get_list_field("platforms", lambda x: PlatformSettingTree(x))
     
+    @property
+    def environments(self):
+        """
+        environment's organization.
+
+        @rtype: EnvironmentSettingTree
+        """
+
+        return self._get_list_field("environments", lambda x: EnvironmentSettingTree(x))
+
     def show(self, indent=0):
         print(" "*(indent + 2), "Organization:", self.organization)
         
@@ -335,6 +364,13 @@ class OrganizationSettingTree(JsonWrapper):
         for e in self.environments:
             e._show(indent + 4)
 
+        print(" "*(indent + 2), "Distributions:")
+        for e in self.distributions:
+            e._show(indent + 4)
+
+        print(" "*(indent + 2), "Platforms:")
+        for e in self.platforms:
+            e._show(indent + 4)
 
 
 class EnvironmentSettingTree(JsonWrapper):
@@ -380,6 +416,62 @@ class EnvironmentSettingTree(JsonWrapper):
         for h in self.hosts:
             h._show(indent + 4)
 
+class DistributionSettingTree(JsonWrapper):
+
+    @property
+    def distribution(self):
+        """
+        distribution name.
+
+        @rtype: string
+        """
+
+        return self._get_field("distribution")
+
+    @property
+    def settings(self):
+        """
+        Setting's distribution.
+
+        @rtype: string
+        """
+
+        return self._get_list_field("settings", lambda x: Setting(None, x))
+
+    def _show(self, indent=2):
+        print(" "*(indent + 2), "Distribution:", self.distribution)
+        print(" "*(indent + 2), "Settings:")
+        for s in self.settings:
+            s._show(indent + 4, False)
+
+class PlatformSettingTree(JsonWrapper):
+
+    @property
+    def platform(self):
+        """
+        Platform name.
+
+        @rtype: string
+        """
+
+        return self._get_field("platform")
+
+    @property
+    def settings(self):
+        """
+        Setting's environment.
+
+        @rtype: string
+        """
+
+        return self._get_list_field("settings", lambda x: Setting(None, x))
+
+    def _show(self, indent=2):
+        print(" "*(indent + 2), "Platform:", self.platform)
+        print(" "*(indent + 2), "Settings:")
+        for s in self.settings:
+            s._show(indent + 4, False)
+
 class HostSettingTree(JsonWrapper):
 
     @property
@@ -411,6 +503,16 @@ class HostSettingTree(JsonWrapper):
         """
 
         return self._get_list_field("applications", lambda x: ApplicationSettingTree(x))
+
+    @property
+    def distribution(self):
+        """
+        distribution's host.
+
+        @rtype: ApplicationSettingTree
+        """
+
+        return DistributionSettingTree(self._get_field("distribution"))
 
     
     def _show(self, indent=2):
@@ -832,7 +934,8 @@ class HasSettings(Entity):
         parameters = {};
         parameters["secret_only"] = secret
         parameters["no_secret"] = no_secret
-        parameters["key"] = key        
+        if key:
+            parameters["key"] = key        
 
         json = self.client._http_client.read(self.url+ "tree/settings/", parameters=parameters)
         return OrganizationSettingTree(json)

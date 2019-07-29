@@ -521,7 +521,6 @@ class OrganizationSettingsController(EntityController):
         if self._config.options.raw:
             print(json.dumps(entity.get_json(), indent=4))
         else:
-            print(entity)
             entity.show()
 
     def _tree_doc(self):
