@@ -59,7 +59,7 @@ class OrchestrationCollection(Collection):
         Get orchestration by name for given organization
 
         @return: Fetched orchestration.
-        @rtype: L{Orchistration}
+        @rtype: L{OrchestrationCollection}
         """
         return super(OrchestrationCollection, self).get(identifier, parameters)
     
@@ -96,8 +96,8 @@ class Orchestration(Entity):
         """
         Sets list of orchestration's applicationOperations.
 
-        @param groups: New list of orchestration's applicationOperations.
-        @type groups: list of ApplicationOperation
+        @param applicationOperations: New list of orchestration's applicationOperations.
+        @type applicationOperations: list of ApplicationOperation
         """
         return self._set_list_field("applicationsOperations", applicationOperations)
 
