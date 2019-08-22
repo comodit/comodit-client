@@ -25,6 +25,7 @@ from comodit_client.api.parameters import HasParameters
 from comodit_client.api.store import IsStoreCapable
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.json_wrapper import JsonWrapper
+from comodit_client.api.entity import Entity
 from .files import File
 
 
@@ -626,8 +627,38 @@ class Action(JsonWrapper):
 
         print(" "*indent, self.type, self.resource)
 
+class HandlerCollection(Collection):
+    """
+    Collection of L{parameters<Parameter>}.
+    """
 
-class Handler(JsonWrapper):
+    def _new(self, json_data = None):
+        res = Handler(self, json_data)
+        return res
+
+    def new(self, name, key, description = ""):
+        """
+        Instantiates a new parameter representation.
+
+        @param name: Parameter's name.
+        @type name: string
+        @param key: Parameter's key.
+        @type key: string
+        @param description: Parameter's description.
+        @type description: string
+        @param default_value: Parameter's default value.
+        @type default_value: JSON object
+        @return: A parameter representation.
+        @rtype: L{Parameter}
+        """
+
+        h = self._new()
+        h.name = name
+        h.key = key
+        h.description = description
+        return p
+
+class Handler(Entity):
     """
     An application handler. A handler defines actions to execute when one of its
     associated triggers is "pulled". A trigger is generally the key of a setting.
@@ -962,25 +993,14 @@ class Application(HasParameters, IsStoreCapable):
 
         return self.files().get(name)
 
-    @property
     def handlers(self):
         """
-        The handlers associated to this application.
+        Instantiates a collection of parameters.
 
-        @rtype: list of L{Handler}
-        """
-        return self._get_list_field("handlers", lambda x: Handler(x))
-    
-    @handlers.setter
-    def handlers(self, handlers):
-        """
-        Sets the handlers associated to this application.
-
-        @param handlers: The list of handlers
-        @type handlers: list of L{Handler}
+        @rtype: L{HandlerCollection}
         """
 
-        self._set_list_field("handlers", handlers)
+        return HandlerCollection(self.client, self.url + "handlers/")
 
     def add_handler(self, handler):
         """
@@ -1125,7 +1145,7 @@ class Application(HasParameters, IsStoreCapable):
         for r in repos:
             r.show(indent + 2)
         print(" "*indent, "Handlers:")
-        handlers = self.handlers
+        handlers = self.handlers()
         for f in handlers:
             f.show(indent + 2)
 

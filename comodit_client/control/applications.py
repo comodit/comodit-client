@@ -17,6 +17,7 @@ from comodit_client.control.organization_entity import OrganizationEntityControl
 from comodit_client.control.parameters import ApplicationParametersController
 from comodit_client.control.store_helper import StoreHelper
 from comodit_client.control.sync import AppSyncController
+from comodit_client.control.handlers import HandlerController
 from . import completions
 
 
@@ -30,6 +31,7 @@ class ApplicationsController(OrganizationEntityController):
         # sub-controllers
         self._register_subcontroller(["files"], ApplicationFilesController())
         self._register_subcontroller(["parameters"], ApplicationParametersController())
+        self._register_subcontroller(["handlers"], HandlerController())
         self._register_subcontroller(["sync"], AppSyncController())
 
         self._doc = "Applications handling."
@@ -61,6 +63,7 @@ class ApplicationsController(OrganizationEntityController):
         json_wrapper._del_field("organization")
         json_wrapper._del_field("files")
         json_wrapper._del_field("parameters")
+        print(json_wrapper)
 
     # Export
 
