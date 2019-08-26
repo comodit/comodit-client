@@ -672,6 +672,26 @@ class Handler(Entity):
     """
 
     @property
+    def id(self):
+        """
+        Resource's id.
+
+        @rtype: string
+        """
+
+        return self._get_field("id")
+
+    @id.setter
+    def name(self, id):
+        """
+        Sets resource's id.
+
+        @type id: string
+        """
+
+        return self._set_field("id", id)
+
+    @property
     def name(self):
         """
         Resource's name.
@@ -699,7 +719,7 @@ class Handler(Entity):
         @rtype: string
         """
 
-        return self.name
+        return self.id
     
     @property
     def actions(self):
@@ -762,7 +782,7 @@ class Handler(Entity):
         """
         self._add_to_list_field("on", trigger)
         
-    def show(self, indent=0):
+    def _show(self, indent=0):
         """
         Prints this handler's state to standard output in a user-friendly way.
 
@@ -993,13 +1013,37 @@ class Application(HasParameters, IsStoreCapable):
 
         return self.files().get(name)
 
+    @property
+    def handlers_f(self):
+        """
+        The handler associated to this application. The entities returned in this
+        list are "connected" to their collection, they can therefore be used to
+        alter remote entities.
+
+        @rtype: list of L{Handler}
+        """
+
+        return self._get_list_field("handlers", lambda x: Handler(self.handlers(), x))
+
+    @handlers_f.setter
+    def handlers_f(self, handlers):
+        """
+        Sets the files associated to this application. This field will only be
+        taken into account on application creation. Afterwards, use application
+        files collection instead (see L{handlers}).
+
+        @param files: A list of files.
+        @type files: list of L{Handler}
+        """
+
+        self._set_list_field("handlers", handlers)
+
     def handlers(self):
         """
         Instantiates a collection of parameters.
 
         @rtype: L{HandlerCollection}
         """
-
         return HandlerCollection(self.client, self.url + "handlers/")
 
     def add_handler(self, handler):

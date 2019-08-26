@@ -128,6 +128,16 @@ class Import(object):
         else:
             app.set_thumbnail_content(src_file)
 
+    def _import_entity_with_handlers(self, res, root_folder, skip_conflict_detection=False):
+        res.load(root_folder)
+
+        app = res.collection.get(res.name)    
+        for handler in app.handlers():
+            handler.delete()
+
+        for handler in res.handlers_f:
+            self._create_entity(handler, "handler")
+        
     def _import_entity_with_files_and_parameters(self, res, root_folder, entity_type = "entity", skip_conflict_detection=False):
         res.load(root_folder)
         files_to_upload = res.files_f
@@ -162,7 +172,10 @@ class Import(object):
         """
 
         app = Application(org.applications(), None)
+
+        self._import_entity_with_handlers(app, root_folder, skip_conflict_detection=skip_conflict_detection)
         self._import_entity_with_files_and_parameters(app, root_folder, "application", skip_conflict_detection=skip_conflict_detection)
+        
 
     def import_distribution(self, org, root_folder, skip_conflict_detection=False):
         """
