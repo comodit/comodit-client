@@ -629,7 +629,7 @@ class Action(JsonWrapper):
 
 class HandlerCollection(Collection):
     """
-    Collection of L{parameters<Parameter>}.
+    Collection of L{handlers<Handler>}.
     """
 
     def _new(self, json_data = None):
@@ -638,18 +638,18 @@ class HandlerCollection(Collection):
 
     def new(self, name, key, description = ""):
         """
-        Instantiates a new parameter representation.
+        Instantiates a new handler representation.
 
-        @param name: Parameter's name.
+        @param name: Handler's name.
         @type name: string
-        @param key: Parameter's key.
+        @param key: Handler's key.
         @type key: string
-        @param description: Parameter's description.
+        @param description: Handler's description.
         @type description: string
-        @param default_value: Parameter's default value.
+        @param default_value: Handler's default value.
         @type default_value: JSON object
-        @return: A parameter representation.
-        @rtype: L{Parameter}
+        @return: A Handler representation.
+        @rtype: L{Handler}
         """
 
         h = self._new()
@@ -1032,15 +1032,15 @@ class Application(HasParameters, IsStoreCapable):
         taken into account on application creation. Afterwards, use application
         files collection instead (see L{handlers}).
 
-        @param files: A list of files.
-        @type files: list of L{Handler}
+        @param handlers: A list of handlers.
+        @type handlers: list of L{Handler}
         """
 
         self._set_list_field("handlers", handlers)
 
     def handlers(self):
         """
-        Instantiates a collection of parameters.
+        Instantiates a collection of handlers.
 
         @rtype: L{HandlerCollection}
         """
