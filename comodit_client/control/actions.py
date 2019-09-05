@@ -43,7 +43,7 @@ class ActionController(AbstractController):
 
         if self._config.options.wait:
             for change in changes:
-                host.wait_for_change_terminated(change)
+                host.wait_for_change_terminated(str(change))
                     
     def _print_action_completions(self, param_num, argv):
         if param_num < 4:

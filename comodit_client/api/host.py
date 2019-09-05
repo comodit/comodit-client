@@ -1374,10 +1374,9 @@ class Host(HasSettings):
         @param orchestration_name: The name of orchestration.
         @type orchestration_name: string
         """
-        
-        result = self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = False)
-        return result.read().decode('utf-8')
-        
+
+        return self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = True)
+
     def get_orchestrations(self):
         """
         Requests to get orchestrations available on host 
