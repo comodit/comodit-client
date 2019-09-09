@@ -37,15 +37,14 @@ class ActionController(AbstractController):
         if len(argv) < 4:
             raise ArgumentException("Wrong number of arguments")
 
-        options = self._config.options
-        parameters = {}
-        parameters["wait"] = options.wait
-        
-
         host = self._get_host(argv)
         orch_name = argv[3]
-        host.run_orchestration(orch_name, parameters)
-        
+        changes = host.run_orchestration(orch_name)
+
+        if self._config.options.wait:
+            for change in changes:
+                host.wait_for_change_terminated(str(change))
+
     def _print_action_completions(self, param_num, argv):
         if param_num < 4:
             self._print_host_completions(param_num, argv)

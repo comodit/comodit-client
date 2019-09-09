@@ -57,8 +57,12 @@ class Export(object):
                 else:
                     raise e
 
-    def _export_entity(self, res, res_folder, export_files = False, export_thumb = False):
-        print("exporting", res.name, "to", res_folder)
+    def _export_entity(self, res, res_folder, export_files = False, export_thumb = False, backup = False):
+        if backup:
+            print("backup", res.name, "to", res_folder)
+        else:
+            print("exporting", res.name, "to", res_folder)
+
         # Ensures local repository does not contain stale data
         if(os.path.exists(res_folder) and len(os.listdir(res_folder)) > 0) and not self._force:
             raise ExportException(res_folder + " already exists and is not empty.")
@@ -83,7 +87,7 @@ class Export(object):
                 else:
                     raise e
 
-    def export_application(self, app, path):
+    def export_application(self, app, path, backup = False):
         """
         Exports an application to a local folder.
 
@@ -91,11 +95,13 @@ class Export(object):
         @type app: L{Application}
         @param path: Path to local directory.
         @type path: string
+        @param backup: indicate is a backup.
+        @type path: bool
         """
 
-        self._export_entity(app, path, True, True)
+        self._export_entity(app, path, True, True, backup)
 
-    def export_distribution(self, dist, path):
+    def export_distribution(self, dist, path, backup = False):
         """
         Exports a distribution to a local folder.
 
@@ -103,11 +109,13 @@ class Export(object):
         @type dist: L{Distribution}
         @param path: Path to local directory.
         @type path: string
+        @param backup: indicate is a backup.
+        @type path: bool
         """
 
-        self._export_entity(dist, path, True, True)
+        self._export_entity(dist, path, True, True, backup)
 
-    def export_platform(self, plat, path):
+    def export_platform(self, plat, path, backup = False):
         """
         Exports a platform to a local folder.
 
@@ -115,9 +123,11 @@ class Export(object):
         @type plat: L{Platform}
         @param path: Path to local directory.
         @type path: string
+        @param backup: indicate is a backup.
+        @type path: bool
         """
 
-        self._export_entity(plat, path, True)
+        self._export_entity(plat, path, True, backup=backup)
 
     def export_environment(self, env, path):
         """

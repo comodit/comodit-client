@@ -126,15 +126,18 @@ class ApplicationContext(AbstractContext):
 
         self._set_field("application", application)
 
-    def run_handler(self, name, parameters = None):
+    def run_handler(self, name):
         """
-        Requests the execution of the handler associated to given custom action key.
+        Requests the execution of the handler associated to given custom action key. Return changeId on host
 
         @param key: The key of a custom action.
         @type key: string
+
+        @rtype: string
         """
 
-        self._http_client.update(self.url + "handler/" + name + "/_run", decode = False, parameters=parameters)
+        result = self._http_client.update(self.url + "handler/" + name + "/_run", decode = False)
+        return result.read().decode('utf-8')
 
     def _show(self, indent = 0):
         print(" "*indent, "Application:", self.application)

@@ -8,6 +8,7 @@ from __future__ import print_function
 from builtins import str
 from builtins import object
 import os
+import getpass
 
 from comodit_client.api.application import Application
 from comodit_client.api.collection import EntityNotFoundException
@@ -17,11 +18,11 @@ from comodit_client.api.distribution import Distribution
 from comodit_client.api.environment import Environment
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.host import Host, Instance
-from comodit_client.api.notification import Notification
 from comodit_client.api.job import Job
 from comodit_client.api.organization import Organization
 from comodit_client.api.platform import Platform
 from comodit_client.api.orchestration import Orchestration
+from comodit_client.api.exporter import Export
 
 class ImportException(Exception):
     """
@@ -66,6 +67,36 @@ class Import(object):
         conflict = self._detect_conflict(local_res, skip_conflict_detection)
         self._import_entity(local_res, conflict, entity_type)
         return conflict
+
+    def _delete_old_files(self, res_remote, files_to_upload, entity_type):
+        for file in res_remote.files_f:
+            found = False
+            for local_file in files_to_upload:
+                if local_file.name == file.name:
+                    found = True
+
+            if not found:
+                print("delete file ", file.name)
+
+                if self._queue_actions:
+                    self._actions_queue.add_action(DeleteEntity(file, entity_type))
+                else:
+                    file.delete()
+
+    def _delete_old_params(self, res_remote, params_to_upload, entity_type):
+        for param in res_remote.parameters_f:
+            found = False
+            for local_param in params_to_upload:
+                if local_param.name == param.name:
+                    found = True
+
+            if not found:
+                print("delete parameter ", param.name)
+
+            if self._queue_actions:
+                self._actions_queue.add_action(DeleteEntity(param, entity_type))
+            else:
+                param.delete()
 
     def _detect_conflict(self, local_res, skip_conflict_detection=False):
         if not skip_conflict_detection:
@@ -131,35 +162,53 @@ class Import(object):
     def _import_entity_with_handlers(self, res, root_folder, skip_conflict_detection=False):
         res.load(root_folder)
 
-        app = res.collection.get(res.name)    
+        app = res.collection.get(res.name)
         for handler in app.handlers():
             handler.delete()
 
         for handler in res.handlers_f:
             self._create_entity(handler, "handler")
-        
-    def _import_entity_with_files_and_parameters(self, res, root_folder, entity_type = "entity", skip_conflict_detection=False):
-        res.load(root_folder)
-        files_to_upload = res.files_f
 
-        conflict = self._detect_conflict(res, skip_conflict_detection)
+    def _import_entity_with_files_and_parameters(self, res_local, res_remote, root_folder, entity_type ="entity", skip_conflict_detection=False):
+        files_to_upload = res_local.files_f
+        params_to_upload = res_local.parameters_f
+
+        if self._update_existing and res_remote is not None:
+            try:
+                user = getpass.getuser()
+            except:
+                user = "unknown"
+                pass
+
+            export = Export(True)
+            if entity_type == "application":
+                export.export_application(res_remote, "/tmp/" + user + "/comodit-client/" + res_remote.name, backup=True)
+            elif entity_type == "distribution":
+                export.export_distribution(res_remote, "/tmp/" + user + "/comodit-client/" + res_remote.name, backup=True)
+            elif entity_type == "platform":
+                export.export_platform(res_remote, "/tmp/" + user + "/comodit-client/" + res_remote.name, backup=True)
+
+            self._delete_old_files(res_remote, files_to_upload, entity_type)
+            self._delete_old_params(res_remote, params_to_upload, entity_type)
+
+        conflict = self._detect_conflict(res_local, skip_conflict_detection)
         if conflict:
-            for res_file in res.files_f:
+            for res_file in res_local.files_f:
                 self._import_entity_and_detect_conflict(res_file, "file", skip_conflict_detection)
-            for param in res.parameters_f:
+            for param in res_local.parameters_f:
                 self._import_entity_and_detect_conflict(param, "parameter", skip_conflict_detection)
 
-        self._import_entity(res, conflict, entity_type)
+        self._import_entity(res_local, conflict, entity_type)
 
         # Push files' content
         for f in files_to_upload:
             file_name = f.name
             content_file = os.path.join(root_folder, "files", file_name)
-            self._import_file_content(conflict, content_file, res, file_name, entity_type)
+            self._import_file_content(conflict, content_file, res_local, file_name, entity_type)
 
         if os.path.exists(os.path.join(root_folder, "thumb")):
             thumb_file = os.path.join(root_folder, "thumb")
-            self._import_thumbnail(conflict, thumb_file, res, entity_type)
+            self._import_thumbnail(conflict, thumb_file, res_local, entity_type)
 
     def import_application(self, org, root_folder, skip_conflict_detection=False):
         """
@@ -172,10 +221,13 @@ class Import(object):
         """
 
         app = Application(org.applications(), None)
-
+        app.load(root_folder)
+        if self._update_existing:
+            app_to_update = org.get_application(app.name)
+        else:
+            app_to_update = None
         self._import_entity_with_handlers(app, root_folder, skip_conflict_detection=skip_conflict_detection)
-        self._import_entity_with_files_and_parameters(app, root_folder, "application", skip_conflict_detection=skip_conflict_detection)
-        
+        self._import_entity_with_files_and_parameters(app, app_to_update, root_folder, "application", skip_conflict_detection=skip_conflict_detection)
 
     def import_distribution(self, org, root_folder, skip_conflict_detection=False):
         """
@@ -188,7 +240,13 @@ class Import(object):
         """
 
         dist = Distribution(org.distributions(), None)
-        self._import_entity_with_files_and_parameters(dist, root_folder, "distribution", skip_conflict_detection=skip_conflict_detection)
+        dist.load(root_folder)
+        if self._update_existing:
+            dist_to_update = org.get_distribution(dist.name)
+        else:
+            dist_to_update = None
+
+        self._import_entity_with_files_and_parameters(dist, dist_to_update, root_folder, "distribution", skip_conflict_detection=skip_conflict_detection)
 
     def import_platform(self, org, root_folder, skip_conflict_detection=False):
         """
@@ -201,7 +259,13 @@ class Import(object):
         """
 
         plat = Platform(org.platforms(), None)
-        self._import_entity_with_files_and_parameters(plat, root_folder, "platform", skip_conflict_detection=skip_conflict_detection)
+        plat.load(root_folder)
+        if self._update_existing:
+            plat_to_update = org.get_platform(plat.name)
+        else:
+            plat_to_update = None
+
+        self._import_entity_with_files_and_parameters(plat, plat_to_update, root_folder, "platform", skip_conflict_detection=skip_conflict_detection)
 
     def import_environment(self, org, env_folder, skip_conflict_detection=False):
         """
@@ -555,6 +619,31 @@ class UpdateEntity(Action):
 
     def get_summary(self):
         return "Update " + self._entity_type + " '" + self._res_object.name + "'"
+
+class DeleteEntity(Action):
+    """
+    Entity delete action.
+    """
+
+    def __init__(self, res_object, entity_type):
+        """
+        Delete an entity.
+
+        @param res_object: The entity to delete.
+        @type res_object: L{Entity}
+        @param entity_type: Entity type.
+        @type entity_type: string
+        """
+
+        super(DeleteEntity, self).__init__(False)
+        self._res_object = res_object
+        self._entity_type = entity_type
+
+    def execute(self):
+        self._res_object.delete()
+
+    def get_summary(self):
+        return "Delete " + self._entity_type + " '" + self._res_object.name + "'"
 
 
 class ActionsQueue(object):

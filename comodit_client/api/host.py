@@ -665,6 +665,16 @@ class Change(Entity):
         return self._get_field("orderNum")
 
     @property
+    def change_id(self):
+        """
+        The id of change
+
+        @rtype: string
+        """
+
+        return self._get_field("key")
+
+    @property
     def tasks(self):
         """
         The tasks associated to this change.
@@ -686,6 +696,20 @@ class Change(Entity):
             if t.status == "PENDING":
                 return True
         return False
+
+    def get_tasks_error(self):
+        """
+        get all tasks in error
+
+        @return: return a list of error tasks
+        @rtype:  L{Task}
+        """
+
+        result = []
+        for t in self.tasks:
+            if t.status == "ERROR":
+                result.append(t)
+        return result
 
     def _show(self, indent = 0):
         print(" "*indent, "Number:", self.order_num)
@@ -720,8 +744,7 @@ class ChangeCollection(Collection):
         """
 
         params = parameters.copy()
-        if show_processed:
-            params["show_processed"] = "true"
+        params["show_processed"] = show_processed
         return super(ChangeCollection, self).list(parameters = params)
 
 class MonitoringAlert(Entity):
@@ -1239,6 +1262,17 @@ class Host(HasSettings):
 
         return ChangeCollection(self.client, self.url + "changes/")
 
+    def all_changes(self):
+        """
+        Instantiates changes collection.
+
+        @return: Changes collection.
+        @rtype: L{ChangeCollection}
+        """
+
+        return ChangeCollection(self.client, self.url + "changes/").list(show_processed=True)
+
+
     def get_change(self, num):
         """
         Fetches a change from server.
@@ -1333,16 +1367,15 @@ class Host(HasSettings):
 
         self._http_client.update(self.url + "applications/" + app_name + "/files/" + file_name + "/_update", decode = False)
         
-    def run_orchestration(self, orchestration_name, parameters = None):
+    def run_orchestration(self, orchestration_name):
         """
         Requests to run orchestration on provisioned machine. 
 
         @param orchestration_name: The name of orchestration.
         @type orchestration_name: string
         """
-        
-        self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = False, parameters = parameters)
-        
+        return self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = True)
+
     def get_orchestrations(self):
         """
         Requests to get orchestrations available on host 
@@ -1476,6 +1509,18 @@ class Host(HasSettings):
                 return True
         return False
 
+    def _change_terminated(self, changeId):
+        for c in self.all_changes():
+            if c.change_id == changeId:
+                taskErrors = c.get_tasks_error()
+                if taskErrors:
+                    for t in taskErrors:
+                        print("error ", t.error)
+                    return True;
+                if c.are_tasks_pending():
+                    return False
+        return True
+
     def wait_for_pending_changes(self, time_out = 0):
         """
         Waits until host has no more pending changes.
@@ -1487,6 +1532,14 @@ class Host(HasSettings):
 
         start_time = time.time()
         while self._are_changes_pending():
+            time.sleep(3)
+            now = time.time()
+            if time_out > 0 and (now - start_time) > time_out:
+                break
+
+    def wait_for_change_terminated(self, change_id, time_out = 0):
+        start_time = time.time()
+        while not self._change_terminated(change_id):
             time.sleep(3)
             now = time.time()
             if time_out > 0 and (now - start_time) > time_out:
