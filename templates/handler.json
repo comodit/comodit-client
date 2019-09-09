@@ -1,0 +1,22 @@
+{
+	"do": [
+        {
+        	"action": "update", 
+                "resource": "file://<file name>"
+        }, 
+        {
+                "action": "execute", 
+                "resource": "file://<file name>"
+        },
+        {
+                "action": "restart", 
+                "resource": "service://<service name>"
+        }, 
+        {
+                "action": "reload", 
+                "resource": "service://<service name>"
+        }], 
+   	"on": [
+   		"<setting key>"
+		]
+}
