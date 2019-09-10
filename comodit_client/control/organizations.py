@@ -139,6 +139,6 @@ class OrganizationsController(RootEntityController):
             importer.display_queue(show_only_conflicts = True)
 
     def _import_doc(self):
-        return ActionDoc("import", "<src_folder>] [--skip-conflict] [--dry-run]", """
+        return ActionDoc("import", "<src_folder> [--skip-conflict] [--dry-run]", """
         Import organization from disk. With --skip-conflict, conflicting actions
         are skipped. With --dry-run, actions are displayed but not applied.""")

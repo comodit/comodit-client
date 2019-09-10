@@ -23,7 +23,6 @@ class HostAbstractSettingsController(EntityController):
         super(HostAbstractSettingsController, self).__init__()
 
         self._doc = "Settings handling."
-        self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
         self._update_action_doc_params("add", "<org_name> <env_name> <host_name>")
         self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <setting_name>")
         self._update_action_doc_params("update", "<org_name> <env_name> <host_name> <setting_name>")
@@ -31,6 +30,8 @@ class HostAbstractSettingsController(EntityController):
 
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
+        self._register_action_doc(self._list_setting_doc())
+
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
@@ -75,6 +76,14 @@ class HostAbstractSettingsController(EntityController):
         return ActionDoc("change", self._list_params(), """
         Add, update or delete Settings.""")
 
+    def _list_setting_doc(self):
+        return ActionDoc("list", "<org_name> <env_name> <host_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
+
+
 class PlatformContextSettingsController(HostAbstractSettingsController):
 
     def __init__(self):
@@ -102,7 +111,6 @@ class ApplicationContextSettingsController(EntityController):
 
         self._doc = "Settings handling."
 
-        self._update_action_doc_params("list", "<org_name> <env_name> <host_name> <app_name>")
         self._update_action_doc_params("add", "<org_name> <env_name> <host_name> <app_name>")
         self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <app_name> <setting_name>")
         self._update_action_doc_params("update", "<org_name> <env_name> <host_name> <app_name> <setting_name>")
@@ -110,7 +118,16 @@ class ApplicationContextSettingsController(EntityController):
 
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
-        
+        self._register_action_doc(self._list_setting_doc())
+
+
+    def _list_setting_doc(self):
+        return ActionDoc("list", "<org_name> <env_name> <host_name> <app_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
+
     def _get_name_argument(self, argv):
         if len(argv) < 5:
             raise ArgumentException("An organization, an environment, a host, an application and a setting name must be provided");
@@ -163,17 +180,25 @@ class HostSettingsController(EntityController):
         super(HostSettingsController, self).__init__()
 
         self._doc = "Settings handling."
-        self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
         self._update_action_doc_params("add", "<org_name> <env_name> <host_name>")
         self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <setting_name>")
         self._update_action_doc_params("update", "<org_name> <env_name> <host_name> <setting_name>")
         self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <setting_name>")
+        self._register_action_doc(self._list_setting_doc())
+
 
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
 
         self._register(["impact"], self._impact, self._print_entity_completions)
         self._register_action_doc(self._impact_doc())
+
+    def _list_setting_doc(self):
+            return ActionDoc("list", "<org_name>  <env_name> <host_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
@@ -236,7 +261,6 @@ class EnvironmentSettingsController(EntityController):
         super(EnvironmentSettingsController, self).__init__()
 
         self._doc = "Settings handling."
-        self._update_action_doc_params("list", "<org_name> <env_name>")
         self._update_action_doc_params("add", "<org_name> <env_name>")
         self._update_action_doc_params("delete", "<org_name> <env_name> <setting_name>")
         self._update_action_doc_params("update", "<org_name> <env_name> <setting_name>")
@@ -247,6 +271,7 @@ class EnvironmentSettingsController(EntityController):
 
         self._register(["impact"], self._impact, self._print_entity_completions)
         self._register_action_doc(self._impact_doc())
+        self._register_action_doc(self._list_setting_doc())
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -298,6 +323,14 @@ class EnvironmentSettingsController(EntityController):
         return ActionDoc("impact", "<org_name> <env_name> <setting_name>", """
         Impact analysis if setting change.""")
 
+    def _list_setting_doc(self):
+            return ActionDoc("list", "<org_name> <env_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
+
+
 class DistributionSettingsController(EntityController):
 
     _template = "setting.json"
@@ -306,7 +339,6 @@ class DistributionSettingsController(EntityController):
         super(DistributionSettingsController, self).__init__()
 
         self._doc = "Settings handling."
-        self._update_action_doc_params("list", "<org_name> <dist_name>")
         self._update_action_doc_params("add", "<org_name> <dist_name>")
         self._update_action_doc_params("delete", "<org_name> <dist_name> <setting_name>")
         self._update_action_doc_params("update", "<org_name> <dist_name> <setting_name>")
@@ -314,6 +346,7 @@ class DistributionSettingsController(EntityController):
 
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
+        self._register_action_doc(self._list_setting_doc())
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -354,6 +387,14 @@ class DistributionSettingsController(EntityController):
         return ActionDoc("change", self._list_params(), """
         Add, update or delete Settings.""")
 
+    def _list_setting_doc(self):
+            return ActionDoc("list", "<org_name> <dist_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
+
+
 class PlatformSettingsController(EntityController):
 
     _template = "setting.json"
@@ -370,6 +411,7 @@ class PlatformSettingsController(EntityController):
 
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
+        self._register_action_doc(self._list_setting_doc())
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -410,6 +452,14 @@ class PlatformSettingsController(EntityController):
         return ActionDoc("change", self._list_params(), """
         Add, update or delete Settings.""")
 
+    def _list_setting_doc(self):
+            return ActionDoc("list", "<org_name> <plat_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
+
+
 class OrganizationSettingsController(EntityController):
 
     _template = "setting.json"
@@ -421,7 +471,6 @@ class OrganizationSettingsController(EntityController):
         self._parameters = {}
 
         self._doc = "Settings handling."
-        self._update_action_doc_params("list", "<org_name>")
         self._update_action_doc_params("add", "<org_name>")
         self._update_action_doc_params("delete", "<org_name> <setting_name>")
         self._update_action_doc_params("update", "<org_name> <setting_name>")
@@ -435,6 +484,8 @@ class OrganizationSettingsController(EntityController):
 
         self._register(["tree"], self._tree, self._print_list_completions)
         self._register_action_doc(self._tree_doc())
+
+        self._register_action_doc(self._list_setting_doc())
 
     def _get_name_argument(self, argv):
         if len(argv) < 2:
@@ -485,6 +536,13 @@ class OrganizationSettingsController(EntityController):
         return ActionDoc("impact", "<org_name>", """
         Impact analysis if setting change.""")
 
+    def _list_setting_doc(self):
+        return ActionDoc("list", "<org_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
+
     def _tree(self, argv):
         paramters = self._get_list_parameters(argv)
 
@@ -499,8 +557,11 @@ class OrganizationSettingsController(EntityController):
             entity.show()
 
     def _tree_doc(self):
-        return ActionDoc("tree", "<org_name>", """
-        Get a tree of each setting in organization.""")
+        return ActionDoc("tree", "<org_name>  [--secret] [--non-secret] [--key]", """
+        Get a tree of each setting in organization.
+        --secret return only secret setting
+        --non-secret return only non secret setting
+        --key option add filter on setting key""")
 
 class ChangeHandler(object):
 
