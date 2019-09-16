@@ -11,6 +11,7 @@ from builtins import str
 from builtins import object
 from .exceptions import PythonApiException
 import time
+import sys
 
 from comodit_client.api.audit import AuditLogCollection
 from comodit_client.api.collection import Collection
@@ -1515,8 +1516,8 @@ class Host(HasSettings):
                 taskErrors = c.get_tasks_error()
                 if taskErrors:
                     for t in taskErrors:
-                        print("error ", t.error)
-                    return True;
+                        sys.exit("error " + t.error)
+                    return True
                 if c.are_tasks_pending():
                     return False
         return True
