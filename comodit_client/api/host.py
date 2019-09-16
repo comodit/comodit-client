@@ -1517,7 +1517,6 @@ class Host(HasSettings):
                 if taskErrors:
                     for t in taskErrors:
                         sys.exit("error " + t.error)
-                    return True
                 if c.are_tasks_pending():
                     return False
         return True
