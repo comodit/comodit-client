@@ -1,6 +1,7 @@
 from builtins import object
 from collections import OrderedDict
 import json
+import sys
 
 from comodit_client.util.editor import edit_text
 
@@ -17,6 +18,8 @@ class JsonUpdater(object):
                 return json.load(f, object_pairs_hook=OrderedDict)
         elif self._options.json:
             return json.loads(self._options.json, object_pairs_hook=OrderedDict)
+        elif self._options.stdin:
+            return json.load(sys.stdin, object_pairs_hook=OrderedDict)
         else:
             original = json_data.get_real_json(indent = 4)
             updated = edit_text(original, ignore_not_modified=self._ignore_not_modified)

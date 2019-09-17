@@ -100,7 +100,7 @@ Available entities:
     parser.add_argument("action", help = "An action to perform on given (sub)entity", nargs = "?")
 
     parser.add_argument("-f", "--file", dest = "filename", help = "input file with a JSON object")
-    parser.add_argument("--stdin", dest = "stdin", help = "input read from standard input")
+    parser.add_argument("--stdin", dest = "stdin", help = "input read from standard input", action = "store_true", default = False)
     parser.add_argument("-j", "--json", dest = "json", help = "input JSON object via command line")
     parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform upon creation", action = "store_true", default = False)
     parser.add_argument("-t", "--test", dest = "test", help = "let driver test platform upon creation", action = "store_true", default = False)
