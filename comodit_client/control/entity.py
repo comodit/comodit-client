@@ -11,6 +11,7 @@ from __future__ import print_function
 
 from collections import OrderedDict
 import json, os
+import sys
 
 from comodit_client.config import Config
 from comodit_client.control.abstract import AbstractController
@@ -108,6 +109,8 @@ class EntityController(AbstractController):
                 item = json.load(f, object_pairs_hook=OrderedDict)
         elif options.json:
             item = json.loads(options.json, object_pairs_hook=OrderedDict)
+        elif options.stdin:
+            item = json.load(sys.stdin, object_pairs_hook=OrderedDict)
         else :
             template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
             self._complete_template(argv, template_json)
