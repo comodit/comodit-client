@@ -81,6 +81,7 @@ class HostAbstractSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
 
@@ -126,6 +127,7 @@ class ApplicationContextSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
     def _get_name_argument(self, argv):
@@ -198,6 +200,7 @@ class HostSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
     def _get_name_argument(self, argv):
@@ -328,6 +331,7 @@ class EnvironmentSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
 
@@ -392,6 +396,7 @@ class DistributionSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
 
@@ -457,6 +462,7 @@ class PlatformSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
 
@@ -541,6 +547,7 @@ class OrganizationSettingsController(EntityController):
         List available settings. 
         --secret return only secret settings
         --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
         --key option add filter on setting key""")
 
     def _tree(self, argv):
