@@ -10,7 +10,7 @@ from comodit_client.control.abstract import AbstractController
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
 from . import completions
-
+import sys
 
 class ApplicationActionController(AbstractController):
 
@@ -54,10 +54,15 @@ class ApplicationActionController(AbstractController):
         app_name = argv[3]
         handler_name = argv[4]
 
+        try:
+            time_out = int(self._config.options.timeout)
+        except Exception:
+            sys.exit("Invalid format for timeout")
+
         changeId = host.get_application(app_name).run_handler(handler_name)
 
         if self._config.options.wait:
-            host.wait_for_change_terminated(changeId, self._config.options.timeout)
+            host.wait_for_change_terminated(changeId, time_out)
 
     def _print_run_completions(self, param_num, argv):
         if param_num < 4:

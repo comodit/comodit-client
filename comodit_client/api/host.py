@@ -1541,7 +1541,7 @@ class Host(HasSettings):
         start_time = time.time()
 
         while not self._change_terminated(change_id):
-            time.sleep(1)
+            time.sleep(2)
             now = time.time()
             val = int(now - start_time)
             if time_out > 0 and  val > int(time_out):

@@ -10,6 +10,7 @@ from comodit_client.control.abstract import AbstractController
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
 from . import completions
+import sys
 
 
 class ActionController(AbstractController):
@@ -37,13 +38,18 @@ class ActionController(AbstractController):
         if len(argv) < 4:
             raise ArgumentException("Wrong number of arguments")
 
+        try:
+            time_out = int(self._config.options.timeout)
+        except Exception:
+            sys.exit("Invalid format for timeout")
+
         host = self._get_host(argv)
         orch_name = argv[3]
         changes = host.run_orchestration(orch_name)
 
         if self._config.options.wait:
             for change in changes:
-                host.wait_for_change_terminated(str(change), self._config.options.timeout)
+                host.wait_for_change_terminated(str(change), time_out)
                     
     def _print_action_completions(self, param_num, argv):
         if param_num < 4:
