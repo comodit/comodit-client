@@ -1539,11 +1539,14 @@ class Host(HasSettings):
 
     def wait_for_change_terminated(self, change_id, time_out = 0):
         start_time = time.time()
+
         while not self._change_terminated(change_id):
-            time.sleep(3)
+            time.sleep(1)
             now = time.time()
-            if time_out > 0 and (now - start_time) > time_out:
-                break
+            val = int(now - start_time)
+            if time_out > 0 and  val > int(time_out):
+                sys.exit("timeout")
+
 
 
 class PackageResource(JsonWrapper):
