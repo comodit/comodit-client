@@ -373,7 +373,6 @@ class Organization(HasSettings):
 
         return OrchestrationCollection(self.client, self.url + "orchestrations/")
 
-    @property
     def notifications(self):
         """
         Instantiates the collection of notifications associated to this organization.
