@@ -11,6 +11,7 @@ from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.json_update import JsonUpdater
+from comodit_client.util import prompt
 
 
 class InstancesController(EntityController):
@@ -24,6 +25,8 @@ class InstancesController(EntityController):
         self._register(["resume"], self._resume, self._print_entity_completions)
         self._register(["shutdown"], self._shutdown, self._print_entity_completions)
         self._register(["poweroff"], self._poweroff, self._print_entity_completions)
+        self._register(["lock"], self._lock, self._print_entity_completions)
+        self._register(["unlock"], self._unlock, self._print_entity_completions)
         self._register(["forget"], self._forget, self._print_entity_completions)
         self._register(["properties"], self._properties, self._print_entity_completions)
         self._register(["show_file"], self._show_file, self._print_entity_completions)
@@ -127,6 +130,17 @@ class InstancesController(EntityController):
     def _poweroff(self, argv):
         instance = self._get_entity(argv)
         instance.poweroff()
+
+    def _lock(self, argv):
+        instance = self._get_entity(argv)
+        instance.lock()
+
+    def _unlock(self, argv):
+        instance = self._get_entity(argv)
+        if not instance.locked :
+            print("instance not locked")
+        elif self._config.options.force or (prompt.confirm(prompt="Unlock " + instance.host + " ?", resp=False)) :
+            instance.unlock()
 
     def _poweroff_doc(self):
         return ActionDoc("poweroff", "<org_name>  <env_name> <host_name>", """

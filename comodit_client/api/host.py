@@ -278,6 +278,16 @@ class Instance(Entity):
 
         return self._get_field("state")
 
+    @property
+    def locked(self):
+        """
+        locked instance.
+
+        @rtype: bool
+        """
+
+        return self._get_field("locked")
+
     def get_ip(self, interface):
         """
         Retrieves the IP address associated to given interface from instance
@@ -445,6 +455,30 @@ class Instance(Entity):
         except ApiException as e:
             raise PythonApiException("Unable to power instance off: " + e.message)
 
+    def lock(self):
+        """
+        lock instance.
+        """
+
+        try:
+            result = self._http_client.create(self.url + "lock", decode = False)
+            if(result.getcode() != 200):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException as e:
+            raise PythonApiException("Unable to lock instance : " + e.message)
+
+    def unlock(self):
+        """
+        unlock instance
+        """
+
+        try:
+            result = self._http_client.create(self.url + "unlock", decode = False)
+            if(result.getcode() != 200):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException as e:
+            raise PythonApiException("Unable to unlock instance : " + e.message)
+
     def forget(self):
         """
         Forgets instance.
@@ -468,7 +502,8 @@ class Instance(Entity):
 
         print(" "*indent, "State:", self.state)
         print(" "*indent, "Agent state:", self.agent_state)
-        print(" "*indent, "Hostname:", self.hostname)
+        print(" "*indent, "Hostname:", self.host)
+        print(" "*indent, "Locked:", self.locked)
         print(" "*indent, "Vnc:")
         self.vnc.show(indent + 2)
 
