@@ -29,6 +29,8 @@ from comodit_client.control.notification_log import NotificationLogHelper
 from comodit_client.control.log import OtherLogHelper
 from comodit_client.control.log import AgentLogHelper
 from comodit_client.control.actions import ActionController
+from comodit_client.api.importer import Import
+from comodit_client.control.doc import ActionDoc
 
 class HostsController(EntityController):
 
@@ -60,6 +62,7 @@ class HostsController(EntityController):
         self._register(["notification-logs"], self._notificationLog.notification_log, self._print_entity_completions)
         self._register(["agent-logs"], self._agentLog.agent_log, self._print_entity_completions)
         self._register(["other-logs"], self._otherLog.other_log, self._print_entity_completions)
+        self._register(["import"], self._import, self._print_import_completions)
         self._register(["vnc"], self._vnc, self._print_entity_completions)
 
         self._doc = "Hosts handling."
@@ -76,10 +79,12 @@ class HostsController(EntityController):
         self._register_action_doc(self._agentLog.agent_log_doc())
         self._register_action_doc(self._otherLog.other_log_doc())
         self._register_action_doc(self._vnc_doc())
+        self._register_action_doc(self._import_doc())
+
 
     def get_collection(self, argv):
         if len(argv) < 2:
-            raise ArgumentException("Wrong number of arguments");
+            raise ArgumentException("Wrong number of arguments")
 
         return self._client.hosts(argv[0], argv[1])
 
@@ -97,13 +102,13 @@ class HostsController(EntityController):
 
     def _complete_template(self, argv, template_json):
         if len(argv) < 2:
-            raise ArgumentException("Wrong number of arguments");
+            raise ArgumentException("Wrong number of arguments")
         template_json["organization"] = argv[0]
         template_json["environment"] = argv[1]
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
-            raise ArgumentException("Wrong number of arguments");
+            raise ArgumentException("Wrong number of arguments")
 
         return argv[2]
 
@@ -116,7 +121,7 @@ class HostsController(EntityController):
     def _delete(self, argv):
         host = self._get_entity(argv)
 
-        if self._config.options.force or (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
+        if self._config.options.force or (prompt.confirm(prompt = "Delete " + host.name + " ?", resp = False)) :
             host.delete()
 
     def _print_file_completions(self, param_num, argv):
@@ -131,6 +136,12 @@ class HostsController(EntityController):
         if param_num < 3:
             self._print_entity_completions(param_num, argv)
         elif param_num == 3:
+            completions.print_dir_completions()
+
+    def _print_import_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_entity_completions(param_num, argv)
+        elif param_num == 2:
             completions.print_dir_completions()
 
     def _render_tree(self, argv):
@@ -203,3 +214,33 @@ class HostsController(EntityController):
     def _vnc_doc(self):
         return ActionDoc("vnc", "<org_name> <env_name> <res_name>", """
         Executes configured VNC viewer for host's instance.""")
+
+    def _import(self, argv):
+        """
+        Pushes local data to comodit server. Data may include applications,
+        distributions, platforms, organizations, environments and hosts.
+        Local data are automatically imported if no collision with remote data
+        is detected. In case of collision, 'force' option can be used to still
+        import data.
+        """
+        self._options = self._config.options
+        org = self._client.organizations().get(argv[0])
+        env = self._client.environments(argv[0]).get(argv[1])
+
+
+
+        if len(argv) < 3:
+            raise ArgumentException("Wrong number of arguments")
+
+        importer = Import(self._config.options.skip_conflict, queue_actions=True,
+                          with_instances=self._config.options.with_instances)
+        importer.import_full_host(org, env, argv[2])
+
+        if (importer.no_conflict() or self._config.options.skip_conflict) and not self._config.options.dry_run:
+            importer.execute_queue()
+        else:
+            importer.display_queue(show_only_conflicts = True)
+
+    def _import_doc(self):
+        return ActionDoc("import", "<src_folder> [--dry-run]", """
+            Import host from disk. With --dry-run, actions on conflict are displayed but not applied.""")

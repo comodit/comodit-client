@@ -328,7 +328,6 @@ class Import(object):
         host._del_field("distribution")
 
         host_already_exists = self._import_entity_and_detect_conflict(host, "host", skip_conflict_detection=skip_conflict_detection)
-
         # Import application contexts
         for app in apps:
             context = ApplicationContext(host.applications(), None)
@@ -348,6 +347,88 @@ class Import(object):
             context = DistributionContext(host.distribution(), None)
             context.load_json(dist_file)
             self._import_entity_and_detect_conflict(context, "distribution context", skip_conflict_detection=not host_already_exists)
+
+        # Import instance (must come at last)
+        instance_file = os.path.join(host_folder, "instance.json")
+        if os.path.exists(instance_file) and self._with_instances:
+            instance = Instance(host.instance(), None)
+            instance.load_json(instance_file)
+            self._import_instance(instance)
+
+    def import_full_env(self, org, env_folder):
+        env = Environment(org.environments(), None)
+        env.load(env_folder)
+        self._import_entity_and_detect_conflict(env, "environment", skip_conflict_detection=False)
+
+        hosts_folder = os.path.join(env_folder, "hosts")
+        if os.path.exists(hosts_folder):
+            hosts_list = os.listdir(hosts_folder)
+            for host_name in hosts_list:
+                host_folder = os.path.join(hosts_folder, host_name)
+                self.import_full_host(org, env, host_folder)
+
+
+    def import_full_host(self, org, env, host_folder):
+        host = Host(env.hosts(), None)
+        host.load(host_folder)
+
+        apps = host.application_names
+        dist = host.distribution_name
+        plat = host.platform_name
+
+        # Contexts are created below
+        host._del_field("applications")
+        host._del_field("platform")
+        host._del_field("distribution")
+
+        self._import_entity_and_detect_conflict(host, "host", False)
+
+        org_folder = os.path.join(host_folder, "..", "..", "..", "..")
+
+        if dist:
+            try:
+                org.get_distribution(dist)
+            except EntityNotFoundException as e:
+                dists_folder = os.path.join(org_folder, "distributions")
+                if os.path.exists(dists_folder):
+                    self.import_distribution(org, os.path.join(dists_folder, dist), skip_conflict_detection=False)
+        if plat:
+            try:
+                org.get_platform(plat)
+            except EntityNotFoundException as e:
+                plats_folder = os.path.join(org_folder, "platforms")
+                if os.path.exists(plats_folder):
+                    self.import_platform(org, os.path.join(plats_folder, plat), skip_conflict_detection=False)
+
+        apps_folder = os.path.join(org_folder, "applications")
+
+        if os.path.exists(apps_folder):
+            for app in apps:
+                try:
+                    org.get_application(app)
+                except EntityNotFoundException as e:
+                    self.import_application(org, os.path.join(apps_folder, app), skip_conflict_detection=False)
+
+
+        # Import application contexts
+        for app in apps:
+            context = ApplicationContext(host.applications(), None)
+            context.load_json(os.path.join(host_folder, "applications", app + ".json"))
+            self._import_entity_and_detect_conflict(context, "application context", skip_conflict_detection=False)
+
+        # Import platform context
+        platform_file = os.path.join(host_folder, "platform.json")
+        if os.path.exists(platform_file):
+            context = PlatformContext(host.platform(), None)
+            context.load_json(platform_file)
+            self._import_entity_and_detect_conflict(context, "platform context", skip_conflict_detection=False)
+
+        # Import distribution context
+        dist_file = os.path.join(host_folder, "distribution.json")
+        if os.path.exists(dist_file):
+            context = DistributionContext(host.distribution(), None)
+            context.load_json(dist_file)
+            self._import_entity_and_detect_conflict(context, "distribution context", skip_conflict_detection=False)
 
         # Import instance (must come at last)
         instance_file = os.path.join(host_folder, "instance.json")
