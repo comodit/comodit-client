@@ -31,7 +31,7 @@ class EnvironmentsController(OrganizationEntityController):
         self._register_subcontroller(["settings"], EnvironmentSettingsController())
 
         # actions
-        self._register(["import"], self._import, self._print_import_completions)
+        # self._register(["import"], self._import, self._print_import_completions)
         self._register(["audit-logs"], self._audit.audit, self._print_entity_completions)
         self._register_action_doc(self._audit.audit_doc())
         
@@ -47,7 +47,7 @@ class EnvironmentsController(OrganizationEntityController):
         self._register(["other-logs"], self._otherLog.other_log, self._print_entity_completions)
         self._register_action_doc(self._otherLog.other_log_doc())
 
-        self._register_action_doc(self._import_doc())
+        # self._register_action_doc(self._import_doc())
 
         self._doc = "Environments handling."
 
