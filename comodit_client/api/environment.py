@@ -15,6 +15,7 @@ from comodit_client.api.audit import AuditLogCollection
 from comodit_client.api.notificationLog import NotificationLogCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
+from comodit_client.api.group import GroupCollection
 
 
 
@@ -180,6 +181,17 @@ class Environment(HasSettings):
         """
 
         return OtherLogCollection(self.client, self.url + "other/")
+
+    def groups(self):
+        """
+        Instantiates the collection of groups associated to this organization.
+
+        @return: The collection of groups associated to this organization.
+        @rtype: L{GroupCollection}
+        """
+        print (self.url)
+        return GroupCollection(self.client, self.url + "groups/")
+
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)

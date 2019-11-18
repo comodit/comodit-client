@@ -14,6 +14,7 @@ from comodit_client.control.notification_log import NotificationLogHelper
 from comodit_client.control.log import OtherLogHelper
 from comodit_client.control.log import AgentLogHelper
 from comodit_client.control import completions
+from comodit_client.control.groups import EnvironmentGroupsController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.api.importer import Import
 from comodit_client.control.doc import ActionDoc
@@ -47,6 +48,7 @@ class EnvironmentsController(OrganizationEntityController):
         self._register(["other-logs"], self._otherLog.other_log, self._print_entity_completions)
         self._register_action_doc(self._otherLog.other_log_doc())
 
+        self._register_subcontroller(["groups"], EnvironmentGroupsController())
         self._register_action_doc(self._import_doc())
 
         self._doc = "Environments handling."

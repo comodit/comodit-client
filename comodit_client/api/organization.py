@@ -7,7 +7,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 from .collection import Collection
-from .entity import Entity
 from .environment import EnvironmentCollection
 from .distribution import DistributionCollection
 from .platform import PlatformCollection
@@ -17,158 +16,14 @@ from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.audit import AuditLogCollection
 from comodit_client.api.purchased import PurchasedCollection
-from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.application_key import ApplicationKeyCollection
 from comodit_client.api.job import JobCollection
 from comodit_client.api.notification import NotificationCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
-
-class User(JsonWrapper):
-    """
-    A ComodIT user's representation.
-    """
-
-    @property
-    def username(self):
-        """
-        User's username.
-
-        @rtype: string
-        """
-
-        return self._get_field("username")
-
-    @username.setter
-    def username(self, username):
-        """
-        Sets user's username.
-        """
-
-        self._set_field("username", username)
-
-    @property
-    def full_name(self):
-        """
-        User's full name.
-
-        @rtype: string
-        """
-        return self._get_field("fullname")
-
-    @property
-    def email(self):
-        """
-        User's e-mail.
-
-        @rtype: string
-        """
-
-        return self._get_field("email")
-
-    def show(self, indent = 0):
-        """
-        Prints user's representation to standard output in a user-friendly way.
-
-        @param indent: The number of spaces to put in front of each displayed
-        line.
-        @type indent: int
-        """
-
-        print(" "*indent, "Username:", self.username)
-        print(" "*indent, "Full name:", self.full_name)
-        print(" "*indent, "E-mail:", self.email)
-
-
-class GroupCollection(Collection):
-    """
-    Collection of organization's L{groups<Group>}. Currently, organizations
-    have 3 pre-defined groups:
-      - users: Normal users.
-      - admin: Administrators, can add/remove users from groups and delete
-      the organization.
-      - readonly: Have a read-only access to the organization.
-    No group can added or deleted.
-    """
-
-    def _new(self, json_data = None):
-        return Group(self, json_data)
-
-
-class Group(Entity):
-    """
-    The representation of an organization's group. A group is defined by a list
-    of ComodIT users.
-    """
-
-    @property
-    def organization(self):
-        """
-        The name of the organization this group is part of.
-
-        @rtype: string
-        """
-
-        return self._get_field("organization")
-
-    @property
-    def users(self):
-        """
-        The users in this group.
-        
-        @rtype: list of L{User}
-        """
-
-        return self._get_list_field("users", lambda x: User(x))
-
-    def add_user(self, username):
-        """
-        Adds a new user to this group. In order to add a user to the group,
-        at least its username must be set.
-
-        @param username: The new user's username.
-        @type username: string
-        """
-
-        user = User()
-        user.username = username
-        return self._add_to_list_field("users", user)
-
-    def remove_user(self, username):
-        """
-        Removes given user from list.
-
-        @param username: The username of the user to remove.
-        @type username: string
-        """
-
-        users = self._get_field("users")  # Field is not interpreted
-
-        i = 0
-        for u in users:
-            if u["username"] == username:
-                break
-            i += 1
-
-        if i < len(users):
-            del users[i]
-
-    def clear_users(self):
-        """
-        Remove all users from this group.
-        """
-
-        return self._set_list_field("users", [])
-
-    def _show(self, indent = 0):
-        print(" "*indent, "Name:", self.name)
-        print(" "*indent, "Description:", self.description)
-        print(" "*indent, "Organization:", self.organization)
-        print(" "*indent, "Users:")
-        users = self.users
-        for u in users:
-            u.show(indent + 2)
+from comodit_client.api.group import GroupCollection
+from comodit_client.api.group import Group
 
 
 class OrganizationCollection(Collection):

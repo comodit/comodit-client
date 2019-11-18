@@ -17,13 +17,13 @@ from comodit_client.control.changes import ChangeController
 from comodit_client.control.compliance import ComplianceController
 from comodit_client.control.contexts import PlatformContextController, \
     DistributionContextController, ApplicationContextController
-from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException, MissingException, \
     ControllerException
 from comodit_client.control.instances import InstancesController
 from comodit_client.control.settings import HostSettingsController
 from comodit_client.control.tree_rendering import TreeRenderer
+from comodit_client.control.groups import HostGroupsController
 from comodit_client.util import prompt
 from comodit_client.control.notification_log import NotificationLogHelper
 from comodit_client.control.log import OtherLogHelper
@@ -53,6 +53,7 @@ class HostsController(EntityController):
         self._register_subcontroller(["changes"], ChangeController())
         self._register_subcontroller(["alerts"], MonitoringAlertController())
         self._register_subcontroller(["actions"], ActionController())
+        self._register_subcontroller(["groups"], HostGroupsController())
 
         # actions
         self._register(["provision"], self._provision, self._print_entity_completions)

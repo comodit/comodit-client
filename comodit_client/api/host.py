@@ -26,6 +26,7 @@ from comodit_client.api.notificationLog import NotificationLogCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
+from comodit_client.api.group import GroupCollection
 
 
 class HostCollection(Collection):
@@ -1581,6 +1582,16 @@ class Host(HasSettings):
             val = int(now - start_time)
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
+
+    def groups(self):
+        """
+        Instantiates the collection of groups associated to this organization.
+
+        @return: The collection of groups associated to this organization.
+        @rtype: L{GroupCollection}
+        """
+        print (self.url)
+        return GroupCollection(self.client, self.url + "groups/")
 
 
 

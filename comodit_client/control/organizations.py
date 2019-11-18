@@ -13,7 +13,7 @@ from comodit_client.api.importer import Import
 from comodit_client.control.audit import AuditHelper
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
-from comodit_client.control.groups import GroupsController
+from comodit_client.control.groups import OrganizationGroupsController
 from comodit_client.control.root_entity import RootEntityController
 from comodit_client.control.settings import OrganizationSettingsController
 from . import completions
@@ -57,7 +57,7 @@ class OrganizationsController(RootEntityController):
         
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
-        self._register_subcontroller(["groups"], GroupsController())
+        self._register_subcontroller(["groups"], OrganizationGroupsController())
         self._register_subcontroller(["jobs"], JobsController())
         self._register_subcontroller(["notification-channels"], NotificationsController())
         self._register_subcontroller(["application-keys"], ApplicationKeysController())
