@@ -133,6 +133,20 @@ class GroupOrganizationTree(Entity):
             group = GroupEnvironmentTree(self, json_data=g)
             group.show(indent + 4)
 
+class GroupEnvironmentTreeCollection(Collection):
+    """
+        Collection of environment's L{groups<Group>}. Currently, organizations
+        have 3 pre-defined groups:
+          - users: Normal users.
+          - admin: Administrators, can add/remove users from groups and delete
+          the organization.
+          - readonly: Have a read-only access to the environment.
+        No group can added or deleted.
+        """
+    def _new(self, json_data = None):
+        return GroupEnvironmentTree(self, json_data)
+
+
 class GroupEnvironmentTree(Entity):
     @property
     def environment(self):
@@ -175,6 +189,20 @@ class GroupEnvironmentTree(Entity):
         for g in self.hostGroups:
             group = GroupHostTree(self, json_data=g)
             group.show(indent + 4)
+
+
+class GroupHostTreeCollection(Collection):
+    """
+        Collection of environment's L{groups<Group>}. Currently, organizations
+        have 3 pre-defined groups:
+          - users: Normal users.
+          - admin: Administrators, can add/remove users from groups and delete
+          the organization.
+          - readonly: Have a read-only access to the host.
+        No group can added or deleted.
+        """
+    def _new(self, json_data = None):
+        return GroupHostTree(self, json_data)
 
 
 

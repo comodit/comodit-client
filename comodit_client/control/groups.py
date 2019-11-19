@@ -5,6 +5,7 @@ import json
 
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
+from comodit_client.control.doc import ActionDoc
 
 from . import completions
 
@@ -19,6 +20,7 @@ class OrganizationGroupsController(EntityController):
 
         self._doc = "Groups handling."
         self._register(["tree"], self._tree, self._print_list_completions)
+        self._register_action_doc(self._tree_doc())
 
 
     def get_collection(self, argv):
@@ -48,6 +50,10 @@ class OrganizationGroupsController(EntityController):
         else:
             res.show()
 
+    def _tree_doc(self):
+        return ActionDoc("tree", "<org_name>  ", """
+        Get a tree of each groups in organization.""")
+
 
 class EnvironmentGroupsController(EntityController):
     def __init__(self):
@@ -57,6 +63,9 @@ class EnvironmentGroupsController(EntityController):
         self._unregister(["add", "delete"])
 
         self._doc = "Groups handling."
+        self._register(["tree"], self._tree, self._print_list_completions)
+        self._register_action_doc(self._tree_doc())
+
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -81,6 +90,16 @@ class EnvironmentGroupsController(EntityController):
             raise ArgumentException("An organization name and ank environment name and a group name must be provided")
         return argv[2]
 
+    def _tree(self, argv):
+        res = self._client.get_environment(argv[0], argv[1]).groupsTree()
+        if self._config.options.raw:
+            print(json.dumps(res.get_json(), indent=4))
+        else:
+            res.show()
+
+    def _tree_doc(self):
+        return ActionDoc("tree", "<org_name>  ", """
+        Get a tree of each groups in environment.""")
 
 class HostGroupsController(EntityController):
     def __init__(self):
@@ -89,6 +108,8 @@ class HostGroupsController(EntityController):
         # Unregister unsupported actions
         self._unregister(["add", "delete"])
         self._doc = "Groups handling."
+        self._register(["tree"], self._tree, self._print_list_completions)
+        self._register_action_doc(self._tree_doc())
 
     def get_collection(self, argv):
         if len(argv) < 3:
@@ -114,3 +135,14 @@ class HostGroupsController(EntityController):
         if len(argv) < 4:
             raise ArgumentException("An organization name and ank environment name and host name and a group name must be provided")
         return argv[3]
+
+    def _tree(self, argv):
+        res = self._client.get_host(argv[0], argv[1], argv[2]).groupsTree()
+        if self._config.options.raw:
+            print(json.dumps(res.get_json(), indent=4))
+        else:
+            res.show()
+
+    def _tree_doc(self):
+        return ActionDoc("tree", "<org_name>  ", """
+        Get a tree of each groups in host.""")
