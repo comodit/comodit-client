@@ -4,6 +4,7 @@ from __future__ import print_function
 from .collection import Collection
 from .entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
+from comodit_client.api.application_key import ApplicationKey
 
 class User(JsonWrapper):
     """
@@ -75,6 +76,137 @@ class GroupCollection(Collection):
     def _new(self, json_data = None):
         return Group(self, json_data)
 
+class GroupOrganizationTreeCollection(Collection):
+    """
+        Collection of organization's L{groups<Group>}. Currently, organizations
+        have 3 pre-defined groups:
+          - users: Normal users.
+          - admin: Administrators, can add/remove users from groups and delete
+          the organization.
+          - readonly: Have a read-only access to the organization.
+        No group can added or deleted.
+        """
+    def _new(self, json_data = None):
+        return GroupOrganizationTree(self, json_data)
+
+class GroupOrganizationTree(Entity):
+
+    @property
+    def organization(self):
+        """
+        The name of the organization this group is part of.
+
+        @rtype: string
+        """
+
+        return self._get_field("organization")
+
+    @property
+    def groups(self):
+        """
+        The users and applicationKeys in this group.
+
+        @rtype: list of L{Group}
+        """
+        return self._get_list_field("groupViews")
+
+    @property
+    def environmentGroups(self):
+        """
+        The users or applicationKeys in environment in this organization.
+
+        @rtype: {GroupEnvironmentTree}
+        """
+        return self._get_list_field("environmentGroupViews")
+
+
+    def show(self, indent=0):
+        print(" "*(indent + 2), "Organization:", self.organization)
+
+        print(" "*(indent + 2), "Groups:")
+        for g in self.groups:
+            group = Group(self, json_data=g)
+            group._show(indent + 4, lite=True)
+
+        print(" "*(indent + 2), "Environment:")
+        for g in self.environmentGroups:
+            group = GroupEnvironmentTree(self, json_data=g)
+            group.show(indent + 4)
+
+class GroupEnvironmentTree(Entity):
+    @property
+    def environment(self):
+        """
+        The name of the environment this group is part of.
+
+        @rtype: string
+        """
+
+        return self._get_field("environment")
+
+    @property
+    def groups(self):
+        """
+        The users and applicationKeys in this group.
+
+        @rtype: list of L{User}
+        """
+        return self._get_list_field("groupViews")
+
+    @property
+    def hostGroups(self):
+        """
+        The users or applicationKeys in hosts of environment in this organization.
+
+        @rtype: {GroupHostTree}
+        """
+        return self._get_list_field("hostGroupViews")
+
+
+    def show(self, indent=0):
+        print(" "*(indent + 2), "Environment:", self.environment)
+
+        print(" "*(indent + 2), "Groups:")
+        for g in self.groups:
+            group = Group(self, json_data=g)
+            group._show(indent + 4, lite=True)
+
+        print(" "*(indent + 2), "Host:")
+        for g in self.hostGroups:
+            group = GroupHostTree(self, json_data=g)
+            group.show(indent + 4)
+
+
+
+class GroupHostTree(Entity):
+
+    @property
+    def host(self):
+        """
+        The name of the organization this group is part of.
+
+        @rtype: string
+        """
+
+        return self._get_field("host")
+
+    @property
+    def groups(self):
+        """
+        The users in this group.
+
+        @rtype: list of L{User}
+        """
+        return self._get_list_field("groupViews")
+
+    def show(self, indent=0):
+        print(" "*(indent + 2), "Host:", self.host)
+
+        print(" "*(indent + 2), "Groups:")
+        for g in self.groups:
+            group = Group(self, json_data=g)
+            group._show(indent + 4, lite=True)
+
 
 class Group(Entity):
     """
@@ -101,6 +233,16 @@ class Group(Entity):
         """
 
         return self._get_list_field("users", lambda x: User(x))
+
+    @property
+    def application_keys(self):
+        """
+        The users in this group.
+
+        @rtype: list of L{User}
+        """
+
+        return self._get_list_field("applicationKeys")
 
     def add_user(self, username):
         """
@@ -141,11 +283,18 @@ class Group(Entity):
 
         return self._set_list_field("users", [])
 
-    def _show(self, indent = 0):
+    def _show(self, indent = 0, lite=False):
         print(" "*indent, "Name:", self.name)
-        print(" "*indent, "Description:", self.description)
-        print(" "*indent, "Organization:", self.organization)
+        if not lite:
+            print(" "*indent, "Organization:", self.organization)
+            print(" "*indent, "Description:", self.description)
+
         print(" "*indent, "Users:")
         users = self.users
         for u in users:
             u.show(indent + 2)
+
+        print(" "*indent, "application keys:")
+        for a in self.application_keys:
+            app = ApplicationKey(self, json_data=a)
+            app._show(indent + 4)

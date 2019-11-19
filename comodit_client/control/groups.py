@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from __future__ import absolute_import
+import json
 
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
@@ -17,6 +18,8 @@ class OrganizationGroupsController(EntityController):
         self._unregister(["add", "delete"])
 
         self._doc = "Groups handling."
+        self._register(["tree"], self._tree, self._print_list_completions)
+
 
     def get_collection(self, argv):
         if len(argv) < 1:
@@ -37,6 +40,14 @@ class OrganizationGroupsController(EntityController):
         if len(argv) < 2:
             raise ArgumentException("An organization name and a group name must be provided")
         return argv[1]
+
+    def _tree(self, argv):
+        res = self._client.get_organization(argv[0]).groupsTree()
+        if self._config.options.raw:
+            print(json.dumps(res.get_json(), indent=4))
+        else:
+            res.show()
+
 
 class EnvironmentGroupsController(EntityController):
     def __init__(self):

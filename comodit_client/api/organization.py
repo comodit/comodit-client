@@ -24,6 +24,7 @@ from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
 from comodit_client.api.group import GroupCollection
 from comodit_client.api.group import Group
+from comodit_client.api.group import GroupOrganizationTreeCollection
 
 
 class OrganizationCollection(Collection):
@@ -257,6 +258,15 @@ class Organization(HasSettings):
         """
 
         return GroupCollection(self.client, self.url + "groups/")
+
+    def groupsTree(self):
+        """
+        Get all groups defined in all organization
+
+        @return: The collection of groups associated to this organization.
+        @rtype: L{GroupOrganizationTreeCollection}
+        """
+        return GroupOrganizationTreeCollection(self.client, self.url + "groups").get("/tree")
 
     def get_group(self, name):
         """
