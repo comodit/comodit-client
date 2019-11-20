@@ -559,6 +559,12 @@ class ApplicationSettingTree(JsonWrapper):
 
 
 class SettingHandlerContext(JsonWrapper):
+
+    @property
+    def noAccessAllResources(self):
+
+        return self._get_field("noAccessToAllResources")
+
     @property
     def application(self):
         """
@@ -625,6 +631,10 @@ class SettingHandlerContext(JsonWrapper):
         print(" "*(indent + 2), "Actions")
         for h in self.handlers:
             h.show(indent)
+
+        if self.noAccessAllResources:
+            print (" "*(indent + 2),"WARNING : You don't have the right to see all the impacts")
+
 
 class HostSettingContext(JsonWrapper):
     @property
