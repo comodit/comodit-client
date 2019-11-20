@@ -64,12 +64,14 @@ class User(JsonWrapper):
 
 class GroupCollection(Collection):
     """
-    Collection of organization's L{groups<Group>}. Currently, organizations
-    have 3 pre-defined groups:
+    Collection of organization's L{groups<Group>}. Currently, organization, environment or host
+    have 5 pre-defined groups:
       - users: Normal users.
-      - admin: Administrators, can add/remove users from groups and delete
-      the organization.
-      - readonly: Have a read-only access to the organization.
+      - admin: Administrators, can add/remove users from groups and delete the organization
+      - auditors: same right of users but all secrets settings are hidden
+      - readonly: Have a read-only access
+      - readonly: Have a read-only access
+      - no access: Impossible to access the resource
     No group can added or deleted.
     """
 
@@ -78,14 +80,8 @@ class GroupCollection(Collection):
 
 class GroupOrganizationTreeCollection(Collection):
     """
-        Collection of organization's L{groups<Group>}. Currently, organizations
-        have 3 pre-defined groups:
-          - users: Normal users.
-          - admin: Administrators, can add/remove users from groups and delete
-          the organization.
-          - readonly: Have a read-only access to the organization.
-        No group can added or deleted.
-        """
+        Get all GroupCollection on organization and each environment and host where user or applicationKey are defined
+    """
     def _new(self, json_data = None):
         return GroupOrganizationTree(self, json_data)
 
@@ -135,14 +131,8 @@ class GroupOrganizationTree(Entity):
 
 class GroupEnvironmentTreeCollection(Collection):
     """
-        Collection of environment's L{groups<Group>}. Currently, organizations
-        have 3 pre-defined groups:
-          - users: Normal users.
-          - admin: Administrators, can add/remove users from groups and delete
-          the organization.
-          - readonly: Have a read-only access to the environment.
-        No group can added or deleted.
-        """
+        Get all GroupCollection on each environments and hosts where user or applicationKey are defined
+    """
     def _new(self, json_data = None):
         return GroupEnvironmentTree(self, json_data)
 
@@ -193,14 +183,8 @@ class GroupEnvironmentTree(Entity):
 
 class GroupHostTreeCollection(Collection):
     """
-        Collection of environment's L{groups<Group>}. Currently, organizations
-        have 3 pre-defined groups:
-          - users: Normal users.
-          - admin: Administrators, can add/remove users from groups and delete
-          the organization.
-          - readonly: Have a read-only access to the host.
-        No group can added or deleted.
-        """
+        Get all GroupCollection on each hosts where user or applicationKey are defined
+    """
     def _new(self, json_data = None):
         return GroupHostTree(self, json_data)
 

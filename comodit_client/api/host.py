@@ -1586,9 +1586,9 @@ class Host(HasSettings):
 
     def groups(self):
         """
-        Instantiates the collection of groups associated to this organization.
+        Instantiates the collection of groups associated to this host.
 
-        @return: The collection of groups associated to this organization.
+        @return: The collection of groups associated to this host.
         @rtype: L{GroupCollection}
         """
         print (self.url)
@@ -1596,7 +1596,7 @@ class Host(HasSettings):
 
     def groupsTree(self):
         """
-        Get all groups defined in all host
+        Get all groups defined in this host
 
         @return: The collection of groups associated to this host.
         @rtype: L{GroupHostTreeCollection}

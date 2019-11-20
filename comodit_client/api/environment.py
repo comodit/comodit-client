@@ -185,9 +185,9 @@ class Environment(HasSettings):
 
     def groups(self):
         """
-        Instantiates the collection of groups associated to this organization.
+        Instantiates the collection of groups associated to this environment.
 
-        @return: The collection of groups associated to this organization.
+        @return: The collection of groups associated to this environment.
         @rtype: L{GroupCollection}
         """
         print (self.url)

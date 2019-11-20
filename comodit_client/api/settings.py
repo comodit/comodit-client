@@ -562,7 +562,11 @@ class SettingHandlerContext(JsonWrapper):
 
     @property
     def noAccessAllResources(self):
+        """
+        indicate if user has access to all resource to show impact
 
+        @rtype: bool
+        """
         return self._get_field("noAccessToAllResources")
 
     @property
