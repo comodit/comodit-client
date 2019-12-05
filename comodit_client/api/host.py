@@ -27,7 +27,7 @@ from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
 from comodit_client.api.group import GroupCollection
-from comodit_client.api.group import GroupHostTreeCollection
+from comodit_client.api.group import GroupOrganizationTreeCollection
 
 
 class HostCollection(Collection):
@@ -1601,7 +1601,7 @@ class Host(HasSettings):
         @return: The collection of groups associated to this host.
         @rtype: L{GroupHostTreeCollection}
         """
-        return GroupHostTreeCollection(self.client, self.url + "groups").get("/tree")
+        return GroupOrganizationTreeCollection(self.client, self.url + "groups").get("/tree")
 
 
 

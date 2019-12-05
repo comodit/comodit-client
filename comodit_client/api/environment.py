@@ -16,7 +16,7 @@ from comodit_client.api.notificationLog import NotificationLogCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.group import GroupCollection
-from comodit_client.api.group import GroupEnvironmentTreeCollection
+from comodit_client.api.group import GroupOrganizationTreeCollection
 
 
 
@@ -200,7 +200,7 @@ class Environment(HasSettings):
         @return: The collection of groups associated to this environment.
         @rtype: L{GroupEnvironmentTreeCollection}
         """
-        return GroupEnvironmentTreeCollection(self.client, self.url + "groups").get("/tree")
+        return GroupOrganizationTreeCollection(self.client, self.url + "groups").get("/tree")
 
 
     def _show(self, indent = 0):

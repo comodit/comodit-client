@@ -117,7 +117,7 @@ class GroupOrganizationTree(Entity):
 
 
     def show(self, indent=0):
-        print(" "*(indent + 2), "Organization:", self.organization)
+        print(" "*(indent + 2), "Name:", self.organization)
 
         print(" "*(indent + 2), "Groups:")
         for g in self.groups:
@@ -168,7 +168,7 @@ class GroupEnvironmentTree(Entity):
 
 
     def show(self, indent=0):
-        print(" "*(indent + 2), "Environment:", self.environment)
+        print(" "*(indent + 2), "Name:", self.environment)
 
         print(" "*(indent + 2), "Groups:")
         for g in self.groups:
@@ -179,16 +179,6 @@ class GroupEnvironmentTree(Entity):
         for g in self.hostGroups:
             group = GroupHostTree(self, json_data=g)
             group.show(indent + 4)
-
-
-class GroupHostTreeCollection(Collection):
-    """
-        Get all GroupCollection on each hosts where user or applicationKey are defined
-    """
-    def _new(self, json_data = None):
-        return GroupHostTree(self, json_data)
-
-
 
 class GroupHostTree(Entity):
 
@@ -212,7 +202,7 @@ class GroupHostTree(Entity):
         return self._get_list_field("groupViews")
 
     def show(self, indent=0):
-        print(" "*(indent + 2), "Host:", self.host)
+        print(" "*(indent + 2), "Name:", self.host)
 
         print(" "*(indent + 2), "Groups:")
         for g in self.groups:
@@ -301,12 +291,12 @@ class Group(Entity):
             print(" "*indent, "Organization:", self.organization)
             print(" "*indent, "Description:", self.description)
 
-        print(" "*indent, "Users:")
+        print(" "*(indent+2), "Users:")
         users = self.users
         for u in users:
-            u.show(indent + 2)
+            u.show(indent + 4)
 
-        print(" "*indent, "application keys:")
+        print(" "*(indent+2), "application keys:")
         for a in self.application_keys:
             app = ApplicationKey(self, json_data=a)
             app._show(indent + 4)
