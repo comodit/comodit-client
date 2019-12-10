@@ -1,4 +1,4 @@
-# Introduction
+# Introduction to ComodIT
 
 ComodIT client is both a Python library to interact with ComodIT's API and
 a Command-Line Interface (CLI) to ComodIT. The CLI actually relies on the
