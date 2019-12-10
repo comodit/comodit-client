@@ -10,12 +10,31 @@ EOF'''
 sh '''./scripts/build-rpm.sh'''
             }
         }
-        stage('SSH Transfer') {
+        stage('Deploy') {
             steps {
-                echo 'Testing..'
+                sshPublisher(publishers:
+                             [sshPublisherDesc(
+                                 configName: "${PUBLISH_NAME}",
+                                 transfers: [sshTransfer(
+                                     cleanRemote: false,
+                                     excludes: '',
+                                     execCommand: '',
+                                     execTimeout: 120000, 
+                                     flatten: false,
+                                     makeEmptyDirs: false,
+                                     noDefaultExcludes: false,
+                                     patternSeparator: '[, ]+',
+                                     remoteDirectory: "${REMOTE_PATH}",
+                                     remoteDirectorySDF: false,
+                                     removePrefix: "${SOURCE_PATH}",
+                                     sourceFiles: "${SOURCE_PATH}"*.rpm)],
+                                 usePromotionTimestamp: false,
+                                 useWorkspaceInPromotion: false,
+                                 verbose: false
+                             )])
             }
         }
-        stage('Deploy') {
+        stage('Update') {
             steps {
                 echo 'Deploying....'
             }
