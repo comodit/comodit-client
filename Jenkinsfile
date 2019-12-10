@@ -5,10 +5,12 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+sh '''cat <<'EOF' > config
+EOF'''
+sh '''./scripts/rpm-build.sh'''
             }
         }
-        stage('Test') {
+        stage('SSH Transfer') {
             steps {
                 echo 'Testing..'
             }
