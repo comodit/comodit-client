@@ -27,7 +27,7 @@ sh '''./scripts/build-rpm.sh'''
                                      remoteDirectory: "${REMOTE_PATH}",
                                      remoteDirectorySDF: false,
                                      removePrefix: "${SOURCE_PATH}",
-                                     sourceFiles: "${SOURCE_PATH}"*.rpm)],
+                                     sourceFiles: "${SOURCE_PATH}*.rpm")],
                                  usePromotionTimestamp: false,
                                  useWorkspaceInPromotion: false,
                                  verbose: false
