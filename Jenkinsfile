@@ -7,7 +7,7 @@ pipeline {
             steps {
 sh '''cat <<'EOF' > config
 EOF'''
-sh '''./scripts/rpm-build.sh'''
+sh '''./scripts/build-rpm.sh'''
             }
         }
         stage('SSH Transfer') {
