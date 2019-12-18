@@ -26,7 +26,8 @@ fi
 
 COMMIT=`git describe --tags --long --match "release-$VERSION" | awk -F"-" '{print $4}'`
 
-sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${ENV}-${NAME}.spec
+sed "s/#NAME#/${ENV}${NAME}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${ENV}-${NAME}.spec
+sed -i "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${ENV}-${NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${ENV}-${NAME}.spec
 sed -i "s/#COMMIT#/${COMMIT}/g" rpmbuild/SPECS/${ENV}-${NAME}.spec
 
