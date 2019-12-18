@@ -4,7 +4,7 @@
 set -e
 source config
 
-NAME="comodit-client"
+NAME="python2-comodit-client"
 
 git branch
 
