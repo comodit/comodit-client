@@ -48,7 +48,7 @@ tar -cvzf ${ENV}-${NAME}-${VERSION}-${RELEASE}.tar.gz * \
 
 mv ${ENV}-${NAME}-${VERSION}-${RELEASE}.tar.gz rpmbuild/SOURCES
 
-rpmbuild --define "_topdir $(pwd)/rpmbuild" -ba rpmbuild/SPECS/${NAME}.spec
+rpmbuild --define "_topdir $(pwd)/rpmbuild" -ba rpmbuild/SPECS/${ENV}-${NAME}.spec
 
 if [ -f "/usr/bin/mock" ]
 then
