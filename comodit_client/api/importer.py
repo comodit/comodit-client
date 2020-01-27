@@ -418,7 +418,7 @@ class Import(object):
 
         if plat:
             plats_folder = os.path.join(org_folder, "platforms")
-            self.import_distribution_if_not_exist(org, plats_folder, plat)
+            self.import_platform_if_not_exist(org, plats_folder, plat)
 
         apps_folder = os.path.join(org_folder, "applications")
         self.import_application_if_not_exist(org, apps_folder, apps)
