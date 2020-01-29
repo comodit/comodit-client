@@ -110,7 +110,7 @@ Available entities:
     parser.add_argument("--non-secret", dest = "non_secret", help = "filter to get only non secret setting", action = "store_true", default = False)
     parser.add_argument("--key", dest = "key", help = "filter to get setting by key", default = None)
     parser.add_argument("--obfuscate", dest = "obfuscate", help = "obfuscate all password", action = "store_true", default = False)
-    parser.add_argument("--wait", dest = "wait", help = "wait action run is finshed", action = "store_true", default = False)
+    parser.add_argument("--wait", dest = "wait", help = "wait action run is finished", action = "store_true", default = False)
     parser.add_argument("--timeout", dest = "timeout", help = "set timeout in second for wait", default = 0)
     parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor upon creation", default = None)
 

@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/30/2017
+.\"      Date: 01/29/2020
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "08/30/2017" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "01/29/2020" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -304,9 +304,34 @@ import PATH [\-\-force] [\-\-skip\-conflicts] [\-\-dry\-run] [\-\-with\-instance
 Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&. \-\-skip\-conflicts implies that data already present are ignored\&. With \-\-dry\-run, actions are not actually performed but displayed on standard output\&. \-\-with\-instances also imports the instances (WARNING: this may be dangerous if the exported organization still exists as several hosts then point to the same actual machines or VMs)\&.
 .RE
 .PP
-audit ORG_NAME
+audit\-logs ORG_NAME
 .RS 4
 Prints audit logs for this organization\&.
+.RE
+.PP
+agent\-logs ORG_NAME
+.RS 4
+Prints agent logs for this organization\&.
+.RE
+.PP
+notification\-logs ORG_NAME
+.RS 4
+Prints notification logs for this organization\&.
+.RE
+.PP
+notification\-channels ORG_NAME
+.RS 4
+Generic handling for notifications
+.RE
+.PP
+orchestrations ORG_NAME
+.RS 4
+Generic handling for orchestrations
+.RE
+.PP
+jobs ORG_NAME
+.RS 4
+Generic handling for jobs
 .RE
 .RE
 .sp
@@ -348,7 +373,40 @@ where NAME is organization\*(Aqs name\&.
 .sp -1
 .IP \(bu 2.3
 .\}
+application\-keys
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 groups
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+jobs
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+orchestration
 .RE
 .sp
 .RS 4
@@ -789,9 +847,24 @@ clone ORG_NAME ENV_NAME CLONE_NAME
 Creates a copy of given environment\&.
 .RE
 .PP
-audit ORG_NAME ENV_NAME
+audit_logs ORG_NAME ENV_NAME
 .RS 4
 Prints audit logs for this environment\&.
+.RE
+.PP
+notification_logs ORG_NAME ENV_NAME
+.RS 4
+Prints notification logs for this environment\&.
+.RE
+.PP
+agent_logs ORG_NAME ENV_NAME
+.RS 4
+Prints agent logs for this environment\&.
+.RE
+.PP
+import ORG_NAME PATH [\-\-dry\-run]
+.RS 4
+Environment is imported from given path\&. If Hosts, distributions, platforms and applications don\*(Aqt exists, There are automacly created but not updated [\-\-dry\-run] action are displayed but not applied
 .RE
 .RE
 .sp
@@ -849,6 +922,136 @@ where ORG is an organization\*(Aqs name and NAME is environment\*(Aqs name\&.
 settings
 .RE
 .RE
+.SS "Orchestrations"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+orchestrations
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions but more options are available\&.
+.PP
+The following specific actions are also available:
+.PP
+run ORG_NAME ENV_NAME HOST_NAME NAME
+.RS 4
+run the orchestration on host
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ORG
+.sp
+where ORG is the name of an organization\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ORG NAME
+.sp
+where ORG is the name of an organization and NAME is orchestration\*(Aqs name\&.
+.RE
+.RE
+.SS "Jobs"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+Jobs
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions but more options are available\&.
+.PP
+The following specific actions are also available:
+.PP
+run ORG_NAME JOB_NAME
+.RS 4
+run the job
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ORG
+.sp
+where ORG is the name of an organization\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ORG NAME
+.sp
+where ORG is the name of an organization and NAME is job\*(Aqs name\&.
+.RE
+.RE
 .SS "Hosts"
 .sp
 .it 1 an-trap
@@ -894,9 +1097,24 @@ provision ORG_NAME ENV_NAME HOST_NAME
 Provisions (i\&.e\&. instantiates and configures) given host\&. This action creates the instance of the host\&.
 .RE
 .PP
-audit ORG_NAME ENV_NAME HOST_NAME
+audit_logs ORG_NAME ENV_NAME HOST_NAME
 .RS 4
 Prints audit logs for this host\&.
+.RE
+.PP
+notification_logs ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Prints notification logs for this host\&.
+.RE
+.PP
+agent_logs ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Prints agent logs for this host\&.
+.RE
+.PP
+import ORG_NAME ENV_NAME PATH [\-\-dry\-run]
+.RS 4
+Host is imported from given path\&. If distribution, platform and applications don\*(Aqt exists, There are automatically created but not updated [\-\-dry\-run] action are displayed but not applied
 .RE
 .RE
 .sp
@@ -995,7 +1213,7 @@ distribution
 .sp -1
 .IP \(bu 2.3
 .\}
-live
+actions
 .RE
 .sp
 .RS 4
@@ -1206,6 +1424,17 @@ where ORG is an organization\*(Aqs name, ENV an environment name and NAME is a h
 .IP \(bu 2.3
 .\}
 settings
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+actions
 .RE
 .RE
 .SS "Distribution context"
@@ -1670,6 +1899,16 @@ where ID is a list of selectors\&.
 .RS 4
 .PP
 All generic actions\&.
+.PP
+tree ID [\-\-secret] [\-\-non\-secret] [\-\-key]
+.RS 4
+Get a tree of each setting is setted\&. You can filter the result with \-\-secret return only secret settings \-\-non\-secret return only non secret setting \-\-key option add filter on setting key
+.RE
+.PP
+impact ID
+.RS 4
+Show handlers triggered if setting changed
+.RE
 .RE
 .sp
 .it 1 an-trap
@@ -1751,7 +1990,7 @@ For entity: NAME
 where NAME is a flavor\*(Aqs name\&.
 .RE
 .RE
-.SS "Live Management"
+.SS "Actions Management"
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -1761,7 +2000,7 @@ where NAME is a flavor\*(Aqs name\&.
 \fBSelectors\fR
 .RS 4
 .PP
-hosts live
+hosts actions
 .RE
 .sp
 .it 1 an-trap
@@ -1788,6 +2027,16 @@ Updates service on machine i\&.e\&. stops it if it was started but expected to b
 .RE
 .PP
 update\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_RES_NAME
+.RS 4
+Updates file on machine\&.
+.RE
+.PP
+impact ORG_NAME ENV_NAME HOST_NAME APP_NAME _HANDLER_NAME Show actions and trigger of handler
+.RS 4
+Updates file on machine\&.
+.RE
+.PP
+run ORG_NAME ENV_NAME HOST_NAME APP_NAME _HANDLER_NAME execute handler
 .RS 4
 Updates file on machine\&.
 .RE
@@ -1997,6 +2246,11 @@ Provides a JSON description in a file (see \*(Aqadd\*(Aq and \*(Aqupdate\*(Aq ac
 Provides a JSON description via standard input (see \*(Aqadd\*(Aq and \*(Aqupdate\*(Aq actions)\&.
 .RE
 .PP
+\-\-stdin
+.RS 4
+input read from standard input
+.RE
+.PP
 \-d | \-\-default
 .RS 4
 Let driver add required files and/or settings to newly created platform\&.
@@ -2100,6 +2354,31 @@ Prints complete stack trace in case of error\&. Only error message is displayed 
 \-\-version
 .RS 4
 Prints version information\&.
+.RE
+.PP
+\-\-wait
+.RS 4
+wait action run is finished\&.
+.RE
+.PP
+\-\-secret
+.RS 4
+filter to get only secret setting\&.
+.RE
+.PP
+\-\-non\-secret
+.RS 4
+filter to get only non secret setting\&.
+.RE
+.PP
+\-\-key
+.RS 4
+filter to get setting by key\&.
+.RE
+.PP
+\-\-obfuscate
+.RS 4
+obfuscate all secret settings\&.
 .RE
 .SH "CONFIGURATION FILES"
 .PP
