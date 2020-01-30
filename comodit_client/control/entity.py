@@ -56,7 +56,7 @@ class EntityController(AbstractController):
         parameters["secret_only"] = options.secret
         parameters["no_secret"] = options.non_secret
         parameters["obfuscate"] = options.obfuscate
-        if options.key <> None:
+        if options.key is not None:
             parameters["key"] = options.key
 
         entities_list = self._list_entities(argv, parameters=parameters)
