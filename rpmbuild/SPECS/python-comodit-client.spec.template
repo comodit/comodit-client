@@ -1,0 +1,150 @@
+%define main_package comodit_client
+
+%global pkgname #NAME#
+
+%global _description %{expand:
+ComodIT automates the management of an Information System through the entire
+life-cycle. Integrating in particular the management of virtual machines
+(though an hypervisor), the provisioning, the configuration management,
+auditing and monitoring.}
+
+Name: python-%{pkgname}
+Version: #VERSION#
+Release: #RELEASE#%{?dist}
+Summary: ComodIT command line interface
+
+Group: System Environment/Shells
+License: MIT
+URL: http://www.comodit.com
+Vendor: Guardis
+Source0: %{name}-%{version}-#RELEASE#.tar.gz
+
+BuildArch: noarch
+
+Packager: Daniel Bartz <daniel.bartz@guardis.com>
+
+Obsoletes: cortex-client
+
+%description %_description
+
+%if 0%{?el < 8}
+%package -n python2-%{pkgname}
+Summary:        %{summary}
+Group:          Development/Languages
+BuildRequires: python2-setuptools
+%{?el8:BuildRequires: python2}
+%{?el7:BuildRequires: python-devel}
+%{?el8:BuildRequires: python2-devel}
+
+Requires: python2-six
+
+%if 0%{?el7}
+Requires: python >= 2.6
+Requires: python-argparse
+Requires: python-pycurl
+Requires: python-future
+Requires: python-configparser
+%endif
+
+%if 0%{?el8}
+Requires: python2 
+Requires: python3-configargparse
+Requires: python3-pycurl
+Requires: python3-future
+%endif
+
+BuildRoot:  %{_tmppath}/python2-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+%{?python_provide:%python_provide python2-%{pkgname}}
+%description -n python2-%{pkgname} %_description
+%endif
+
+%package -n python3-%{pkgname}
+Summary:        %{summary}
+Group:          Development/Languages
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-devel
+%{?el7:BuildRequires: python3-rpm-macros}
+%{?el8:BuildRequires: platform-python-devel}
+
+Requires: python3 >= 3.5
+Requires: python3-pycurl
+%{?el7:Requires: python36-future}
+%{?el8:Requires: python3-future}
+%{?el7:Requires: python36-six}
+%{?el8:Requires: python3-six}
+
+BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+%{?python_provide:%python_provide python3-%{pkgname}}
+%description -n python3-%{pkgname} %_description
+
+%prep
+%autosetup -c python-%{name}-%{version}-#RELEASE# 
+
+%build
+%py2_build
+%if 0%{?el8}
+/usr/bin/pathfix.py -pn -i %{__python2} setup.py
+/usr/bin/pathfix.py -pn -i %{__python2} comodit
+%endif
+
+%py3_build
+%if 0%{?el8}
+/usr/bin/pathfix.py -pn -i %{__python3} setup.py
+/usr/bin/pathfix.py -pn -i %{__python2} comodit
+%endif
+
+%install
+%py2_install
+%{__mkdir} -p %{buildroot}/etc/comodit-client/
+%{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
+%{__mkdir} -p %{buildroot}/etc/bash_completion.d/
+%{__mkdir} -p %{buildroot}/usr/share/man/man1/
+
+%{__cp} comodit %{buildroot}/usr/bin/comodit
+%{__cp} rpmbuild/etc/comodit-client/comodit-client.conf %{buildroot}/etc/comodit-client/
+%{__cp} templates/*.json %{buildroot}/usr/share/comodit-client/templates/
+%{__cp} auto_completion/comodit %{buildroot}/etc/bash_completion.d/comodit
+%{__cp} doc/comodit.1 %{buildroot}/usr/share/man/man1/comodit.1
+
+# Remove egg info
+%{__rm} -rf %{buildroot}/%{python2_sitelib}/comodit_client*.egg-info
+
+%py3_install
+%{__mkdir} -p %{buildroot}/etc/comodit-client/
+%{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
+%{__mkdir} -p %{buildroot}/etc/bash_completion.d/
+%{__mkdir} -p %{buildroot}/usr/share/man/man1/
+
+%{__cp} comodit %{buildroot}/usr/bin/comodit
+%{__cp} rpmbuild/etc/comodit-client/comodit-client.conf %{buildroot}/etc/comodit-client/
+%{__cp} templates/*.json %{buildroot}/usr/share/comodit-client/templates/
+%{__cp} auto_completion/comodit %{buildroot}/etc/bash_completion.d/comodit
+%{__cp} doc/comodit.1 %{buildroot}/usr/share/man/man1/comodit.1
+
+# Remove egg info
+%{__rm} -rf %{buildroot}/%{python3_sitelib}/comodit_client*.egg-info
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files -n python2-%{pkgname}
+%attr(755, root, root) /usr/bin/comodit
+%config(noreplace)/etc/comodit-client/comodit-client.conf
+/usr/share/comodit-client/templates/*.json
+/etc/bash_completion.d/comodit
+/usr/share/man/man1/comodit.1.gz
+%{python2_sitelib}/%{main_package}
+
+%files -n python3-%{pkgname}
+%attr(755, root, root) /usr/bin/comodit
+%config(noreplace)/etc/comodit-client/comodit-client.conf
+/usr/share/comodit-client/templates/*.json
+/etc/bash_completion.d/comodit
+/usr/share/man/man1/comodit.1.gz
+%{python3_sitelib}/%{main_package}
+
+%changelog
+* Fri Sep 29 2017 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
+- Update SPEC file
