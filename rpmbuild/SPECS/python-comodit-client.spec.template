@@ -4,11 +4,11 @@
 %define use_systemd = 1
 %endif
 
-%if 0%{?el < 8}
+%if 0%{?el < 8} || 0%{?fedora}
 %bcond_with python2
 %endif
 
-%global pkgname #NAME#
+%global pkgname comodit-client
 
 %global _description %{expand:
 ComodIT automates the management of an Information System through the entire
@@ -17,7 +17,7 @@ life-cycle. Integrating in particular the management of virtual machines
 auditing and monitoring.}
 
 Name: python-%{pkgname}
-Version: #VERSION#
+Version: #VERSION# 
 Release: #RELEASE#%{?dist}
 Summary: ComodIT command line interface
 
@@ -44,7 +44,7 @@ BuildRequires: python2-setuptools
 %{?el7:BuildRequires: python-devel}
 %{?el8:BuildRequires: python2-devel}
 %{?fedora:BuildRequires: python2-devel}
-
+%{?fedora:BuildRequires: python3-rpm-macros}
 Requires: python2-six
 
 %if 0%{?el7}
@@ -72,10 +72,10 @@ BuildRoot:  %{_tmppath}/python2-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 Summary:        %{summary}
 Group:          Development/Languages
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-devel
 %{?el7:BuildRequires: python3-rpm-macros}
 %{?el8:BuildRequires: platform-python-devel}
 %{?fedora:BuildRequires: platform-devel}
+%{?fedora:BuildRequires: python3-devel}
 
 Requires: python3 >= 3.5
 Requires: python3-pycurl
@@ -97,16 +97,16 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %build
 %if 0%{with python2}
 %py2_build
-%if 0%{?el8}
+%if 0%{?el8}0%{?fedora}
 /usr/bin/pathfix.py -pn -i %{__python2} setup.py
 /usr/bin/pathfix.py -pn -i %{__python2} comodit
 %endif
 %endif
 
 %py3_build
-%if 0%{?el8}
+%if 0%{?el8}0%{?fedora}
 /usr/bin/pathfix.py -pn -i %{__python3} setup.py
-/usr/bin/pathfix.py -pn -i %{__python2} comodit
+/usr/bin/pathfix.py -pn -i %{__python3} comodit
 %endif
 
 %install
