@@ -1,6 +1,6 @@
 %define main_package comodit_client
 
-%if 0{?fedora}
+%if 0%{?fedora}
 %define use_systemd = 1
 %endif
 
