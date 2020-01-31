@@ -1,5 +1,9 @@
 %define main_package comodit_client
 
+%if 0{?fedora}
+%define use_systemd = 1
+%endif
+
 %global pkgname #NAME#
 
 %global _description %{expand:
@@ -35,6 +39,7 @@ BuildRequires: python2-setuptools
 %{?el8:BuildRequires: python2}
 %{?el7:BuildRequires: python-devel}
 %{?el8:BuildRequires: python2-devel}
+%{?fedora:BuildRequires: python2-devel}
 
 Requires: python2-six
 
@@ -66,13 +71,16 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 %{?el7:BuildRequires: python3-rpm-macros}
 %{?el8:BuildRequires: platform-python-devel}
+%{?fedora:BuildRequires: platform-devel}
 
 Requires: python3 >= 3.5
 Requires: python3-pycurl
 %{?el7:Requires: python36-future}
 %{?el8:Requires: python3-future}
+%{?fedora:Requires: python3-future}
 %{?el7:Requires: python36-six}
 %{?el8:Requires: python3-six}
+%{?fedora:Requires: python3-six}
 
 BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
