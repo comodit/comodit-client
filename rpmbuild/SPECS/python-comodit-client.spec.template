@@ -145,6 +145,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %clean
 %{__rm} -rf %{buildroot}
 
+%if 0%{with python2}
 %files -n python2-%{pkgname}
 %attr(755, root, root) /usr/bin/comodit
 %config(noreplace)/etc/comodit-client/comodit-client.conf
@@ -152,8 +153,8 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 /etc/bash_completion.d/comodit
 /usr/share/man/man1/comodit.1.gz
 %{python2_sitelib}/%{main_package}
+%endif
 
-%if 0%{with python2}
 %files -n python3-%{pkgname}
 %attr(755, root, root) /usr/bin/comodit
 %config(noreplace)/etc/comodit-client/comodit-client.conf
@@ -161,7 +162,6 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 /etc/bash_completion.d/comodit
 /usr/share/man/man1/comodit.1.gz
 %{python3_sitelib}/%{main_package}
-%endif
 
 %changelog
 * Fri Sep 29 2017 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
