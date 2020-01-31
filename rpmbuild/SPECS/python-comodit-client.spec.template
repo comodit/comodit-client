@@ -4,6 +4,10 @@
 %define use_systemd = 1
 %endif
 
+%if 0%{?el < 8}
+%bcond_with python2
+%endif
+
 %global pkgname #NAME#
 
 %global _description %{expand:
@@ -31,7 +35,7 @@ Obsoletes: cortex-client
 
 %description %_description
 
-%if 0%{?el < 8}
+%if 0%{with python2}
 %package -n python2-%{pkgname}
 Summary:        %{summary}
 Group:          Development/Languages
@@ -91,10 +95,12 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %autosetup -c python-%{name}-%{version}-#RELEASE# 
 
 %build
+%if 0%{with python2}
 %py2_build
 %if 0%{?el8}
 /usr/bin/pathfix.py -pn -i %{__python2} setup.py
 /usr/bin/pathfix.py -pn -i %{__python2} comodit
+%endif
 %endif
 
 %py3_build
@@ -104,6 +110,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %endif
 
 %install
+%if 0%{with python2}
 %py2_install
 %{__mkdir} -p %{buildroot}/etc/comodit-client/
 %{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
@@ -118,6 +125,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 
 # Remove egg info
 %{__rm} -rf %{buildroot}/%{python2_sitelib}/comodit_client*.egg-info
+%endif
 
 %py3_install
 %{__mkdir} -p %{buildroot}/etc/comodit-client/
@@ -145,6 +153,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 /usr/share/man/man1/comodit.1.gz
 %{python2_sitelib}/%{main_package}
 
+%if 0%{with python2}
 %files -n python3-%{pkgname}
 %attr(755, root, root) /usr/bin/comodit
 %config(noreplace)/etc/comodit-client/comodit-client.conf
@@ -152,6 +161,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 /etc/bash_completion.d/comodit
 /usr/share/man/man1/comodit.1.gz
 %{python3_sitelib}/%{main_package}
+%endif
 
 %changelog
 * Fri Sep 29 2017 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
