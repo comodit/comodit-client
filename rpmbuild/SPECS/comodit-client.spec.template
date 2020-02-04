@@ -6,7 +6,7 @@
 %define __python /usr/bin/python2
 %endif
 
-Name: #NAME#
+Name: comodit-client
 Version: #VERSION#
 Release: #RELEASE#%{?dist}
 Summary: ComodIT command line interface
