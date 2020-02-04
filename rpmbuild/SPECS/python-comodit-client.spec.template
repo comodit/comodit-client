@@ -4,7 +4,7 @@
 %define use_systemd = 1
 %endif
 
-%if 0%{?el < 8} || 0%{?fedora}
+%if 0%{?el}<8 || 0%{?fedora}
 %bcond_with python2
 %endif
 
