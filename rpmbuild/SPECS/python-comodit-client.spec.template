@@ -35,7 +35,7 @@ Obsoletes: cortex-client
 
 %description %_description
 
-%if 0%{with python2}
+%if %{with python2}
 %package -n python2-%{pkgname}
 Summary:        %{summary}
 Group:          Development/Languages
@@ -95,7 +95,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %autosetup -c python-%{name}-%{version}-#RELEASE# 
 
 %build
-%if 0%{with python2}
+%if %{with python2}
 %py2_build
 %if 0%{?el8}0%{?fedora}
 /usr/bin/pathfix.py -pn -i %{__python2} setup.py
@@ -110,7 +110,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %endif
 
 %install
-%if 0%{with python2}
+%if %{with python2}
 %py2_install
 %{__mkdir} -p %{buildroot}/etc/comodit-client/
 %{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
@@ -145,7 +145,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %clean
 %{__rm} -rf %{buildroot}
 
-%if 0%{with python2}
+%if %{with python2}
 %files -n python2-%{pkgname}
 %attr(755, root, root) /usr/bin/comodit
 %config(noreplace)/etc/comodit-client/comodit-client.conf
