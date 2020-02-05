@@ -1,13 +1,3 @@
-%define main_package comodit_client
-
-%if 0%{?fedora}
-%define use_systemd = 1
-%endif
-
-%if 0%{?el}<8 || 0%{?fedora}
-%bcond_with python2
-%endif
-
 %global pkgname comodit-client
 
 %global _description %{expand:
@@ -16,8 +6,9 @@ life-cycle. Integrating in particular the management of virtual machines
 (though an hypervisor), the provisioning, the configuration management,
 auditing and monitoring.}
 
+
 Name: python-%{pkgname}
-Version: #VERSION# 
+Version: #VERSION#
 Release: #RELEASE#%{?dist}
 Summary: ComodIT command line interface
 
@@ -31,23 +22,25 @@ BuildArch: noarch
 
 Packager: Daniel Bartz <daniel.bartz@guardis.com>
 
-Obsoletes: cortex-client
+%define main_package comodit_client
 
 %description %_description
 
-%if %{with python2}
+%if 0%{?el7}0%{?fedora}
 %package -n python2-%{pkgname}
 Summary:        %{summary}
 Group:          Development/Languages
 BuildRequires: python2-setuptools
-%{?el8:BuildRequires: python2}
+
 %{?el7:BuildRequires: python-devel}
+%{?el8:BuildRequires: python2}
 %{?el8:BuildRequires: python2-devel}
 %{?fedora:BuildRequires: python2-devel}
-%{?fedora:BuildRequires: python3-rpm-macros}
+%{?fedora:BuildRequires: python-rpm-macros}
+
 Requires: python2-six
 
-%if 0%{?el7}
+%if 0%{?el<8}
 Requires: python >= 2.6
 Requires: python-argparse
 Requires: python-pycurl
@@ -72,6 +65,7 @@ BuildRoot:  %{_tmppath}/python2-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 Summary:        %{summary}
 Group:          Development/Languages
 BuildRequires:  python3-setuptools
+
 %{?el7:BuildRequires: python3-rpm-macros}
 %{?el8:BuildRequires: platform-python-devel}
 %{?fedora:BuildRequires: platform-devel}
@@ -80,10 +74,10 @@ BuildRequires:  python3-setuptools
 Requires: python3 >= 3.5
 Requires: python3-pycurl
 %{?el7:Requires: python36-future}
-%{?el8:Requires: python3-future}
-%{?fedora:Requires: python3-future}
 %{?el7:Requires: python36-six}
+%{?el8:Requires: python3-future}
 %{?el8:Requires: python3-six}
+%{?fedora:Requires: python3-future}
 %{?fedora:Requires: python3-six}
 
 BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -92,12 +86,12 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %description -n python3-%{pkgname} %_description
 
 %prep
-%autosetup -c python-%{name}-%{version}-#RELEASE# 
+%autosetup -c python-%{name}-%{version}-#RELEASE#
 
 %build
-%if %{with python2}
+%if 0%{?el7}0%{?fedora}
 %py2_build
-%if 0%{?el8}0%{?fedora}
+%if 0%{?fedora}
 /usr/bin/pathfix.py -pn -i %{__python2} setup.py
 /usr/bin/pathfix.py -pn -i %{__python2} comodit
 %endif
@@ -110,7 +104,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %endif
 
 %install
-%if %{with python2}
+%if 0%{?el7}0%{?fedora}
 %py2_install
 %{__mkdir} -p %{buildroot}/etc/comodit-client/
 %{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
@@ -145,7 +139,7 @@ BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -
 %clean
 %{__rm} -rf %{buildroot}
 
-%if %{with python2}
+%if 0%{?el7}0%{?fedora}
 %files -n python2-%{pkgname}
 %attr(755, root, root) /usr/bin/comodit
 %config(noreplace)/etc/comodit-client/comodit-client.conf
