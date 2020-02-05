@@ -4,7 +4,7 @@
 set -e
 source config
 
-NAME="comodit-client"
+NAME="python-comodit-client"
 
 if [ -z $1 ]
 then
