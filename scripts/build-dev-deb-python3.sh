@@ -37,10 +37,10 @@ DIST_DIR=${TMP_DIR}/dist
 python setup.py sdist --dist-dir=${DIST_DIR}
 mv ${DIST_DIR}/$NAME-$VERSION-$RELEASE.tar.gz $NAME\_$VERSION.$RELEASE.orig.tar.gz
 
-cp debian/rules-with-python3 debian/rules
-cp debian/control-withPython3 debian/control
+cp debian/python3-rules.template debian/rules
+cp debian/python3-control.template debian/control
 
-dpkg-buildpackage -i -I -rfakeroot
+dpkg-buildpackage -i -I -d -rfakeroot
 
 # Clean-up
 python setup.py clean
