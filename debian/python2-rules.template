@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+export PYBUILD_NAME=comodit-agent
+export PYBUILD_DISABLE=test
+
+%:
+	dh $@ --with python2  --buildsystem=pybuild
