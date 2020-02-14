@@ -32,19 +32,28 @@ echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
 
 debchange --newversion $VERSION-$RELEASE "$MESSAGE"
 
+mkdir -p ../builder-packages/python2
+
 # Build package
 DIST_DIR=${TMP_DIR}/dist
 python setup.py sdist --dist-dir=${DIST_DIR}
 mv ${DIST_DIR}/$NAME-$VERSION-$RELEASE.tar.gz $NAME\_$VERSION.$RELEASE.orig.tar.gz
 
 cp debian/python2-rules.template debian/rules
-cp debian/python22control.template debian/control
+cp debian/python2-control.template debian/control
 
 dpkg-buildpackage -i -I -d -rfakeroot
+
+mv ../*.deb ../builder-packages/python2
+mv ../*.dsc ../builder-packages/python2
+mv ../*.tar.gz ../builder-packages/python2
 
 # Clean-up
 python setup.py clean
 make -f debian/rules clean
 find . -name '*.pyc' -delete
+
 rm -rf *.egg-info
-rm -f $NAME\_$VERSION.$RELEASE.orig.tar.gz
+rm -rf ../*.changes
+rm -rf ../*.buildinfo
+rm -rf ../*.tar.gz

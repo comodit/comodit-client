@@ -32,6 +32,8 @@ echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
 
 debchange --newversion $VERSION-$RELEASE "$MESSAGE"
 
+mkdir -p ../builder-packages/python3
+
 # Build package
 DIST_DIR=${TMP_DIR}/dist
 python setup.py sdist --dist-dir=${DIST_DIR}
@@ -42,9 +44,16 @@ cp debian/python3-control.template debian/control
 
 dpkg-buildpackage -i -I -d -rfakeroot
 
+mv ../*.deb ../builder-packages/python3
+mv ../*.dsc ../builder-packages/python3
+mv ../*.tar.gz ../builder-packages/python3
+
 # Clean-up
 python setup.py clean
 make -f debian/rules clean
 find . -name '*.pyc' -delete
+
 rm -rf *.egg-info
-rm -f $NAME\_$VERSION.$RELEASE.orig.tar.gz
+rm -rf ../*.changes
+rm -rf ../*.buildinfo
+rm -rf ../*.tar.gz
