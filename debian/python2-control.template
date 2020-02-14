@@ -5,7 +5,6 @@ Priority: optional
 Build-Depends: debhelper (>= 9), dh-python, python-dev, python-setuptools
 Standards-Version: 3.9.1.0
 X-Python-Version: >= 2.6
-X-Python3-Version: >= 3.2
 
 Package: python2-comodit-client
 Architecture: all
