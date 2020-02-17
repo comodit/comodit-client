@@ -25,8 +25,8 @@ do
   sudo HOME=/home/$USERNAME DIST=$tab ARCH=amd64 /usr/sbin/cowbuilder --build ../builder-packages/python2/comodit-client*.dsc 
   sudo HOME=/home/$USERNAME DIST=$tab ARCH=i386 /usr/sbin/cowbuilder --build ../builder-packages/python2/comodit-client*.dsc
 
-  sudo HOME=/home/$USERNAME DIST=$tab ARCH=amd64 /usr/sbin/cowbuilder --build ../builder-packages/python3/comodit-agent*.dsc 
-  sudo HOME=/home/$USERNAME DIST=$tab ARCH=i386 /usr/sbin/cowbuilder --build ../builder-packages/python3/comodit-agent*.dsc
+  sudo HOME=/home/$USERNAME DIST=$tab ARCH=amd64 /usr/sbin/cowbuilder --build ../builder-packages/python3/comodit-client*.dsc 
+  sudo HOME=/home/$USERNAME DIST=$tab ARCH=i386 /usr/sbin/cowbuilder --build ../builder-packages/python3/comodit-client*.dsc
   
   mkdir -p /home/$USERNAME/$PACKAGES/$tab-amd64 /home/$USERNAME/$PACKAGES/$tab-i386
 
