@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-export PYBUILD_NAME=comodit-agent
+export PYBUILD_NAME=comodit-client
 export PYBUILD_DISABLE=test
 
 %:
