@@ -2,7 +2,7 @@ Source: comodit-client
 Maintainer: Sebastien CAPS <sebastien.caps@guardis.com>
 Section: misc
 Priority: optional
-Build-Depends: debhelper (>= 9), dh-python, python-dev, python-setuptools
+Build-Depends: debhelper (>= 9), dh-python, python-all-dev, python-setuptools
 Standards-Version: 3.9.1.0
 X-Python-Version: >= 2.6
 
