@@ -98,7 +98,7 @@ class Client(object):
     access to ComodIT entities.
     """
 
-    def __init__(self, endpoint, username, password, token, insecure_upload = False):
+    def __init__(self, endpoint, username, password, token, insecure_upload = False, mfa = None):
         """
         Client constructor. In order to create a client, the URL to a ComodIT
         server's REST API (e.g. http://my.comodit.com/api) must be provided, in
@@ -114,7 +114,7 @@ class Client(object):
         @type token: String
         """
 
-        self._http_client = HttpClient(endpoint, username, password, token, insecure_upload)
+        self._http_client = HttpClient(endpoint, username, password, token, insecure_upload, mfa)
         self._organizations = OrganizationCollection(self)
         self._flavors = FlavorCollection(self)
         self._app_store = AppStoreCollection(self)

@@ -41,8 +41,8 @@ class ComodITConsole(object):
             for line in f:
                 self.execute_line(line)
 
-    def connect(self, api_url, username, password, insecure = False):
-        self._cmds = Commands(Client(api_url, username, password, insecure))
+    def connect(self, api_url, username, password, insecure = False, mfa = None):
+        self._cmds = Commands(Client(api_url, username, password, insecure, mfa))
         self._cmds.set_debug(self._debug)
 
     def execute_line(self, line):

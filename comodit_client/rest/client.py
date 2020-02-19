@@ -21,11 +21,12 @@ from collections import OrderedDict
 
 
 class HttpClient(object):
-    def __init__(self, endpoint, username, password, token, insecure_upload = False):
+    def __init__(self, endpoint, username, password, token, insecure_upload = False, mfa = None):
         self.endpoint = endpoint.rstrip('/')
         self.username = username
         self.password = password
         self.token = token
+        self.mfa = mfa
         self._insecure_upload = insecure_upload
 
     def create(self, entity, item = None, parameters = {}, decode = True):
@@ -104,12 +105,21 @@ class HttpClient(object):
                        "X-ComodIT-AppKey": self._get_app_key_field(),
                     }
         else:
-            return {
-                       "Authorization": self._get_basic_authorization_field(),
-                    }
+            if self._is_mfa_enabled():
+                return {
+                           "Authorization": self._get_basic_authorization_field(),
+                           "X-ComodIT-TotpToken": self._get_mfa_field(),
+                        }
+            else :
+                return {
+                    "Authorization": self._get_basic_authorization_field(),
+                }
 
     def _is_token_available(self):
         return self.token
+
+    def _is_mfa_enabled(self):
+        return self.mfa
 
     def _get_basic_authorization_field(self):
         s = six.b(self.username + ":" + self.password)
@@ -122,6 +132,9 @@ class HttpClient(object):
 
     def _get_app_key_field(self):
         return self.token
+
+    def _get_mfa_field(self):
+        return self.mfa
 
     def _urlopen(self, request):
         try:

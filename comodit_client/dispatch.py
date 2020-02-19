@@ -132,6 +132,7 @@ Available entities:
     parser.add_argument("--api", dest = "api", help = "endpoint for the API", default = None)
     parser.add_argument("--user", dest = "username", help = "username on comodit server", default = None)
     parser.add_argument("--pass", dest = "password", help = "password on comodit server", default = None)
+    parser.add_argument("--mfa", dest = "mfa", help = "mfa on comodit server", default = None)
     parser.add_argument("--token", dest = "token", help = "application key token", default = None)
     parser.add_argument("--templates", dest = "templates_path", help = "directory containing JSON templates", default = config.templates_path)
     parser.add_argument("--profile", dest = "profile_name", help = "Name of profile to use", default = None)
@@ -205,7 +206,7 @@ def _parse(argv):
         print("You have to provider either a username and a password or a token")
         exit(-1)
 
-    client = Client(api, config.options.username, config.options.password, config.options.token, config.options.insecure)
+    client = Client(api, config.options.username, config.options.password, config.options.token, config.options.insecure, config.options.mfa)
 
     entity_args = [] + config.options.subentities
 

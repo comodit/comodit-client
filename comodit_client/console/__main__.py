@@ -27,7 +27,6 @@ if __name__ == '__main__':
     parser.add_argument('-d', "--debug", dest = "debug", help = "Tells the client to work in debug mode, causing every exception to be considered as an error", action = "store_true", default = False)
 
     options = parser.parse_known_args(args = sys.argv)[0]
-
     # Use profile data to configure connection.
     if not options.api is None:
         api = options.api
@@ -51,7 +50,6 @@ if __name__ == '__main__':
         raise Exception("No credentials found")
 
     console = ComodITConsole(options.debug)
-    console.connect(api, username, password, options.insecure)
     if options.file is None:
         console.interact()
     else:
