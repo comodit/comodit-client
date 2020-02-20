@@ -14,3 +14,12 @@ class ApiException(Exception):
 
     def __str__(self):
         return "Error ({}): {}".format(self.code, self.message)
+
+
+class RetryApiException(Exception):
+    def __init__(self, message, code):
+        self.message = message
+        self.code = code
+
+    def __str__(self):
+        return "Error ({}): {}".format(self.code, self.message)

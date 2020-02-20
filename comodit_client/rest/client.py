@@ -16,7 +16,7 @@ import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error,
 import comodit_client.util.fileupload as fileupload
 from urllib.error import HTTPError
 from comodit_client.util import urllibx
-from comodit_client.rest.exceptions import ApiException
+from comodit_client.rest.exceptions import ApiException, RetryApiException
 from collections import OrderedDict
 
 
@@ -28,6 +28,7 @@ class HttpClient(object):
         self.token = token
         self.mfa = mfa
         self._insecure_upload = insecure_upload
+        self.retryErrorCount = 0
 
     def create(self, entity, item = None, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
@@ -43,7 +44,11 @@ class HttpClient(object):
             # Fix regarding Nginx not supporting empty requests with no
             # Content-Length
             req.add_header("Content-Length", 0)
-        raw = self._urlopen(req)
+        try:
+            raw = self._urlopen(req)
+        except RetryApiException:
+            self.create(entity, item, parameters, decode)
+
         if decode:
             try:
                 return self._decode_and_keep_key_order(raw)
@@ -61,7 +66,11 @@ class HttpClient(object):
     def read(self, entity, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
         req = self._new_request(url, "GET")
-        raw = self._urlopen(req)
+        try:
+            raw = self._urlopen(req)
+        except RetryApiException:
+            self.read(entity, parameters, decode)
+
         if decode:
             return self._decode_and_keep_key_order(raw)
         else:
@@ -76,7 +85,11 @@ class HttpClient(object):
             # Fix regarding Nginx not supporting empty requests with no
             # Content-Length
             req.add_header("Content-Length", 0)
-        raw = self._urlopen(req)
+        try:
+            raw = self._urlopen(req)
+        except RetryApiException:
+            self.update(entity, item, parameters, decode)
+
         if decode:
             return self._decode_and_keep_key_order(raw)
         else:
@@ -85,7 +98,11 @@ class HttpClient(object):
     def delete(self, entity, parameters = {}):
         url = self._encode_url(entity, parameters)
         req = self._new_request(url, "DELETE")
-        self._urlopen(req)
+
+        try:
+            self._urlopen(req)
+        except RetryApiException:
+            self.delete(entity, parameters)
 
     def _encode_url(self, entity, parameters):
         url = self.endpoint + "/" + urllib.parse.quote(entity, "/%")
@@ -138,8 +155,15 @@ class HttpClient(object):
 
     def _urlopen(self, request):
         try:
-            return urllib.request.urlopen(request)
+            result = urllib.request.urlopen(request)
+            self.retryErrorCount = 0
+            return result
         except HTTPError as err:
+            if self.retryErrorCount < 3 and err.code == 401 and self._is_mfa_enabled():
+                self.retryErrorCount +=1
+                self.mfa = input("[%s] Invalid credential please verify mfa: " % self.retryErrorCount)
+                raise RetryApiException("Invalid credential", err.code)
+
             err_content = err.read().decode('utf-8', errors = 'ignore')
             try:
                 data = json.loads(err_content)

@@ -50,6 +50,7 @@ if __name__ == '__main__':
         raise Exception("No credentials found")
 
     console = ComodITConsole(options.debug)
+    console.connect(api, username, password, options.insecure)
     if options.file is None:
         console.interact()
     else:
