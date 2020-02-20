@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/29/2020
+.\"      Date: 02/20/2020
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "01/29/2020" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "02/20/2020" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,7 +31,7 @@
 comodit \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/comodit\ 'u
-/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-with\-instances] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-token\ TOKEN] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {sel} [sel\ \&...] {action} [id\ \&...] [\&...]
+/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-with\-instances] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-mfa\ MFA] [\-\-token\ TOKEN] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {sel} [sel\ \&...] {action} [id\ \&...] [\&...]
 .SH "INTRODUCTION"
 .PP
 This section briefly describes ComodIT and the way you will, in general, interact with the client\&.
@@ -2329,6 +2329,11 @@ Sets the user name to use for authentication\&.
 \-\-pass PASSWORD
 .RS 4
 Sets the password to use for authentication\&.
+.RE
+.PP
+\-\-mfa MFA
+.RS 4
+Sets the token of mfa to use for authentication\&.
 .RE
 .PP
 \-\-token TOKEN
