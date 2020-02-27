@@ -47,7 +47,7 @@ class HttpClient(object):
         try:
             raw = self._urlopen(req)
         except RetryApiException:
-            self.create(entity, item, parameters, decode)
+            return self.create(entity, item, parameters, decode)
 
         if decode:
             try:
@@ -69,7 +69,7 @@ class HttpClient(object):
         try:
             raw = self._urlopen(req)
         except RetryApiException:
-            self.read(entity, parameters, decode)
+            return self.read(entity, parameters, decode)
 
         if decode:
             return self._decode_and_keep_key_order(raw)
@@ -88,7 +88,7 @@ class HttpClient(object):
         try:
             raw = self._urlopen(req)
         except RetryApiException:
-            self.update(entity, item, parameters, decode)
+            return self.update(entity, item, parameters, decode)
 
         if decode:
             return self._decode_and_keep_key_order(raw)
