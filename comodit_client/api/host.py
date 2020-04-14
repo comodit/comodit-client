@@ -1411,6 +1411,9 @@ class Host(HasSettings):
 
         @param orchestration_name: The name of orchestration.
         @type orchestration_name: string
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
         """
         return self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = True)
 
@@ -1423,7 +1426,7 @@ class Host(HasSettings):
 
         """
         return OrchestrationCollection(self.client, self.url + "orchestrations")
-        
+
     def live_restart_service(self, app_name, svc_name):
         """
         Requests the restart of a service on provisioned machine. This may, for

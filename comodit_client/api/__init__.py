@@ -338,7 +338,10 @@ class Client(object):
         """
 
         return self.__get_unresolved_org(org_name).jobs()
-    
+
+    def __get_unresolved_orchestration(self, org_name, name):
+        return self.orchestrations(org_name).new(name)
+
     def orchestrations(self, org_name):
         """
         Instantiates the collection of orchestrations associated to named
@@ -350,6 +353,47 @@ class Client(object):
         """
 
         return self.__get_unresolved_org(org_name).orchestrations()
+
+    def orchestration(self, org_name, name):
+        """
+        Instantiates the collection of orchestrations associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{Orchestration}
+        """
+
+        return self.orchestrations(org_name).get(name)
+
+
+    def orchestrationContexts(self, org_name, orch_name):
+        """
+        Instantiates the collection of orchestration contexts associated to named
+        organization and orchestration.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{OrchestrationContextCollection}
+        """
+
+        return self.orchestration(org_name, orch_name).contexts()
+
+    def orchestrationContext(self, org_name, orch_name, context_id):
+        """
+        Instantiates the orchestration context associated to named
+        organization, orchestration and id of context.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @param orch_name: The name of the orchestration owning requested collection.
+        @type orch_name: string
+        @param context_id: The id of orchestrationContext
+        @type org_name: string
+        @rtype: L{OrchestrationContext}
+        """
+
+        return self.orchestration(org_name, orch_name).get_context(context_id)
 
     def notifications(self, org_name):
         """

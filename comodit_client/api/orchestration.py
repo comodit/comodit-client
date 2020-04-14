@@ -11,6 +11,7 @@ from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.rest.exceptions import ApiException
+from comodit_client.api.OrchestrationContext import OrchestrationContextCollection
 
 
 
@@ -53,24 +54,13 @@ class OrchestrationCollection(Collection):
         orchestration = self.new(name, description)
         orchestration.create()
         return orchestration
-    
-    def get(self, identifier = "", parameters = {}, org_name = None):
-        """
-        Get orchestration by name for given organization
 
-        @return: Fetched orchestration.
-        @rtype: L{OrchestrationCollection}
-        """
-        return super(OrchestrationCollection, self).get(identifier, parameters)
-    
-    
 
 class Orchestration(Entity):
     """
     Orchestration entity representation. A orchestration is a sequence of service action and handler to execute on host
 
     """
-
     @property
     def organization(self):
         """
@@ -100,6 +90,27 @@ class Orchestration(Entity):
         @type applicationOperations: list of ApplicationOperation
         """
         return self._set_list_field("applicationsOperations", applicationOperations)
+
+    def contexts(self):
+        """
+        Instantiates the collection of hosts associated to this environment.
+
+        @return: The collection of hosts associated to this environment.
+        @rtype: L{HostCollection}
+        """
+
+        return OrchestrationContextCollection(self.client, self.url + "contexts/")
+
+    def get_context(self, id):
+        """
+        Fetches a host of this environment given its name.
+
+        @param name: The name of the host.
+        @type name: string
+        @rtype: L{Host}
+        """
+
+        return self.contexts().get(id)
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)

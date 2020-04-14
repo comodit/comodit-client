@@ -30,10 +30,10 @@ class ActionController(AbstractController):
 
     def _help(self, argv):
         self._print_doc()
-        
+
     def _get_host(self, argv):
         return self._client.hosts(argv[0], argv[1]).get(argv[2])
-        
+
     def _run(self, argv):
         if len(argv) < 4:
             raise ArgumentException("Wrong number of arguments")
@@ -44,18 +44,21 @@ class ActionController(AbstractController):
             sys.exit("Invalid format for timeout")
 
         host = self._get_host(argv)
+        org = argv[0]
         orch_name = argv[3]
-        changes = host.run_orchestration(orch_name)
+
+        result = host.run_orchestration(orch_name)
+
 
         if self._config.options.wait:
-            for change in changes:
-                host.wait_for_change_terminated(str(change), time_out)
-                    
+            context = self._client.orchestrationContext(org, orch_name, result["uuid"])
+            context.wait_finished(time_out, self._config.options.debug)
+
     def _print_action_completions(self, param_num, argv):
         if param_num < 4:
             self._print_host_completions(param_num, argv)
-        
-                
+
+
     def _print_host_completions(self, param_num, argv):
         if param_num == 0:
             completions.print_entity_identifiers(self._client.organizations().list())
@@ -66,20 +69,20 @@ class ActionController(AbstractController):
         elif len(argv) > 2 and param_num == 3:
             host = self._get_host(argv)
             completions.print_entity_identifiers(host.get_orchestrations().list())
-            
+
     def _print_orchestration_completions(self, param_num, argv):
         if param_num == 0:
             completions.print_entity_identifiers(self._client.organizations().list())
         elif len(argv) > 0 and param_num == 1:
             completions.print_entity_identifiers(self._client.orchestrations(argv[0]).list())
-    
+
     def _impact(self, argv):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments")
 
         orch_name = argv[1]
         self._client.orchestrations(argv[0]).get(orch_name).show()
-        
+
     def _impact_doc(self):
         return ActionDoc("impact", "<org_name> <action_name>", """
         get impact action.""")
