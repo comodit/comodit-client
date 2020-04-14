@@ -93,21 +93,21 @@ class Orchestration(Entity):
 
     def contexts(self):
         """
-        Instantiates the collection of hosts associated to this environment.
+        Instantiates the collection of orchestrationContext associated to this orchestration.
 
-        @return: The collection of hosts associated to this environment.
-        @rtype: L{HostCollection}
+        @return: The collection of orchestration context associated to this orchestration.
+        @rtype: L{OrchestrationContextCollection}
         """
 
         return OrchestrationContextCollection(self.client, self.url + "contexts/")
 
     def get_context(self, id):
         """
-        Fetches a host of this environment given its name.
+        Fetches a orchestration context of this orchestration given its id.
 
-        @param name: The name of the host.
+        @param name: The id of the orchestration context.
         @type name: string
-        @rtype: L{Host}
+        @rtype: L{OrchestrationContext}
         """
 
         return self.contexts().get(id)
