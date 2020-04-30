@@ -8,7 +8,7 @@ X-Python3-Version: >= 3.2
 
 Package: python3-comodit-client
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3-pycurl
+Depends: ${misc:Depends}, ${python3:Depends}, python3-pycurl, python3-future
 Replaces: cortex-client
 Description: ComodIT command line client and python library
  ComodIT automates the management of an Information System through the entire
