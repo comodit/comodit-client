@@ -35,7 +35,7 @@ echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
 
 # Build package
 DIST_DIR=${TMP_DIR}/dist
-python setup.py sdist --dist-dir=${DIST_DIR}
+python2 setup.py sdist --dist-dir=${DIST_DIR}
 mv ${DIST_DIR}/$NAME-$VERSION-$RELEASE.tar.gz $NAME\_$VERSION.$RELEASE.orig.tar.gz
 
 cp debian/python2-rules.template debian/rules
@@ -48,7 +48,7 @@ mv ../*.dsc ../builder-packages/python2
 mv ../*.tar.gz ../builder-packages/python2
 
 # Clean-up
-python setup.py clean
+python2 setup.py clean
 make -f debian/rules clean
 find . -name '*.pyc' -delete
 
