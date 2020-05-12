@@ -12,6 +12,7 @@ from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.OrchestrationContext import OrchestrationContextCollection
+from comodit_client.api.hostGroup import OrderedHostGroup
 
 
 
@@ -70,6 +71,16 @@ class Orchestration(Entity):
         """
 
         return self._get_field("organization")
+
+    @property
+    def ordered_hostgroups(self):
+        """
+        List of hostgroups ordered by position
+
+        @rtype: list of ordered_hostgroups L{OrderedHostGroup}
+        """
+
+        return self._get_list_field("orderedHostGroup", lambda x: OrderedHostGroup(x))
     
     @property
     def applicationOperations(self):
@@ -116,9 +127,25 @@ class Orchestration(Entity):
         print(" "*indent, "Name:", self.name)
         print(" "*indent, "Description:", self.description)
         print(" "*indent, "Organization:", self.organization)
+        print(" "*indent, "Actions:")
         for a in self.applicationOperations:
             a._show(indent + 2)
-            
+        print(" "*indent, "Hostgroups:")
+
+        #sort by position
+        self.ordered_hostgroups.sort(key=lambda x: x.position)
+        for h in self.ordered_hostgroups:
+            h._show(indent + 2)
+
+    def show_steps(self, indent = 0):
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Organization:", self.organization)
+        print(" "*indent, "Steps:")
+        for a in self.applicationOperations:
+            a._show(indent + 2)
+
+
     def clone(self, clone_name):
         """
         Requests the cloning of remote entity. Clone will have given name.
@@ -137,7 +164,15 @@ class Orchestration(Entity):
         except ApiException as e:
             raise PythonApiException("Unable to clone orchestration: " + e.message)
 
-    
+    def run(self):
+        """
+        Requests to run orchestration on hostgroups
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_run", decode = True)
+
 class ApplicationOperation(JsonWrapper):
     """
         ApplicationOperation of orchestration

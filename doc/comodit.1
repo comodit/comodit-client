@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/20/2020
+.\"      Date: 04/27/2020
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "02/20/2020" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "04/27/2020" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -333,6 +333,16 @@ jobs ORG_NAME
 .RS 4
 Generic handling for jobs
 .RE
+.PP
+hostgroups ORG_NAME
+.RS 4
+Generic handling for hostgroups
+.RE
+.PP
+orchestrations\-logs ORG_NAME
+.RS 4
+Generic handling for history of orchestrations
+.RE
 .RE
 .sp
 .it 1 an-trap
@@ -407,6 +417,17 @@ jobs
 .IP \(bu 2.3
 .\}
 orchestration
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+hostgroups
 .RE
 .sp
 .RS 4
@@ -947,9 +968,9 @@ All generic actions but more options are available\&.
 .PP
 The following specific actions are also available:
 .PP
-run ORG_NAME ENV_NAME HOST_NAME NAME
+action ORG_NAME ORCH_NAME
 .RS 4
-run the orchestration on host
+Give some action on orchestration
 .RE
 .RE
 .sp
@@ -985,6 +1006,26 @@ where ORG is the name of an organization\&.
 For entity: ORG NAME
 .sp
 where ORG is the name of an organization and NAME is orchestration\*(Aqs name\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBAccepted selectors\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+actions
 .RE
 .RE
 .SS "Jobs"
@@ -1050,6 +1091,150 @@ where ORG is the name of an organization\&.
 For entity: ORG NAME
 .sp
 where ORG is the name of an organization and NAME is job\*(Aqs name\&.
+.RE
+.RE
+.SS "Hostgroups"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+Hostgroups
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ORG
+.sp
+where ORG is the name of an organization\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ORG NAME
+.sp
+where ORG is the name of an organization and NAME is hostgroup\*(Aqs name\&.
+.RE
+.RE
+.SS "Actions"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+Actions
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+execute or show impact of orchestration
+.PP
+impact ORG_NAME ORCHESTRATION_NAME
+.RS 4
+show actions of orchestration
+.RE
+.PP
+run ORG_NAME ORCHESTRATION_NAME
+.RS 4
+run the orchestration
+.RE
+.PP
+pause ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+pause running orchestration
+.RE
+.PP
+stop ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+stop running orchestration
+.RE
+.PP
+resume ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+resume paused orchestration
+.RE
+.PP
+restart ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+restart orchestration in error\&.
+.RE
+.RE
+.SS "Actions"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+Orchestrations\-logs
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBOrchestrations-logs\fR
+.RS 4
+.PP
+show history of orchestration execution
+.PP
+list ORG_NAME ORCHESTRATION_NAME
+.RS 4
+list all execution orchestration\&. Show identifier execution and when it\*(Aqs started
+.RE
+.PP
+show ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+show detail of execution\&.
 .RE
 .RE
 .SS "Hosts"
@@ -1236,6 +1421,17 @@ compliance
 .IP \(bu 2.3
 .\}
 settings
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+actions
 .RE
 .RE
 .SS "Instance"
@@ -2016,7 +2212,7 @@ install\-package ORG_NAME ENV_NAME HOST_NAME APP_NAME PACKAGE_RES_NAME
 (Re)installs package on machine\&.
 .RE
 .PP
-restart\-service ORG_NAME ENV_NAME HOST_NAME APP_NAME SERVICE_RES_NAME
+restart\-service ORG_NAME ENV_NAME HOST_NAME [\-\-skip\-error] APP_NAME SERVICE_RES_NAME \-\-skip\-error skip host in error
 .RS 4
 Re\-starts service on machine\&.
 .RE

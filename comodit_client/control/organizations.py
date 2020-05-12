@@ -19,12 +19,13 @@ from comodit_client.control.settings import OrganizationSettingsController
 from . import completions
 from comodit_client.control.notification_log import NotificationLogHelper
 from comodit_client.control.jobs import JobsController
+from comodit_client.control.hostGroup import HostGroupController
 from comodit_client.control.orchestrations import OrchestrationsController
 from comodit_client.control.notifications import NotificationsController
 from comodit_client.control.application_keys import ApplicationKeysController
 from comodit_client.control.log import OtherLogHelper
 from comodit_client.control.log import AgentLogHelper
-
+from comodit_client.control.orchestration_context import OrchestrationContextController
 
 class OrganizationsController(RootEntityController):
 
@@ -62,6 +63,8 @@ class OrganizationsController(RootEntityController):
         self._register_subcontroller(["notification-channels"], NotificationsController())
         self._register_subcontroller(["application-keys"], ApplicationKeysController())
         self._register_subcontroller(["orchestrations"], OrchestrationsController())
+        self._register_subcontroller(["orchestrations-logs"], OrchestrationContextController())
+        self._register_subcontroller(["hostgroups"], HostGroupController())
 
         self._doc = "Organizations handling."
 

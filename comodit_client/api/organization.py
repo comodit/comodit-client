@@ -22,6 +22,7 @@ from comodit_client.api.notification import NotificationCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
+from comodit_client.api.hostGroup import HostGroupCollection
 from comodit_client.api.group import GroupCollection
 from comodit_client.api.group import Group
 from comodit_client.api.group import GroupOrganizationTreeCollection
@@ -228,6 +229,16 @@ class Organization(HasSettings):
         """
 
         return OrchestrationCollection(self.client, self.url + "orchestrations/")
+
+    def host_groups(self):
+        """
+        Instantiates the collection of hostGroups associated to this organization.
+
+        @return: The collection of hostGroups associated to this organization.
+        @rtype: L{HostGroupCollection}
+        """
+
+        return HostGroupCollection(self.client, self.url + "hostgroups/")
 
     def notifications(self):
         """

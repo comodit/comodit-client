@@ -109,6 +109,7 @@ Available entities:
     parser.add_argument("--secret", dest = "secret", help = "filter to get only secret setting", action = "store_true", default = False)
     parser.add_argument("--non-secret", dest = "non_secret", help = "filter to get only non secret setting", action = "store_true", default = False)
     parser.add_argument("--key", dest = "key", help = "filter to get setting by key", default = None)
+    parser.add_argument("--status", dest = "status", help = "filter to get orchestrations-logs by status", default = None)
     parser.add_argument("--obfuscate", dest = "obfuscate", help = "obfuscate all password", action = "store_true", default = False)
     parser.add_argument("--wait", dest = "wait", help = "wait action run is finished", action = "store_true", default = False)
     parser.add_argument("--timeout", dest = "timeout", help = "set timeout in second for wait", default = 0)
@@ -117,6 +118,7 @@ Available entities:
     parser.add_argument("--skip-chown", dest = "skip_chown", help = "Do not chown files on render tree", action = "store_true", default = False)
     parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "Do not chmod files on render tree", action = "store_true", default = False)
 
+    parser.add_argument("--skip-error", dest = "skip_error", help = "Skip hosts in error on orchestration", action = "store_true", default = False)
     parser.add_argument("--skip-conflict", dest = "skip_conflict", help = "Skip conflicts on import", action = "store_true", default = False)
     parser.add_argument("--update-existing", dest = "update_existing", help = "Updates existing entities on import", action = "store_true", default = False)
     parser.add_argument("--dry-run", dest = "dry_run", help = "Dry-run for import of organization", action = "store_true", default = False)

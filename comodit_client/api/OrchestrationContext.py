@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Provides the classes related to job entity: L{OrchestrationContext}
+Provides the classes related to orchestration context entity: L{OrchestrationContext}
 and L{OrchestrationContextCollection}.
 """
 from __future__ import print_function
@@ -8,6 +8,8 @@ from __future__ import absolute_import
 
 from .collection import Collection
 from comodit_client.api.entity import Entity
+from comodit_client.util.json_wrapper import JsonWrapper
+
 import time
 
 
@@ -124,6 +126,16 @@ class OrchestrationContext(Entity):
        """
         return self._get_field("finished")
 
+    @property
+    def host_queues(self):
+        """
+        List of host's where orchestration is applied.
+
+        @rtype: list of hosts queue L{HostQueue}
+        """
+
+        return self._get_list_field("hostQueues", lambda x: HostQueues(x))
+
     def _show(self, indent = 0):
         print(" "*indent, "organization :", self.organization)
         print(" "*indent, "Orchestration :", self.orchestration)
@@ -131,6 +143,11 @@ class OrchestrationContext(Entity):
         print(" "*indent, "started:", self.started)
         print(" "*indent, "status:", self.status)
         print(" "*indent, "finished:", self.finished)
+        for h in self.host_queues:
+            h._show(indent + 2)
+
+    def show_identifier(self):
+       print(self.started, "(id: ", self.identifier+")" , self.status)
 
     def wait_finished(self, time_out = 0, show=False):
         """
@@ -150,3 +167,136 @@ class OrchestrationContext(Entity):
                 self._show(4)
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
+
+    def pause(self):
+        """
+        Requests to pause orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_pause", decode = True)
+
+    def stop(self):
+        """
+        Requests to stop orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_stop", decode = True)
+
+    def restart(self, skip_error = False):
+        """
+        Requests to restart orchestration in error
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        parameters = {}
+        parameters["skipError"] = skip_error
+
+        return self._http_client.update(self.url + "_restart", parameters, decode = True)
+
+    def resume(self):
+        """
+        Requests to resume a paused orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_resume", decode = True)
+
+
+class HostQueues(JsonWrapper):
+
+    @property
+    def organization(self):
+        """
+        The organization name
+
+        @rtype: string
+        """
+        return self._get_field("organization")
+
+    @property
+    def environment(self):
+        """
+        The environment name
+
+        @rtype: string
+        """
+        return self._get_field("environment")
+
+    @property
+    def host(self):
+        """
+        The host name
+
+        @rtype: string
+        """
+        return self._get_field("host")
+
+    @property
+    def canonical_name(self):
+        """
+        the identifier name of host
+
+        @rtype: string
+        """
+        return self._get_field("canonicalName")
+
+    @property
+    def position(self):
+        """
+        position host of execution
+
+        @rtype: string
+        """
+        return self._get_field("position")
+
+    @property
+    def started(self):
+        """
+        Date when host execution is started
+
+        @rtype: date
+        """
+        return self._get_field("started")
+
+    @property
+    def finished(self):
+        """
+        Date when host execution is finished
+
+        @rtype: date
+        """
+        return self._get_field("finished")
+
+    @property
+    def status(self):
+        """
+        Status of execution of host
+
+        @rtype: string
+        """
+        return self._get_field("status")
+
+    @property
+    def error(self):
+        """
+        Description of error
+
+        @rtype: string
+        """
+        return self._get_field("error")
+
+
+    def _show(self, indent = 0):
+        print(" "*indent, "Position:", self.position)
+        print(" "*indent, "Name:", self.canonical_name)
+        print(" "*indent, "Started:", self.started)
+        print(" "*indent, "Status:", self.status)
+        print(" "*indent, "Finished:", self.finished)
+        print(" "*indent, "error:", self.error)
+

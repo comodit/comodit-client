@@ -1,0 +1,12 @@
+{
+  "name": "name",
+  "description": "description",
+  "hosts": [
+    {
+      "position": 0,
+      "organization": "organization name",
+      "environment": "environment name",
+      "host": "host name"
+    }
+  ]
+}
