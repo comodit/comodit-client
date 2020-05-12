@@ -35,7 +35,7 @@ echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
 
 # Build package
 DIST_DIR=${TMP_DIR}/dist
-python setup.py sdist --dist-dir=${DIST_DIR}
+python3 setup.py sdist --dist-dir=${DIST_DIR}
 mv ${DIST_DIR}/$NAME-$VERSION-$RELEASE.tar.gz $NAME\_$VERSION.$RELEASE.orig.tar.gz
 
 cp debian/python3-rules.template debian/rules
@@ -48,7 +48,7 @@ mv ../*.dsc ../builder-packages/python3
 mv ../*.tar.gz ../builder-packages/python3
 
 # Clean-up
-python setup.py clean
+python3 setup.py clean
 make -f debian/rules clean
 find . -name '*.pyc' -delete
 
