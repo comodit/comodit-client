@@ -240,6 +240,9 @@ class Organization(HasSettings):
 
         return HostGroupCollection(self.client, self.url + "hostgroups/")
 
+    def get_host_groups(self, name):
+        return self.host_groups().get(name)
+
     def notifications(self):
         """
         Instantiates the collection of notifications associated to this organization.
