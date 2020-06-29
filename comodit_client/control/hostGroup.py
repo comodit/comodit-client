@@ -1,4 +1,4 @@
-# control.environments - Controller for comodit Environments entities.
+# control.hostgroups - Controller for comodit HostGroups entities.
 # coding: utf-8
 #
 # Copyright 2010 Guardis SPRL, Liège, Belgium.
@@ -7,6 +7,7 @@
 # authorization from Guardis.
 
 from comodit_client.control.organization_entity import OrganizationEntityController
+from comodit_client.control.settings import HostGroupSettingsController
 
 
 class HostGroupController(OrganizationEntityController):
@@ -16,6 +17,8 @@ class HostGroupController(OrganizationEntityController):
     def __init__(self):
         super(HostGroupController, self).__init__()
         # subcontrollers
+        self._register_subcontroller(["settings"], HostGroupSettingsController())
+
         # actions
 
     def _get_collection(self, org_name):

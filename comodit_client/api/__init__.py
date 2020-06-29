@@ -366,6 +366,19 @@ class Client(object):
 
         return self.__get_unresolved_org(org_name).host_groups()
 
+    def get_host_group(self, org_name, name):
+        """
+        Fetches hostgroup given the name of owning organization and its
+        name.
+
+        @param org_name: The name of the organization owning requested platform.
+        @type org_name: string
+        @param name: The name of the hostgroup.
+        @type name: string
+        @rtype: L{HostGroup}
+        """
+        return self.host_groups(org_name).get(name)
+
     def orchestration(self, org_name, name):
         """
         Instantiates the collection of orchestrations associated to named

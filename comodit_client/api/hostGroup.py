@@ -9,6 +9,7 @@ from __future__ import absolute_import
 from .collection import Collection
 from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
+from comodit_client.api.settings import HasSettings
 
 
 class HostGroupCollection(Collection):
@@ -42,7 +43,7 @@ class HostGroupCollection(Collection):
         return hostGroup
 
 
-class HostGroup(Entity):
+class HostGroup(HasSettings):
     """
     HostGroup entity representation. A host group is a group of host.
 

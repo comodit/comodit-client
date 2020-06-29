@@ -335,6 +335,84 @@ class EnvironmentSettingsController(EntityController):
         --key option add filter on setting key""")
 
 
+class HostGroupSettingsController(EntityController):
+    _template = "setting.json"
+
+    def __init__(self):
+        super(HostGroupSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+        self._update_action_doc_params("add", "<org_name> <hostgroup_name>")
+        self._update_action_doc_params("delete", "<org_name> <hostgroup_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <hostgroup_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <hostgroup_name> <setting_name>")
+
+        self._register(["change"], self._change, self._print_list_completions)
+        self._register_action_doc(self._change_doc())
+
+        self._register(["impact"], self._impact, self._print_entity_completions)
+        self._register_action_doc(self._impact_doc())
+        self._register_action_doc(self._list_setting_doc())
+
+    def _get_name_argument(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("An organization, a hostgroup and a setting name must be provided");
+
+        return argv[2]
+
+    def _get_value_argument(self, argv):
+        if len(argv) < 4:
+            return None
+
+        return argv[3]
+
+    def get_collection(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("An organization and an hostgroup must be provided");
+
+        return self._client.get_host_group(argv[0], argv[1]).settings()
+
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            completions.print_identifiers(self._client.organizations())
+        elif len(argv) > 0 and param_num == 1:
+            completions.print_identifiers(self._client.host_groups(argv[0]))
+
+    def _print_entity_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_collection_completions(param_num, argv)
+        elif len(argv) > 1 and param_num == 2:
+            completions.print_identifiers(self._client.get_host_group(argv[0], argv[1]).settings())
+
+    def _change(self, argv):
+        settings = self.get_collection(argv)
+        handler = ChangeHandler(self._config)
+        handler.change(settings)
+
+    def _change_doc(self):
+        return ActionDoc("change", self._list_params(), """
+        Add, update or delete Settings.""")
+
+    def _impact(self, argv):
+        res = self._client.get_host_group(argv[0], argv[1]).impact(argv[2])
+        if self._config.options.raw:
+            print(json.dumps(res.get_json(), indent=4))
+        else:
+            res.show()
+
+    def _impact_doc(self):
+        return ActionDoc("impact", "<org_name> <hostgroup_name> <setting_name>", """
+        Impact analysis if setting change.""")
+
+    def _list_setting_doc(self):
+        return ActionDoc("list", "<org_name> <hostgroup_name> [--secret] [--non-secret] [--key]", """
+        List available settings. 
+        --secret return only secret settings
+        --non-secret return only non secret setting
+        --obfuscate obfuscate value for secret setting
+        --key option add filter on setting key""")
+
+
 class DistributionSettingsController(EntityController):
 
     _template = "setting.json"
