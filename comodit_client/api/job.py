@@ -144,7 +144,7 @@ class Job(Entity):
         """
         Execute job
 
-        @param parameters: paramters request
+        @param parameters: parameters request
         
         """
         self._http_client.update(self.url + "/_run", decode = False, parameters=parameters)
