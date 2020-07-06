@@ -77,7 +77,7 @@ class ChangeController(EntityController):
 
     def _delete_all_doc(self):
         return ActionDoc("delete-all", "<org_name> <env_name> <host_name>", """
-        Deletes all compliance errors.""")
+        Deletes all changes.""")
 
     def _list_all_doc(self):
         return ActionDoc("list-all", "<org_name> <env_name> <host_name>", """

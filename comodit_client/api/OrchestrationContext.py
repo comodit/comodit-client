@@ -9,6 +9,7 @@ from __future__ import absolute_import
 from .collection import Collection
 from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
+import sys
 
 import time
 
