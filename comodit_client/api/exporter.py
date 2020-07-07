@@ -172,7 +172,7 @@ class Export(object):
 
     def export_hostgroup(self, hostgroup, path):
         """
-        Exports a orchestration to a local folder.
+        Exports a hostgroup to a local folder.
 
         @param hostgroup: The hostgroup to export.
         @type hostgroup: L{HostGroup}
