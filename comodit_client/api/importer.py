@@ -22,6 +22,7 @@ from comodit_client.api.job import Job
 from comodit_client.api.organization import Organization
 from comodit_client.api.platform import Platform
 from comodit_client.api.orchestration import Orchestration
+from comodit_client.api.hostGroup import HostGroup
 from comodit_client.api.exporter import Export
 
 class ImportException(Exception):
@@ -299,13 +300,28 @@ class Import(object):
 
         @param org: The target organization.
         @type org: L{Organization}
-        @param job_folder: Path to directory containing orchestration's definition.
-        @type job_folder: string
+        @param orchestration_folder: Path to directory containing orchestration's definition.
+        @type orchestration_folder: string
         """
 
         orchestration = Orchestration(org.orchestrations(), None)
         orchestration.load(orchestration_folder)
         self._import_entity_and_detect_conflict(orchestration, "orchestration", skip_conflict_detection=skip_conflict_detection)
+
+    def import_hostgroup(self, org, folder, skip_conflict_detection=False):
+        """
+        Imports an hostgroup from a local folder into a given organization.
+
+        @param org: The target organization.
+        @type org: L{Organization}
+        @param hostgroup_folder: Path to directory containing hostgroup's definition.
+        @type hostgroup_folder: string
+        """
+
+        hostgroup = HostGroup(org.host_groups(), None)
+        hostgroup.load(folder)
+        self._import_entity_and_detect_conflict(hostgroup, "hostgroup", skip_conflict_detection=skip_conflict_detection)
+
 
     def import_host(self, env, host_folder, skip_conflict_detection=False):
         """
@@ -510,11 +526,18 @@ class Import(object):
             for env in os.listdir(envs_folder):
                 self.import_environment(org, os.path.join(envs_folder, env), skip_conflict_detection=not organization_already_exists)
                 
+        hostgroups_folder = os.path.join(org_folder, "hostgroups")
+        if os.path.exists(hostgroups_folder):
+            for hostgroup in os.listdir(hostgroups_folder):
+                self.import_hostgroup(org, os.path.join(hostgroups_folder, hostgroup),
+                                           skip_conflict_detection=not organization_already_exists)
+
         orchestrations_folder = os.path.join(org_folder, "orchestrations")
         if os.path.exists(orchestrations_folder):
-            for orch in os.listdir(orchestrations_folder):
-                self.import_orchestrations(org, os.path.join(orchestrations_folder,orch), skip_conflict_detection=not organization_already_exists)
-        
+            for hostgroup in os.listdir(orchestrations_folder):
+                self.import_orchestrations(org, os.path.join(orchestrations_folder,hostgroup), skip_conflict_detection=not organization_already_exists)
+
+
         jobs_folder = os.path.join(org_folder, "jobs")
         if os.path.exists(jobs_folder):
             for job in os.listdir(jobs_folder):
