@@ -162,13 +162,25 @@ class Export(object):
         """
         Exports a orchestration to a local folder.
 
-        @param job: The orchestration to export.
+        @param orchestration: The orchestration to export.
         @type orchestration: L{Orchestration}
         @param path: Path to local directory.
         @type path: string
         """
 
         self._export_entity(orchestration, path)
+
+    def export_hostgroup(self, hostgroup, path):
+        """
+        Exports a hostgroup to a local folder.
+
+        @param hostgroup: The hostgroup to export.
+        @type hostgroup: L{HostGroup}
+        @param path: Path to local directory.
+        @type path: string
+        """
+
+        self._export_entity(hostgroup, path)
 
     def export_notification(self, notification, path):
         """
@@ -248,6 +260,9 @@ class Export(object):
 
         for orch in org.orchestrations():
             self.export_orchestration(orch, os.path.join(path, "orchestrations", orch.name))
+
+        for hostgroup in org.host_groups():
+            self.export_hostgroup(hostgroup, os.path.join(path, "hostgroups", hostgroup.name))
 
         for env in org.environments():
             self.export_environment(env, os.path.join(path, "environments", env.name))
