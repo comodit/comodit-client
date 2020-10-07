@@ -33,7 +33,7 @@ class ChangeController(EntityController):
         self._register_action_doc(self._list_all_doc())
 
         self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <order_num>")
-        self._update_action_doc_params("delete", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <order_num>")
         self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
 
     def get_collection(self, argv):
@@ -63,18 +63,60 @@ class ChangeController(EntityController):
         return argv[3]
 
     def _delete_all(self, argv):
-        changes = self.get_collection(argv)
-        changes.clear()
+        change_collection = self.get_collection(argv)
+        changes = self.get_collection(argv).list(show_processed=True)
+        has_change_pending = False
+        for change in changes:
+           if change.are_tasks_pending():
+                has_change_pending = True
+
+        if not has_change_pending:
+            change_collection.clear()
+        else :
+            print("Be careful when deleting unfinished changes you may break some processes like orchestrations.")
+            print()
+            print(" "*1, "The following changes are pending :")
+
+            change_finished = 0
+            for change in changes:
+                if change.are_tasks_pending():
+                    print(" "*2, change.description)
+                else:
+                    change_finished += 1
+
+            print()
+            print(" "*1, "There are %d finished changes (successful or not)" % change_finished)
+            print()
+
+            # fixed for python2
+            get_input = input
+            try:
+                get_input = raw_input
+            except NameError:
+                pass
+
+
+            while True:
+                try:
+                    response = get_input("Do you want to delete finished changes (O)nly or delete (A)ll changes ?")
+                    if response == 'O' or response == 'o':
+                        change_collection.clear()
+                        break
+                    if response == 'A' or response == 'a':
+                        change_collection.clear(parameters={"processed_only": False})
+                        break
+                except KeyboardInterrupt:
+                    print()
+                    break
 
     def _list_all(self, argv):
         changes = self.get_collection(argv)
-        entities_list = changes.list(show_processed = True)
-        if(len(entities_list) == 0):
+        entities_list = changes.list(show_processed=True)
+        if (len(entities_list) == 0):
             print("No entities to list")
         else:
             for r in entities_list:
                 print(r.label)
-
     def _delete_all_doc(self):
         return ActionDoc("delete-all", "<org_name> <env_name> <host_name>", """
         Deletes all changes.""")
