@@ -74,6 +74,46 @@ class ApplicationKey(Entity):
         return self._get_field("token")
 
     @property
+    def access_key(self):
+        """
+        The access key associated with this application key.
+
+        @rtype: string
+        """
+
+        return self._get_field("accessKey")
+
+    @property
+    def secret_key(self):
+        """
+        The secret key associated with this application key.
+
+        @rtype: string
+        """
+
+        return self._get_field("secretKey")
+
+    @property
+    def method(self):
+        """
+        The method associated with this application key.
+
+        @rtype: string
+        """
+
+        return self._get_field("method")
+
+    @property
+    def created(self):
+        """
+        The date of creation of associated with this application key.
+
+        @rtype: string
+        """
+
+        return self._get_field("created")
+
+    @property
     def expiration_date(self):
         """
         The expiration date associated with this application key.
@@ -105,7 +145,14 @@ class ApplicationKey(Entity):
 
     def _show(self, indent = 0):
         super(ApplicationKey, self)._show(indent)
-        print(" "*indent, "Token:", self.token)
+        print(" "*indent, "Method:", self.method)
+        if self.token is not None:
+            print(" "*indent, "Token:", self.token)
+        if self.access_key is not None:
+            print(" " *indent, "Access Key:", self.access_key)
+        if self.secret_key is not None:
+            print(" " *indent, "Secret Key:", self.secret_key)
         print(" "*indent, "Expiration date:", self.expiration_date)
         print(" "*indent, "Group:", self.group)
         print(" "*indent, "Creator:", self.creator)
+        print(" "*indent, "Created:", self.created)
