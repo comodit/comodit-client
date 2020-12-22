@@ -23,6 +23,7 @@ from comodit_client.api.organization import Organization
 from comodit_client.api.platform import Platform
 from comodit_client.api.orchestration import Orchestration
 from comodit_client.api.hostGroup import HostGroup
+from comodit_client.api.webhook import Webhook
 from comodit_client.api.exporter import Export
 
 class ImportException(Exception):
@@ -294,6 +295,20 @@ class Import(object):
         job.load(job_folder)
         job_already_exists = self._import_entity_and_detect_conflict(job, "job", skip_conflict_detection=skip_conflict_detection)
 
+    def import_webhook(self, org, folder, skip_conflict_detection=False):
+        """
+        Imports a job from a local folder into a given organization.
+
+        @param org: The target organization.
+        @type org: L{Organization}
+        @param folder: Path to directory containing job's definition.
+        @type folder: string
+        """
+
+        webhook = Webhook(org.webhooks(), None)
+        webhook.load(folder)
+        self._import_entity_and_detect_conflict(webhook, "webhook", skip_conflict_detection=skip_conflict_detection)
+
     def import_orchestrations(self, org, orchestration_folder, skip_conflict_detection=False):
         """
         Imports an orchestration from a local folder into a given organization.
@@ -542,7 +557,13 @@ class Import(object):
         if os.path.exists(jobs_folder):
             for job in os.listdir(jobs_folder):
                 self.import_jobs(org, os.path.join(jobs_folder,job), skip_conflict_detection=not organization_already_exists)
-                
+
+        webhook_folder = os.path.join(org_folder, "webhooks")
+        if os.path.exists(webhook_folder):
+            for data in os.listdir(webhook_folder):
+                self.import_webhook(org, os.path.join(webhook_folder, data),
+                                 skip_conflict_detection=not organization_already_exists)
+
         notifications_folder = os.path.join(org_folder, "notification-channels")
         if os.path.exists(notifications_folder):
             for notification in os.listdir(notifications_folder):

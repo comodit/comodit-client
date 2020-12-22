@@ -110,7 +110,7 @@ class WebhookActionController(AbstractActionController):
     def _impact(self, argv):
         webhook = self._get_webhook(argv)
 
-        webhook.show()
+        webhook.impact()
 
 class HostActionController(AbstractActionController):
     def __init__(self):

@@ -185,7 +185,7 @@ class Webhook(Entity):
 
         return self._get_list_field("properties", lambda x: WebhookProperty(x))
 
-    def show(self, indent = 0):
+    def impact(self, indent = 0):
         print(" "*indent, "Method:", self.method)
         print(" "*indent, "ServerName:", self.server_name)
         print(" "*indent, "Path:", self.path)
