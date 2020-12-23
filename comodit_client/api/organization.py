@@ -421,7 +421,6 @@ class Organization(HasSettings):
         @rtype: L{ApplicationKeyCollection}
         """
 
-        print(self.url + "applicationkeys/")
         return ApplicationKeyCollection(self.client, self.url + "applicationkeys/")
 
     def get_application_key(self, name):

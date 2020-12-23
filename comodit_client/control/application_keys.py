@@ -20,7 +20,6 @@ class ApplicationKeysController(OrganizationEntityController):
         self._unregister("clone")
 
     def _get_collection(self, org_name):
-        print("_get_collection")
         return self._client.application_keys(org_name)
 
     def _reset(self, argv):

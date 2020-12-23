@@ -158,4 +158,4 @@ class ApplicationKey(Entity):
         print(" "*indent, "Created:", self.created)
 
     def reset(self):
-        return ApplicationKey(self._http_client.update(self.url + "_reset"))
+        return ApplicationKey(self.collection, self._http_client.update(self.url + "_reset"))
