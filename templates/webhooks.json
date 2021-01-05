@@ -1,0 +1,34 @@
+{
+    "method": "GET||POST||PUT",
+    "name": "webhook name",
+    "description": "",
+    "serverName": "google.com",
+    "path": "/api/v1/test",
+    "protocol": "HTTP||HTTPS",
+    "organization": "name of organization",
+    "authenticationMethod": "BASIC_AUTH||NO_AUTH",
+    "username": "username",
+    "token": "password",
+    "body": "json body",
+    "port": null,
+    "headers": [
+        {
+            "name": "name of header",
+            "value": "value",
+            "secret": false
+        }
+    ],
+    "parameters": [
+        {
+            "name": "name of parameter",
+            "value": "value of parameter",
+            "secret": false
+        }
+    ],
+    "properties": [
+        {
+            "name": "name of property result",
+            "jsonPath": "$.name"
+        }
+    ]
+}

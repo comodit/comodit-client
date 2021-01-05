@@ -71,6 +71,47 @@ class AbstractActionController(AbstractController):
             context.wait_finished(time_out, self._config.options.debug)
 
 
+class WebhookActionController(AbstractActionController):
+
+    def __init__(self):
+        super(WebhookActionController, self).__init__()
+
+    def _get_doc(self):
+        return "Action for webhook."
+
+    def _run_doc(self):
+        return ActionDoc("run", "<org_name> <webhook_name>", """
+        run webhook.""")
+
+    def _print_run_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_webhook_completions(param_num, argv)
+
+    def _print_webhook_completions(self, param_num, argv):
+        if param_num == 0:
+            completions.print_entity_identifiers(self._client.organizations().list())
+        elif len(argv) > 0 and param_num == 1:
+            completions.print_entity_identifiers(self._client.webhooks(argv[0]).list())
+
+    def _get_webhook(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("Wrong number of arguments")
+
+        org = argv[0]
+        webhook_name = argv[1]
+        return self._client.webhook(org, webhook_name)
+
+    def _run(self, argv):
+        webhook = self._get_webhook(argv)
+
+        result = webhook.run()
+        result.show()
+
+    def _impact(self, argv):
+        webhook = self._get_webhook(argv)
+
+        webhook.impact()
+
 class HostActionController(AbstractActionController):
     def __init__(self):
         super(HostActionController, self).__init__()
