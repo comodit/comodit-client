@@ -170,6 +170,18 @@ class Export(object):
 
         self._export_entity(orchestration, path)
 
+    def export_webhook(self, webhook, path):
+        """
+        Exports a orchestration to a local folder.
+
+        @param webhook: The orchestration to export.
+        @type webhook: L{Orchestration}
+        @param path: Path to local directory.
+        @type path: string
+        """
+
+        self._export_entity(webhook, path)
+
     def export_hostgroup(self, hostgroup, path):
         """
         Exports a hostgroup to a local folder.
@@ -263,6 +275,9 @@ class Export(object):
 
         for hostgroup in org.host_groups():
             self.export_hostgroup(hostgroup, os.path.join(path, "hostgroups", hostgroup.name))
+
+        for webhook in org.webhooks():
+            self.export_webhook(webhook, os.path.join(path, "webhooks", webhook.name))
 
         for env in org.environments():
             self.export_environment(env, os.path.join(path, "environments", env.name))

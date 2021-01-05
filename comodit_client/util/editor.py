@@ -18,7 +18,7 @@ import sys, os, tempfile
 
 def edit_text(starting_text='', ignore_not_modified=False):
     temp_fd, temp_filename = tempfile.mkstemp(text=True)
-    os.write(temp_fd, starting_text)
+    os.write(temp_fd, starting_text.encode())
     os.close(temp_fd)
     updated = edit_file(temp_filename)
     result = open(temp_filename).read()

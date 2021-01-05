@@ -354,6 +354,33 @@ class Client(object):
 
         return self.__get_unresolved_org(org_name).orchestrations()
 
+    def webhooks(self, org_name):
+        """
+        Instantiates the collection of webhooks associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{WebhookCollection}
+        """
+
+        return self.__get_unresolved_org(org_name).webhooks()
+
+    def webhook(self, org_name, name):
+        """
+        Fetches webhook given the name of owning organization and its
+        name.
+
+        @param org_name: The name of the organization
+        @type org_name: string
+        @param name: The name of the webhook.
+        @type name: string
+        @rtype: L{Webhook}
+        """
+
+        return self.webhooks(org_name).get(name)
+
+
     def host_groups(self, org_name):
         """
         Instantiates the collection of hostGroups associated to named
