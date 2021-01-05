@@ -297,11 +297,11 @@ class Import(object):
 
     def import_webhook(self, org, folder, skip_conflict_detection=False):
         """
-        Imports a job from a local folder into a given organization.
+        Imports a webhook from a local folder into a given organization.
 
         @param org: The target organization.
         @type org: L{Organization}
-        @param folder: Path to directory containing job's definition.
+        @param folder: Path to directory containing webhook's definition.
         @type folder: string
         """
 

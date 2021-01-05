@@ -253,7 +253,7 @@ class WebhookParameter(JsonWrapper):
         @rtype: string
         """
 
-        return self._get_field("name")
+        return self._get_field("value")
 
     @property
     def secret(self):
