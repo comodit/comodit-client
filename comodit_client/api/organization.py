@@ -434,3 +434,12 @@ class Organization(HasSettings):
 
         return ApplicationKeyCollection(self.client, self.url + "applicationkeys/")
 
+    def get_application_key(self, name):
+        """
+        Instantiates the collection of application keys associated to this organization.
+
+        @return: The collection of application keys associated to this organization.
+        @rtype: L{ApplicationKeyCollection}
+        """
+
+        return ApplicationKey(self.client, self.url + "applicationkeys/" + name)
