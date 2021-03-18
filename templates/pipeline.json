@@ -1,0 +1,5 @@
+{
+    "name": "name of pipeline",
+    "description": "description of orchestration",
+    "organization": "organization of pipeline"
+}

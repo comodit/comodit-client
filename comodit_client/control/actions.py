@@ -50,8 +50,8 @@ class AbstractActionController(AbstractController):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments")
 
-        orch_name = argv[1]
-        self._client.orchestrations(argv[0]).get(orch_name).show()
+        self._get_entity(argv).show()
+
 
     def _impact_doc(self):
         return ActionDoc("impact", "<org_name> <orchestration_name>", """
@@ -60,15 +60,19 @@ class AbstractActionController(AbstractController):
     def _run_doc(self):
         pass
 
-    def _wait(self, organization, orchestration, orchestration_context_id):
+    def _wait(self, organization, name, context_id):
         if self._config.options.wait:
             try:
                 time_out = int(self._config.options.timeout)
             except Exception:
                 sys.exit("Invalid format for timeout")
 
-            context = self._client.orchestrationContext(organization, orchestration, orchestration_context_id)
+            context = self._get_context(organization, name, context_id)
             context.wait_finished(time_out, self._config.options.debug)
+
+    def _get_context(self, organization, name, context_uuid):
+        pass
+
 
 
 class WebhookActionController(AbstractActionController):
@@ -256,3 +260,84 @@ class OrchestrationActionController(AbstractActionController):
             self._print_orchestration_completions(param_num, argv)
         elif param_num == 2:
             completions.print_entity_identifiers(self._client.orchestrationContexts(argv[0], argv[1]).list())
+
+    def _get_entity(self, argv):
+        name = argv[1]
+        return self._client.orchestrations(argv[0]).get(name)
+
+    def _get_context(self, organization, name, context_uuid):
+        return self._client.orchestrationContext(organization, name, context_uuid)
+
+
+
+class PipelineActionController(AbstractActionController):
+    def __init__(self):
+        super(PipelineActionController, self).__init__()
+        self._register(["pause"], self._pause, self._print_context_completions)
+        self._register(["stop"], self._stop, self._print_context_completions)
+        self._register(["resume"], self._resume, self._print_context_completions)
+
+        self._register_action_doc(self._pause_doc())
+        self._register_action_doc(self._stop_doc())
+        self._register_action_doc(self._resume_doc())
+
+    def _get_context(self, organization, name, context_uuid):
+        return self._client.pipelineContext(organization, name, context_uuid)
+
+    def _pause(self, argv):
+        context = self._get_context(argv[0],  argv[1], argv[2])
+        context.pause()
+
+    def _stop(self, argv):
+        context = self._get_context(argv[0],  argv[1], argv[2])
+        context.stop()
+
+    def _resume(self, argv):
+        context = self._get_context(argv[0],  argv[1], argv[2])
+        context.resume()
+
+    def _run(self, argv):
+        pipeline = self._get_entity(argv)
+
+        result = pipeline.run()
+        print("pipeline started")
+        self._wait(pipeline.organization, pipeline.name, result["uuid"])
+
+    def _get_doc(self):
+        return "Apply actions pipeline context"
+
+    def _run_doc(self):
+        return ActionDoc("run", "<org_name> <pipeline_name>", """
+        run pipeline.""")
+
+    def _pause_doc(self):
+        return ActionDoc("pause", "<org_name> <pipeline_name> <id>", """
+        pause running pipeline.""")
+
+    def _stop_doc(self):
+        return ActionDoc("stop", "<org_name> <pipeline_name> <id>", """
+        stop running pipeline.""")
+
+    def _resume_doc(self):
+        return ActionDoc("resume", "<org_name> <pipeline_name> <id>", """
+        resume paused pipeline""")
+
+    def _print_run_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_pipeline_completions(param_num, argv)
+
+    def _print_context_completions(self, param_num, argv):
+        if param_num == 0:
+            completions.print_entity_identifiers(self._client.organizations().list())
+        elif len(argv) > 0 and param_num == 1:
+            completions.print_entity_identifiers(self._client.pipelines(argv[0]).list())
+
+    def _print_pipeline_context_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_pipeline_completions(param_num, argv)
+        elif param_num == 2:
+            completions.print_entity_identifiers(self._client.pipelineContexts(argv[0], argv[1]).list())
+
+    def _get_entity(self, argv):
+        name = argv[1]
+        return self._client.pipelines(argv[0]).get(name)

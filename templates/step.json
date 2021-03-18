@@ -1,0 +1,14 @@
+{
+    "name": "step name",
+    "description": "step description",
+    "orchestration": "name orchestration",
+    "webhook": "name webhook",
+    "orderedHostGroups": [
+        {
+            "position": 0,
+            "hostGroup": {
+                "name": "name hostgroup"
+            }
+        }
+    ]
+}
