@@ -22,6 +22,7 @@ from comodit_client.api.notification import NotificationCollection
 from comodit_client.api.agentLog import AgentLogCollection
 from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
+from comodit_client.api.pipeline import PipelineCollection
 from comodit_client.api.webhook import WebhookCollection
 from comodit_client.api.hostGroup import HostGroupCollection
 from comodit_client.api.group import GroupCollection
@@ -230,6 +231,16 @@ class Organization(HasSettings):
         """
 
         return OrchestrationCollection(self.client, self.url + "orchestrations/")
+
+    def pipelines(self):
+        """
+        Instantiates the collection of pipelines associated to this organization.
+
+        @return: The collection of pipelines associated to this organization.
+        @rtype: L{PipelineCollection}
+        """
+
+        return PipelineCollection(self.client, self.url + "pipelines/")
 
     def webhooks(self):
         """

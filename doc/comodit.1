@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/18/2020
+.\"      Date: 03/22/2021
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "06/18/2020" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "03/22/2021" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -329,6 +329,11 @@ orchestrations ORG_NAME
 Generic handling for orchestrations
 .RE
 .PP
+pipelines ORG_NAME
+.RS 4
+Generic handling for pipelines
+.RE
+.PP
 jobs ORG_NAME
 .RS 4
 Generic handling for jobs
@@ -342,6 +347,11 @@ Generic handling for hostgroups
 orchestrations\-logs ORG_NAME
 .RS 4
 Generic handling for history of orchestrations
+.RE
+.PP
+pipelines\-logs ORG_NAME
+.RS 4
+Generic handling for history of pipelines
 .RE
 .RE
 .sp
@@ -417,6 +427,17 @@ jobs
 .IP \(bu 2.3
 .\}
 orchestration
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+pipeline
 .RE
 .sp
 .RS 4
@@ -1028,6 +1049,93 @@ where ORG is the name of an organization and NAME is orchestration\*(Aqs name\&.
 actions
 .RE
 .RE
+.SS "Pipelines"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+pipelines
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions but more options are available\&.
+.PP
+The following specific actions are also available:
+.PP
+action ORG_NAME PIPELINE_NAME
+.RS 4
+Give some action on pipeline
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ORG
+.sp
+where ORG is the name of an organization\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ORG NAME
+.sp
+where ORG is the name of an organization and NAME is pipeline\*(Aqs name\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBAccepted selectors\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+actions
+.sp
+stages
+.RE
+.RE
 .SS "Jobs"
 .sp
 .it 1 an-trap
@@ -1192,34 +1300,34 @@ Actions
 \fBActions\fR
 .RS 4
 .PP
-execute or show impact of orchestration
+execute or show impact of orchestration or pipeline
 .PP
-impact ORG_NAME ORCHESTRATION_NAME
+impact ORG_NAME NAME
 .RS 4
-show actions of orchestration
+show actions of orchestration or pipeline
 .RE
 .PP
-run ORG_NAME ORCHESTRATION_NAME
+run ORG_NAME NAME
 .RS 4
-run the orchestration
+run the orchestration or pipeline
 .RE
 .PP
-pause ORG_NAME ORCHESTRATION_NAME ID
+pause ORG_NAME NAME ID
 .RS 4
-pause running orchestration
+pause running orchestration or pipeline
 .RE
 .PP
-stop ORG_NAME ORCHESTRATION_NAME ID
+stop ORG_NAME NAME ID
 .RS 4
-stop running orchestration
+stop running orchestration or pipeline
 .RE
 .PP
-resume ORG_NAME ORCHESTRATION_NAME ID
+resume ORG_NAME NAME ID
 .RS 4
-resume paused orchestration
+resume paused orchestration or pipeline
 .RE
 .PP
-restart ORG_NAME ORCHESTRATION_NAME ID
+restart ORG_NAME NAME ID
 .RS 4
 restart orchestration in error\&.
 .RE
@@ -1253,6 +1361,39 @@ list all execution orchestration\&. Show identifier execution and when it\*(Aqs 
 .RE
 .PP
 show ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+show detail of execution\&.
+.RE
+.RE
+.SS "Actions"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+pipelines\-logs
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBPipelines-logs\fR
+.RS 4
+.PP
+show history of pipeline execution
+.PP
+list ORG_NAME NAME
+.RS 4
+list all execution pipeline\&. Show identifier execution and when it\*(Aqs started
+.RE
+.PP
+show ORG_NAME NAME ID
 .RS 4
 show detail of execution\&.
 .RE
@@ -2124,6 +2265,132 @@ Get a tree of each setting is setted\&. You can filter the result with \-\-secre
 impact ID
 .RS 4
 Show handlers triggered if setting changed
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ID
+.sp
+where ID is the identifier of owning entity\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ID NAME
+.sp
+where ID is the identifier of owning entity and NAME is setting\*(Aqs name\&.
+.RE
+.RE
+.SS "Stage"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+Stage of pipeline
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions\&.
+.PP
+steps
+.RS 4
+Action of steps owned by stage
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ID
+.sp
+where ID is the identifier of owning entity\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ID NAME
+.sp
+where ID is the identifier of owning entity and NAME is setting\*(Aqs name\&.
+.RE
+.RE
+.SS "Steps"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+step of stage
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions\&.
+.PP
+steps
+.RS 4
+Action of steps owned by stage
 .RE
 .RE
 .sp

@@ -71,7 +71,7 @@ class Notification(Entity):
         return self._get_field("organization")
     
     @property
-    def name(self):
+    def channel(self):
         """
         The channel of notification.
 
@@ -102,6 +102,7 @@ class Notification(Entity):
     
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Channel:", self.channel)
         print(" "*indent, "Value:", self.value)
         print(" "*indent, "Organization:", self.organization)
         for n in self.notifiables:

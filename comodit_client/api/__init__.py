@@ -89,6 +89,7 @@ from .platform import Platform
 from .environment import Environment
 from .host import Host
 from .orchestration import OrchestrationCollection
+from .stage import StageCollection
 
 
 class Client(object):
@@ -354,6 +355,66 @@ class Client(object):
 
         return self.__get_unresolved_org(org_name).orchestrations()
 
+    def pipelines(self, org_name):
+        """
+        Instantiates the collection of pipelines associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{PipelineCollection}
+        """
+
+        return self.__get_unresolved_org(org_name).pipelines()
+
+    def stages(self, org_name, pipeline_name):
+        """
+        Instantiates the collection of stages associated to named
+        organization.
+
+        @param org_name: The name of the organization
+        @type org_name: string
+        @param pipeline_name: The name of the pipeline owning requested collection.
+        @type pipeline_name: string
+
+        @rtype: L{StageCollection}
+        """
+
+        return self.pipeline(org_name, pipeline_name).stages
+
+    def stage(self, org_name, pipeline_name, stage_name):
+        """
+        Instantiates the stage associated to named
+        pipeline.
+
+        @param org_name: The name of the organization
+        @type org_name: string
+        @param pipeline_name: The name of the pipeline owning requested collection.
+        @type pipeline_name: string
+        @param stage_name: The name of the stage
+        @type pipeline_name: string
+
+        @rtype: L{Stage}
+        """
+
+        return self.stages(org_name, pipeline_name).get(stage_name)
+
+    def steps(self, org_name, pipeline_name, stage_name):
+        """
+        Instantiates the collection of step
+
+        @param org_name: The name of the organization
+        @type org_name: string
+        @param pipeline_name: The name of the pipeline
+        @type pipeline_name: string
+        @param stage_name: The name of the stage
+        @type pipeline_name: string
+
+        @rtype: L{StepCollection}
+        """
+
+        return self.stages(org_name, pipeline_name).get(stage_name).steps
+
     def webhooks(self, org_name):
         """
         Instantiates the collection of webhooks associated to named
@@ -418,6 +479,21 @@ class Client(object):
 
         return self.orchestrations(org_name).get(name)
 
+    def pipeline(self, org_name, name):
+        """
+        Instantiates the collection of pipelines associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+
+        @param name: The name of the pipeline
+        @type org_name: string
+
+        @rtype: L{Pipeline}
+        """
+
+        return self.pipelines(org_name).get(name)
 
     def orchestrationContexts(self, org_name, orch_name):
         """
@@ -446,6 +522,39 @@ class Client(object):
         """
 
         return self.orchestration(org_name, orch_name).get_context(context_id)
+
+    def pipelineContexts(self, org_name, name):
+        """
+        Instantiates the collection of pipeline contexts associated to named
+        organization and orchestration.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @param name: The name of the pipeline
+        @type name: string
+        @rtype: L{PipelineContextCollection}
+        """
+
+        return self.pipeline(org_name, name).contexts()
+
+    def pipelineContext(self, org_name, name, context_id):
+        """
+        Instantiates the pipeline context associated to named
+        organization, pipeline and id of context.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @param name: The name of the pipeline owning requested collection.
+        @type name: string
+        @param context_id: The id of pipelineContext
+        @type org_name: string
+        @rtype: L{PipelineContext}
+        """
+
+        return self.pipeline(org_name, name).get_context(context_id)
+
+    def __get_unresolved_pipeline(self, org_name, name):
+        return self.pipelines(org_name).new(name)
 
     def notifications(self, org_name):
         """
