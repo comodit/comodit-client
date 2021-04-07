@@ -14,6 +14,7 @@ standard_library.install_aliases()
 from builtins import object
 import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, json
 import comodit_client.util.fileupload as fileupload
+import os
 from urllib.error import HTTPError
 from comodit_client.util import urllibx
 from comodit_client.rest.exceptions import ApiException, RetryApiException
@@ -29,6 +30,7 @@ class HttpClient(object):
         self.mfa = mfa
         self._insecure_upload = insecure_upload
         self.retryErrorCount = 0
+        self.ask_mfa = False
 
     def create(self, entity, item = None, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
@@ -123,14 +125,54 @@ class HttpClient(object):
                     }
         else:
             if self._is_mfa_enabled():
-                return {
-                           "Authorization": self._get_basic_authorization_field(),
-                           "X-ComodIT-TotpToken": self._get_mfa_field(),
-                        }
+                return self._get_jwt_token()
             else :
                 return {
                     "Authorization": self._get_basic_authorization_field(),
                 }
+
+    def _get_jwt_token(self):
+        jwt_file = os.path.join(os.getcwd(), ".comodit-jwt")
+        if os.path.exists(jwt_file):
+            f = open(jwt_file, "r")
+            try:
+                return {
+                    "X-ComodIT-JwtToken": f.read()
+                }
+            finally:
+                f.close()
+        else :
+            self._get_valid_jwt_token()
+            return self._get_jwt_token()
+
+    def _get_valid_jwt_token(self):
+        self.ask_mfa = True
+        url = self._encode_url("account/_verify", {})
+
+        req = self._new_request_with_headers(url, "GET", self._get_mfa_header())
+        result = None
+        try:
+            result = self._urlopen(req)
+        except RetryApiException as e:
+            pass
+
+        if result is not None:
+            decoded = self._decode_and_keep_key_order(result)
+
+            jwt_file = os.path.join(os.getcwd(), ".comodit-jwt")
+            if os.path.exists(jwt_file):
+                os.remove(jwt_file)
+
+            f = open(jwt_file, "wx")
+            f.write(decoded["jwtToken"])
+            f.close()
+
+    def _get_mfa_header(self):
+        return {
+                    "Authorization": self._get_basic_authorization_field(),
+                    "X-ComodIT-TotpToken": self._get_mfa_field(),
+                    "Content-Type": "application/json"
+               }
 
     def _is_token_available(self):
         return self.token
@@ -160,8 +202,11 @@ class HttpClient(object):
             return result
         except HTTPError as err:
             if self.retryErrorCount < 3 and err.code == 401 and self._is_mfa_enabled():
-                self.retryErrorCount +=1
-                self.mfa = input("[%s] Invalid credential please verify mfa: " % self.retryErrorCount)
+                if self.ask_mfa:
+                    self.retryErrorCount +=1
+                    self.mfa = input("[%s] Invalid credential please verify mfa: " % self.retryErrorCount)
+
+                self._get_valid_jwt_token()
                 raise RetryApiException("Invalid credential", err.code)
 
             err_content = err.read().decode('utf-8', errors = 'ignore')
@@ -184,6 +229,10 @@ class HttpClient(object):
 
     def _new_request(self, url, m):
         return urllibx.RequestWithMethod(url, method = m, headers = self._headers())
+
+
+    def _new_request_with_headers(self, url, m, headers):
+        return urllibx.RequestWithMethod(url, method = m, headers = headers)
 
     def _new_request_with_data(self, url, m, d):
         return urllibx.RequestWithMethod(url, method = m, headers = self._headers(), data = six.b(d))
