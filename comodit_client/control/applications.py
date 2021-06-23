@@ -18,7 +18,7 @@ from comodit_client.control.parameters import ApplicationParametersController
 from comodit_client.control.store_helper import StoreHelper
 from comodit_client.control.sync import AppSyncController
 from . import completions
-
+from comodit_client.util import prompt
 
 class ApplicationsController(OrganizationEntityController):
 
@@ -31,6 +31,8 @@ class ApplicationsController(OrganizationEntityController):
         self._register_subcontroller(["files"], ApplicationFilesController())
         self._register_subcontroller(["parameters"], ApplicationParametersController())
         self._register_subcontroller(["sync"], AppSyncController())
+        self._register(["lock"], self._lock, self._print_entity_completions)
+        self._register(["unlock"], self._unlock, self._print_entity_completions)
 
         self._doc = "Applications handling."
 
@@ -107,3 +109,14 @@ class ApplicationsController(OrganizationEntityController):
         return ActionDoc("import", "<org_name> <src_folder> [--update-existing]", """
         Import application from disk. --update-existing option causes existing entities
         on server to be updated.""")
+
+    def _lock(self, argv):
+        app = self._get_entity(argv)
+        app.lock()
+
+    def _unlock(self, argv):
+        app = self._get_entity(argv)
+        if not app.locked :
+            print("application not locked")
+        elif self._config.options.force or (prompt.confirm(prompt="Unlock " + app.name + " ?", resp=False)) :
+            app.unlock()
