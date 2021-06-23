@@ -1130,3 +1130,37 @@ class Application(HasParameters, IsStoreCapable):
             f.show(indent + 2)
 
         self._show_store_fields(indent)
+
+    @property
+    def locked(self):
+        """
+        locked application.
+
+        @rtype: bool
+        """
+
+        return self._get_field("locked")
+
+    def lock(self):
+        """
+        lock application.
+        """
+
+        try:
+            result = self._http_client.create(self.url + "lock", decode = False)
+            if(result.getcode() != 200):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException as e:
+            raise PythonApiException("Unable to lock application : " + e.message)
+
+    def unlock(self):
+        """
+        unlock application
+        """
+
+        try:
+            result = self._http_client.create(self.url + "unlock", decode = False)
+            if(result.getcode() != 200):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException as e:
+            raise PythonApiException("Unable to unlock application : " + e.message)
