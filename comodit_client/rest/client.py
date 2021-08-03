@@ -163,7 +163,7 @@ class HttpClient(object):
             if os.path.exists(jwt_file):
                 os.remove(jwt_file)
 
-            f = open(jwt_file, "wx")
+            f = open(jwt_file, "w")
             f.write(decoded["jwtToken"])
             f.close()
 
