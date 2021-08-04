@@ -568,6 +568,21 @@ class Client(object):
 
         return self.__get_unresolved_org(org_name).notifications()
 
+    def notification(self, org_name, name):
+        """
+        Fetches notification-channel given the name of owning organization and its
+        name.
+
+        @param org_name: The name of the organization
+        @type org_name: string
+        @param name: The name of the notification-channel.
+        @type name: string
+        @rtype: L{Notification}
+        """
+
+        return self.notifications(org_name).get(name)
+
+
     def __get_unresolved_env(self, org_name, name):
         return self.environments(org_name).new(name)
 
