@@ -108,6 +108,17 @@ class Notification(Entity):
         for n in self.notifiables:
             n.show(indent + 2)
 
+    def run(self):
+        """
+        Requests to run notification-channels
+
+        """
+        self._http_client.update(self.url + "_run", decode=False)
+
+    def impact(self, indent = 0):
+        self._show(0)
+
+
 
 class Notifiable(JsonWrapper):
     """

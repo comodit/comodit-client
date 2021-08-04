@@ -5,7 +5,7 @@
 #
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
-
+from comodit_client.control.actions import NotificationChannelActionController
 from comodit_client.control.organization_entity import OrganizationEntityController
 
 class NotificationsController(OrganizationEntityController):
@@ -16,7 +16,7 @@ class NotificationsController(OrganizationEntityController):
         super(NotificationsController, self).__init__()
 
         # subcontrollers
-
+        self._register_subcontroller(["actions"], NotificationChannelActionController())
         # actions
 
     def _get_collection(self, org_name):

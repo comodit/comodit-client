@@ -341,3 +341,46 @@ class PipelineActionController(AbstractActionController):
     def _get_entity(self, argv):
         name = argv[1]
         return self._client.pipelines(argv[0]).get(name)
+
+
+class NotificationChannelActionController(AbstractActionController):
+
+    def __init__(self):
+        super(NotificationChannelActionController, self).__init__()
+
+    def _get_doc(self):
+        return "Action for notification-channels."
+
+    def _run_doc(self):
+        return ActionDoc("run", "<org_name> <notification-channel_name>", """
+        run notification-channel for test.""")
+
+    def _impact_doc(self):
+        return ActionDoc("impact", "<org_name> <notification-channel_name>", """
+                show notification-channel for test.""")
+    def _print_run_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_notitication_channel_completions(param_num, argv)
+
+    def _print_notitication_channel_completions(self, param_num, argv):
+        if param_num == 0:
+            completions.print_entity_identifiers(self._client.organizations().list())
+        elif len(argv) > 0 and param_num == 1:
+            completions.print_entity_identifiers(self._client.notifications(argv[0]).list())
+
+    def _get_notification_channel(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("Wrong number of arguments")
+
+        org = argv[0]
+        name = argv[1]
+        return self._client.notification(org, name)
+
+    def _run(self, argv):
+        notification_channel = self._get_notification_channel(argv)
+        notification_channel.run()
+
+    def _impact(self, argv):
+        notification_channel = self._get_notification_channel(argv)
+
+        notification_channel.impact()
