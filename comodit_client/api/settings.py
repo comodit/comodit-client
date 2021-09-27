@@ -19,7 +19,7 @@ class Schema(JsonWrapper):
     def schema_type(self):
         return self._get_field("type")
 
-    
+
     @property
     def secret(self):
         return self._get_field("secret")
@@ -27,7 +27,7 @@ class Schema(JsonWrapper):
     @property
     def final(self):
         return self._get_field("final")
-    
+
     def _show(self, indent = 0):
         print(" "*indent, "Type:", self.schema_type)
         print(" "*indent, "Multiline:", self.multiline)
@@ -342,7 +342,7 @@ class OrganizationSettingTree(JsonWrapper):
         """
 
         return self._get_list_field("platforms", lambda x: PlatformSettingTree(x))
-    
+
     @property
     def environments(self):
         """
@@ -355,11 +355,11 @@ class OrganizationSettingTree(JsonWrapper):
 
     def show(self, indent=0):
         print(" "*(indent + 2), "Organization:", self.organization)
-        
+
         print(" "*(indent + 2), "Settings:")
         for s in self.settings:
             s._show(indent + 4, False)
-        
+
         print(" "*(indent + 2), "Environments:")
         for e in self.environments:
             e._show(indent + 4)
@@ -405,7 +405,7 @@ class EnvironmentSettingTree(JsonWrapper):
 
         return self._get_list_field("hosts", lambda x: HostSettingTree(x))
 
-    
+
     def _show(self, indent=2):
         print(" "*(indent + 2), "Environment:", self.environment)
         print(" "*(indent + 2), "Settings:")
@@ -514,11 +514,11 @@ class HostSettingTree(JsonWrapper):
 
         return DistributionSettingTree(self._get_field("distribution"))
 
-    
+
     def _show(self, indent=2):
         print(" "*(indent + 2), "Host:", self.host)
         print(" "*(indent + 2), "Settings:")
-        
+
         for s in self.settings:
             s._show(indent + 4, False)
 
@@ -555,7 +555,7 @@ class ApplicationSettingTree(JsonWrapper):
         print(" "*(indent + 2), "Settings:")
         for s in self.settings:
             s._show(indent + 4, False)
-        
+
 
 
 class SettingHandlerContext(JsonWrapper):
@@ -577,7 +577,7 @@ class SettingHandlerContext(JsonWrapper):
         @rtype: String
         """
         return self._get_field("application")
-    
+
     @application.setter
     def application(self, application):
         """
@@ -649,7 +649,7 @@ class HostSettingContext(JsonWrapper):
         @rtype: String
         """
         return self._get_field("name")
-    
+
     @name.setter
     def name(self, name):
         """
@@ -657,7 +657,7 @@ class HostSettingContext(JsonWrapper):
         """
 
         self._set_field("name", name.get_json())
-        
+
     @property
     def environment(self):
         """
@@ -666,7 +666,7 @@ class HostSettingContext(JsonWrapper):
         @rtype: String
         """
         return self._get_field("environment")
-    
+
     @environment.setter
     def environment(self, environment):
         """
@@ -675,7 +675,7 @@ class HostSettingContext(JsonWrapper):
 
         self._set_field("environment", environment.get_json())
 
-    def show(self, indent = 0):        
+    def show(self, indent = 0):
         print(" "*(indent + 4), self.environment + "\\" + self.name)
 
 class HandlerSettingContext(JsonWrapper):
@@ -712,7 +712,7 @@ class Do(JsonWrapper):
         @rtype: String
         """
         return self._get_field("action")
-    
+
     @action.setter
     def action(self, action):
         """
@@ -720,7 +720,7 @@ class Do(JsonWrapper):
         """
 
         self._set_field("action", action.get_json())
-        
+
     @property
     def resource(self):
         """
@@ -729,7 +729,7 @@ class Do(JsonWrapper):
         @rtype: String
         """
         return self._get_field("resource")
-    
+
     @resource.setter
     def resource(self, resource):
         """
@@ -949,7 +949,7 @@ class HasSettings(Entity):
         parameters["secret_only"] = secret
         parameters["no_secret"] = no_secret
         if key:
-            parameters["key"] = key        
+            parameters["key"] = key
 
         json = self.client._http_client.read(self.url+ "tree/settings/", parameters=parameters)
         return OrganizationSettingTree(json)
@@ -958,8 +958,8 @@ class HasSettings(Entity):
         self.add_simple_setting(key, value)
 
     def impact(self, key):
-        return SettingImpactCollection(self.client, self.url + "settings/" + key ).get("/impact")
-        
+        return SettingImpactCollection(self.client, self.url + "settings/" + key).get("/impact")
+
     def add_simple_setting(self, key, value):
         """
         Adds a simple setting to local list of settings. Note that this list is considered only at creation time.
@@ -1049,3 +1049,29 @@ def add_settings(container, settings):
 
     for key, value in settings.items():
         container.add_simple_setting(key, value)
+
+class OriginSetting(JsonWrapper):
+
+    @property
+    def origin(self):
+        return self._get_field("from")
+
+    @property
+    def key(self):
+        return self._get_field("key")
+
+    @property
+    def value(self):
+        return self._get_field("value")
+
+    @property
+    def schema(self):
+        return Schema(self._get_field("schema"))
+
+    def show(self, indent = 0):
+        print(" "*(indent + 2), "Key:", self.key)
+        print(" "*(indent + 2), "From:", self.origin)
+        print(" "*(indent + 2), "Value:", self.value)
+        if self.schema:
+            print(" "*(indent + 2), "Schema:")
+            self.schema._show(indent + 4)

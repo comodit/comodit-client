@@ -118,7 +118,9 @@ class ApplicationContextSettingsController(EntityController):
         self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <app_name> <setting_name>")
 
         self._register(["change"], self._change, self._print_list_completions)
+        self._register(["show-origin"], self._show_origin, self._print_entity_completions)
         self._register_action_doc(self._change_doc())
+        self._register_action_doc(self._show_origin_doc())
         self._register_action_doc(self._list_setting_doc())
 
 
@@ -173,6 +175,20 @@ class ApplicationContextSettingsController(EntityController):
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
         Add, update or delete Settings.""")
+
+    def _show_origin_doc(self):
+        return ActionDoc("show-origin", self._list_params(), """
+        Show origin and value for Settings.""")
+
+    def _show_origin(self, argv):
+        parameters = self._get_show_parameters(argv)
+        res = self._client.get_host(argv[0], argv[1], argv[2])\
+            .get_application(argv[3]).setting_origin(argv[4], parameters)
+
+        if self._config.options.raw:
+            print(json.dumps(res.get_json(), indent=4))
+        else:
+            res.show()
 
 class HostSettingsController(EntityController):
 

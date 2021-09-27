@@ -8,7 +8,7 @@ provided by this module.
 from __future__ import print_function
 
 from comodit_client.api.collection import Collection
-from comodit_client.api.settings import HasSettings, add_settings
+from comodit_client.api.settings import HasSettings, add_settings, OriginSetting
 
 
 class AbstractContext(HasSettings):
@@ -138,6 +138,10 @@ class ApplicationContext(AbstractContext):
 
         result = self._http_client.update(self.url + "handler/" + name + "/_run", decode = False)
         return result.read().decode('utf-8')
+
+    def setting_origin(self, setting_key, parameters):
+        result = self._http_client.read(self.url + "settings/" + setting_key + "/origin", parameters=parameters)
+        return OriginSetting(result)
 
     def _show(self, indent = 0):
         print(" "*indent, "Application:", self.application)
