@@ -100,6 +100,12 @@ class Export(object):
         """
 
         self._export_entity(app, path, True, True, backup)
+        module_folders = os.path.join(path, "rpmmodules")
+        ensure(module_folders)
+        for module in app.rpm_modules():
+            module_folder = os.path.join(module_folders, module.name)
+            ensure(module_folder)
+            module.dump_json(os.path.join(module_folder, "definition.json"))
 
     def export_distribution(self, dist, path, backup = False):
         """

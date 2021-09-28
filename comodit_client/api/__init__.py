@@ -99,7 +99,7 @@ class Client(object):
     access to ComodIT entities.
     """
 
-    def __init__(self, endpoint, username, password, token, insecure_upload = False, mfa = None):
+    def __init__(self, endpoint, username, password, token, insecure_upload=False, mfa=None):
         """
         Client constructor. In order to create a client, the URL to a ComodIT
         server's REST API (e.g. http://my.comodit.com/api) must be provided, in
@@ -143,7 +143,6 @@ class Client(object):
 
         return self.flavors().get(name)
 
-
     # Store helpers
 
     def app_store(self):
@@ -155,7 +154,7 @@ class Client(object):
 
         return self._app_store
 
-    def get_published_app(self, uuid, org_name = None):
+    def get_published_app(self, uuid, org_name=None):
         """
         Fetches a published application given its UUID. Note that an organization
         name may also be provided in order to access private published
@@ -169,7 +168,7 @@ class Client(object):
         @rtype: L{PublishedApplication}
         """
 
-        return self.app_store().get(uuid, org_name = org_name)
+        return self.app_store().get(uuid, org_name=org_name)
 
     def dist_store(self):
         """
@@ -180,7 +179,7 @@ class Client(object):
 
         return self._dist_store
 
-    def get_published_dist(self, uuid, org_name = None):
+    def get_published_dist(self, uuid, org_name=None):
         """
         Fetches a published distribution given its UUID. Note that an organization
         name may also be provided in order to access private published
@@ -194,8 +193,7 @@ class Client(object):
         @rtype: L{PublishedDistribution}
         """
 
-        return self.dist_store().get(uuid, org_name = org_name)
-
+        return self.dist_store().get(uuid, org_name=org_name)
 
     # Organizations helpers
 
@@ -221,7 +219,6 @@ class Client(object):
         @rtype: L{Organization}
         """
         return self.organizations().get(name)
-
 
     # Applications helpers
 
@@ -281,7 +278,6 @@ class Client(object):
         """
         return self.distributions(org_name).get(name)
 
-
     # Platforms helpers
 
     def platforms(self, org_name):
@@ -312,7 +308,6 @@ class Client(object):
         """
 
         return self.platforms(org_name).get(name)
-
 
     # Environments helpers
 
@@ -440,7 +435,6 @@ class Client(object):
         """
 
         return self.webhooks(org_name).get(name)
-
 
     def host_groups(self, org_name):
         """
@@ -582,7 +576,6 @@ class Client(object):
 
         return self.notifications(org_name).get(name)
 
-
     def __get_unresolved_env(self, org_name, name):
         return self.environments(org_name).new(name)
 
@@ -599,6 +592,12 @@ class Client(object):
         """
 
         return self.environments(org_name).get(name)
+
+    def rpm_module(self, org, app, name):
+        return self.get_application(org, app).get_rpm_modules(name)
+
+    def rpm_modules(self, org, app):
+        return self.get_application(org, app).rpm_modules()
 
     # Hosts helpers
 
@@ -633,7 +632,6 @@ class Client(object):
         """
 
         return self.hosts(org_name, env_name).get(name)
-
 
     # Application Keys helpers
 

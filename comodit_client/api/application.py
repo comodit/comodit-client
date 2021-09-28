@@ -20,6 +20,7 @@ from __future__ import absolute_import
 
 from comodit_client.api.collection import Collection
 from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.rpmmodules import ApplicationRpmModuleCollection
 from comodit_client.api.files import FileEntity
 from comodit_client.api.parameters import HasParameters
 from comodit_client.api.store import IsStoreCapable
@@ -961,6 +962,28 @@ class Application(HasParameters, IsStoreCapable):
         """
 
         return self.files().get(name)
+
+    def rpm_modules(self):
+        """
+        Instantiates the collection of application rpm modules associated to the
+        application.
+
+        @rtype: L{ApplicationRpmModuleCollection}
+        """
+
+        return ApplicationRpmModuleCollection(self.client, self.url + "rpmmodules/")
+
+    def get_rpm_modules(self, name):
+        """
+        Fetches a particular rpm module from remote collection.
+
+        @param name: The name of the rpm module.
+        @type name: string
+
+        @rtype: L{RpmModule}
+        """
+
+        return self.rpm_modules().get(name)
 
     @property
     def handlers(self):
