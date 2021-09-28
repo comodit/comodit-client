@@ -1,0 +1,6 @@
+{
+    "name": "module name",
+    "stream": "version",
+    "profile": "profile module",
+    "enabled": true
+}

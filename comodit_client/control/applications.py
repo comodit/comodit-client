@@ -19,6 +19,8 @@ from comodit_client.control.store_helper import StoreHelper
 from comodit_client.control.sync import AppSyncController
 from . import completions
 from comodit_client.util import prompt
+from .rpmmodules import RpmModuleController
+
 
 class ApplicationsController(OrganizationEntityController):
 
@@ -30,6 +32,7 @@ class ApplicationsController(OrganizationEntityController):
         # sub-controllers
         self._register_subcontroller(["files"], ApplicationFilesController())
         self._register_subcontroller(["parameters"], ApplicationParametersController())
+        self._register_subcontroller(["rpm-module"], RpmModuleController())
         self._register_subcontroller(["sync"], AppSyncController())
         self._register(["lock"], self._lock, self._print_entity_completions)
         self._register(["unlock"], self._unlock, self._print_entity_completions)

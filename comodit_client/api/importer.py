@@ -23,6 +23,7 @@ from comodit_client.api.organization import Organization
 from comodit_client.api.platform import Platform
 from comodit_client.api.orchestration import Orchestration
 from comodit_client.api.hostGroup import HostGroup
+from comodit_client.api.rpmmodules import RpmModule
 from comodit_client.api.webhook import Webhook
 from comodit_client.api.exporter import Export
 
@@ -220,6 +221,16 @@ class Import(object):
             app_to_update = None
 
         self._import_entity_with_files_and_parameters(app, app_to_update, root_folder, "application", skip_conflict_detection=skip_conflict_detection)
+
+        modules_folder = os.path.join(root_folder, "rpmmodules")
+        if os.path.exists(modules_folder):
+            modules_list = os.listdir(modules_folder)
+
+            for module_name in modules_list:
+                module_folder = os.path.join(modules_folder, module_name)
+                res = RpmModule(app.rpm_modules(), None)
+                res.load(module_folder)
+                self._import_entity_and_detect_conflict(res, "rpmmodule", skip_conflict_detection=skip_conflict_detection)
 
     def import_distribution(self, org, root_folder, skip_conflict_detection=False):
         """
