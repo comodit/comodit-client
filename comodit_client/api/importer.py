@@ -228,7 +228,6 @@ class Import(object):
 
             for module_name in modules_list:
                 module_folder = os.path.join(modules_folder, module_name)
-                print(module_folder)
                 res = RpmModule(app.rpm_modules(), None)
                 res.load(module_folder)
                 self._import_entity_and_detect_conflict(res, "rpmmodule", skip_conflict_detection=skip_conflict_detection)
