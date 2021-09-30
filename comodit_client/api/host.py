@@ -28,7 +28,7 @@ from comodit_client.api.otherLog import OtherLogCollection
 from comodit_client.api.orchestration import OrchestrationCollection
 from comodit_client.api.group import GroupCollection
 from comodit_client.api.group import GroupOrganizationTreeCollection
-
+from progressbar import *
 
 class HostCollection(Collection):
     """
@@ -1415,7 +1415,7 @@ class Host(HasSettings):
         @return: Orchestration context
         @rtype: L{OrchestrationContext}
         """
-        return self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = True)
+        return self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode=True)
 
     def get_orchestrations(self):
         """
@@ -1550,12 +1550,15 @@ class Host(HasSettings):
                 return True
         return False
 
-    def _change_terminated(self, changeId):
+    def _change_terminated(self, changeId, pbar=None):
         for c in self.all_changes():
             if c.change_id == changeId:
                 taskErrors = c.get_tasks_error()
                 if taskErrors:
                     for t in taskErrors:
+                        if pbar:
+                            pbar.finish()
+
                         sys.exit("error " + t.error)
                 if c.are_tasks_pending():
                     return False
@@ -1577,15 +1580,27 @@ class Host(HasSettings):
             if time_out > 0 and (now - start_time) > time_out:
                 break
 
-    def wait_for_change_terminated(self, change_id, time_out = 0):
+    def wait_for_change_terminated(self, change_id, time_out = 0, progress=False):
         start_time = time.time()
+        pbar=None
+        if progress:
+            print(self.organization, 'Application action', self.name, 'started')
+            widgets = ['Application action - ', Timer()]
+            pbar = ProgressBar(widgets=widgets)
+            pbar.start()
 
-        while not self._change_terminated(change_id):
+        while not self._change_terminated(change_id, pbar):
             time.sleep(2)
             now = time.time()
             val = int(now - start_time)
+            if progress:
+                pbar.update()
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
+
+        if progress:
+            pbar.finish()
+            print(self.organization, 'Application action', self.name, 'finished')
 
     def groups(self):
         """

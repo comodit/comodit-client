@@ -171,7 +171,7 @@ class Orchestration(Entity):
         @return: Orchestration context
         @rtype: L{OrchestrationContext}
         """
-        return self._http_client.update(self.url + "_run", decode = True)
+        return self._http_client.update(self.url + "_run", decode=True)
 
 class ApplicationOperation(JsonWrapper):
     """

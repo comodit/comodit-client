@@ -112,6 +112,7 @@ Available entities:
     parser.add_argument("--status", dest = "status", help = "filter to get orchestrations-logs by status", default = None)
     parser.add_argument("--obfuscate", dest = "obfuscate", help = "obfuscate all password", action = "store_true", default = False)
     parser.add_argument("--wait", dest = "wait", help = "wait action run is finished", action = "store_true", default = False)
+    parser.add_argument("--progress", dest = "progress", help = "show progress of action", action = "store_true", default = False)
     parser.add_argument("--timeout", dest = "timeout", help = "set timeout in second for wait", default = 0)
     parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor upon creation", default = None)
 

@@ -68,10 +68,11 @@ class AbstractActionController(AbstractController):
                 sys.exit("Invalid format for timeout")
 
             context = self._get_context(organization, name, context_id)
-            context.wait_finished(time_out, self._config.options.debug)
+            context.wait_finished(time_out, self._config.options.debug, self._config.options.progress)
 
     def _get_context(self, organization, name, context_uuid):
-        pass
+        return self._client.orchestrationContext(organization, name, context_uuid)
+
 
 
 
@@ -300,7 +301,6 @@ class PipelineActionController(AbstractActionController):
         pipeline = self._get_entity(argv)
 
         result = pipeline.run()
-        print("pipeline started")
         self._wait(pipeline.organization, pipeline.name, result["uuid"])
 
     def _get_doc(self):

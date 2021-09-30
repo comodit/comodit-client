@@ -140,7 +140,7 @@ class ApplicationContext(AbstractContext):
         return result.read().decode('utf-8')
 
     def setting_origin(self, setting_key, parameters):
-        result = self._http_client.read(self.url + "settings/" + setting_key + "/origin", parameters=parameters)
+        result = self._http_client.read(self.url + "origin-settings/" + setting_key, parameters=parameters)
         return OriginSetting(result)
 
     def _show(self, indent = 0):

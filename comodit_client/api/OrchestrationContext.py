@@ -9,8 +9,9 @@ from __future__ import absolute_import
 from .collection import Collection
 from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
-import sys
+from progressbar import *
 
+import sys
 import time
 
 
@@ -132,7 +133,7 @@ class OrchestrationContext(Entity):
         """
         List of host's where orchestration is applied.
 
-        @rtype: list of hosts queue L{HostQueue}
+        @rtype: list of hosts queue L{HostQueues}
         """
 
         return self._get_list_field("hostQueues", lambda x: HostQueues(x))
@@ -150,7 +151,7 @@ class OrchestrationContext(Entity):
     def show_identifier(self):
        print(self.started, "(id: ", self.identifier+")" , self.status)
 
-    def wait_finished(self, time_out = 0, show=False):
+    def wait_finished(self, time_out = 0, show=False, progress=False):
         """
        wait current orchestration is finished
 
@@ -159,6 +160,12 @@ class OrchestrationContext(Entity):
 
         start_time = time.time()
 
+        if progress:
+            print(self.organization, 'orchestration', self.orchestration, 'started')
+            widgets = ['Orchestration - ', Timer()]
+            pbar = ProgressBar(widgets=widgets)
+            pbar.start()
+
         while self.status == "RUNNING":
             time.sleep(2)
             now = time.time()
@@ -166,8 +173,25 @@ class OrchestrationContext(Entity):
             self.refresh()
             if show:
                 self._show(4)
+            elif progress:
+                pbar.update()
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
+
+        if progress:
+            pbar.finish()
+
+        if self.status == "ERROR":
+            host_error = ""
+            for h in self.host_queues:
+                if h.status == "ERROR":
+                    host_error = "%s : %s"%(h.canonical_name, h.error)
+
+            msg = "orchestration %s in error for host %s"%(self.orchestration, host_error)
+            sys.exit(msg)
+
+        if progress:
+            print(self.organization, 'orchestration', self.orchestration, 'finished')
 
     def pause(self):
         """

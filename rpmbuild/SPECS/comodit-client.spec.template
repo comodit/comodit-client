@@ -29,6 +29,7 @@ Requires: python3 >= 3.5
 Requires: python3-pycurl
 Requires: python3-future
 Requires: python3-six
+Requires: python3-progressbar
 %endif
 
 %if 0%{?rhel}
@@ -38,6 +39,7 @@ Requires: python-argparse
 
 # The following may be moved to rhel only when fedora will be fully supporting python3
 Requires: python-pycurl
+Requires: python-progressbar
 Requires: python-future
 Requires: python-six
 Requires: python-configparser
