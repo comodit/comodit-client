@@ -36,7 +36,7 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
 3. Install dependencies (you might need admin rights to execute the following):
 
-        $ pip install pycurl future six progressbar2
+        $ pip install pycurl future six progressbar
 
 4. Restart your shell
 
