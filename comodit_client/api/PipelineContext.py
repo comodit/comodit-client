@@ -150,10 +150,9 @@ class PipelineContext(Entity):
 
        @rtype: date
        """
-
         if progress:
             print(self.organization,  'pipeline', self.pipeline, 'started')
-            widgets = ['  Pipeline - ', Timer()]
+            widgets = ['Pipeline - ', Timer()]
             pbar = ProgressBar(widgets=widgets)
             pbar.start()
 
@@ -171,6 +170,9 @@ class PipelineContext(Entity):
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
 
+        if progress:
+            pbar.finish()
+
         if self.status == "ERROR":
             host_error = ""
             for stage in self.stages:
@@ -183,7 +185,6 @@ class PipelineContext(Entity):
             sys.exit(msg)
 
         if progress:
-            pbar.finish()
             print(self.organization, 'pipeline', self.pipeline, 'finished')
 
     def pause(self):

@@ -162,7 +162,7 @@ class OrchestrationContext(Entity):
 
         if progress:
             print(self.organization, 'orchestration', self.orchestration, 'started')
-            widgets = ['  Orchestration - ', Timer()]
+            widgets = ['Orchestration - ', Timer()]
             pbar = ProgressBar(widgets=widgets)
             pbar.start()
 
@@ -178,6 +178,9 @@ class OrchestrationContext(Entity):
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
 
+        if progress:
+            pbar.finish()
+
         if self.status == "ERROR":
             host_error = ""
             for h in self.host_queues:
@@ -188,7 +191,6 @@ class OrchestrationContext(Entity):
             sys.exit(msg)
 
         if progress:
-            pbar.finish()
             print(self.organization, 'orchestration', self.orchestration, 'finished')
 
     def pause(self):

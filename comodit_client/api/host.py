@@ -1550,12 +1550,15 @@ class Host(HasSettings):
                 return True
         return False
 
-    def _change_terminated(self, changeId):
+    def _change_terminated(self, changeId, pbar=None):
         for c in self.all_changes():
             if c.change_id == changeId:
                 taskErrors = c.get_tasks_error()
                 if taskErrors:
                     for t in taskErrors:
+                        if pbar:
+                            pbar.finish()
+
                         sys.exit("error " + t.error)
                 if c.are_tasks_pending():
                     return False
@@ -1579,14 +1582,14 @@ class Host(HasSettings):
 
     def wait_for_change_terminated(self, change_id, time_out = 0, progress=False):
         start_time = time.time()
-
+        pbar=None
         if progress:
             print(self.organization, 'Application action', self.name, 'started')
-            widgets = ['  Application action - ', Timer()]
+            widgets = ['Application action - ', Timer()]
             pbar = ProgressBar(widgets=widgets)
             pbar.start()
 
-        while not self._change_terminated(change_id):
+        while not self._change_terminated(change_id, pbar):
             time.sleep(2)
             now = time.time()
             val = int(now - start_time)
