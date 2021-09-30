@@ -10,7 +10,7 @@ Package: comodit-client
 Architecture: all
 Homepage: http://www.github.com/guardis/cortex-client
 XB-Python-Version: ${python:Versions}
-Depends: ${misc:Depends}, python-pycurl, python-argparse
+Depends: ${misc:Depends}, python-pycurl, python-argparse, python-progressbar
 Replaces: cortex-client
 Description: ComodIT command line client and python library
  ComodIT automates the management of an Information System through the entire

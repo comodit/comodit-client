@@ -9,8 +9,9 @@ from __future__ import absolute_import
 from .collection import Collection
 from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
-import sys
+from progressbar import *
 
+import sys
 import time
 
 
@@ -143,15 +144,20 @@ class PipelineContext(Entity):
     def show_identifier(self):
        print(self.started, "(id: ", self.identifier+")" , self.status)
 
-    def wait_finished(self, time_out = 0, show=False):
+    def wait_finished(self, time_out = 0, show=False, progress=False):
         """
        wait current pipeline is finished
 
        @rtype: date
        """
 
-        start_time = time.time()
+        if progress:
+            print(self.organization,  'pipeline', self.pipeline, 'started')
+            widgets = ['  Pipeline - ', Timer()]
+            pbar = ProgressBar(widgets=widgets)
+            pbar.start()
 
+        start_time = time.time()
         while self.status == "RUNNING":
             time.sleep(2)
             now = time.time()
@@ -159,8 +165,26 @@ class PipelineContext(Entity):
             self.refresh()
             if show:
                 self._show(4)
+            elif progress:
+                pbar.update()
+
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
+
+        if self.status == "ERROR":
+            host_error = ""
+            for stage in self.stages:
+                if stage.status == "ERROR":
+                    for step in stage.steps:
+                        if step.status == "ERROR":
+                            host_error = "stage %s and step %s" % (stage.name, step.name)
+
+            msg = "pipeline %s in error for %s" % (self.pipeline, host_error)
+            sys.exit(msg)
+
+        if progress:
+            pbar.finish()
+            print(self.organization, 'pipeline', self.pipeline, 'finished')
 
     def pause(self):
         """

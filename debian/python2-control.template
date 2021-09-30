@@ -8,7 +8,7 @@ X-Python-Version: >= 2.6
 
 Package: python2-comodit-client
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-pycurl, python-argparse
+Depends: ${misc:Depends}, ${python:Depends}, python-pycurl, python-argparse, python-progressbar
 Replaces: cortex-client
 Description: ComodIT command line client and python library
  ComodIT automates the management of an Information System through the entire

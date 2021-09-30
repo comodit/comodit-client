@@ -44,6 +44,7 @@ Requires: python2-six
 Requires: python >= 2.6
 Requires: python-argparse
 Requires: python-pycurl
+Requires: python-progressbar
 Requires: python-future
 Requires: python-configparser
 %endif
@@ -52,6 +53,7 @@ Requires: python-configparser
 Requires: python2 
 Requires: python3-configargparse
 Requires: python3-pycurl
+Requires: python3-progressbar
 Requires: python3-future
 %endif
 
@@ -73,6 +75,7 @@ BuildRequires:  python3-setuptools
 
 Requires: python3 >= 3.5
 Requires: python3-pycurl
+Requires: python3-progressbar
 %{?el7:Requires: python36-future}
 %{?el7:Requires: python36-six}
 %{?el8:Requires: python3-future}
