@@ -596,7 +596,7 @@ class Action(JsonWrapper):
     @property
     def type(self):
         """
-        Action's type. Possible values are 'update', 'execute', 'restart' and 'reload'.
+        Action's type. Possible values are 'update', 'execute', 'continue' and 'reload'.
 
         @rtype: string
         """

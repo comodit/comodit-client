@@ -177,7 +177,7 @@ class OrchestrationActionController(AbstractActionController):
         self._register(["pause"], self._pause, self._print_orchestration_context_completions)
         self._register(["stop"], self._stop, self._print_orchestration_context_completions)
         self._register(["resume"], self._resume, self._print_orchestration_context_completions)
-        self._register(["restart"], self._restart, self._print_orchestration_context_completions)
+        self._register(["continue"], self._restart, self._print_orchestration_context_completions)
 
         self._register_action_doc(self._pause_doc())
         self._register_action_doc(self._stop_doc())
