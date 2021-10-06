@@ -2,7 +2,7 @@
 """
 Provides collections base class (L{Collection}) and related exceptions.
 """
-
+import sys
 from builtins import str
 from builtins import object
 from comodit_client.api.exceptions import PythonApiException
@@ -21,6 +21,7 @@ class EntityNotFoundException(PythonApiException):
         @type identifier: string
         """
         super(EntityNotFoundException, self).__init__("Entity not found: " + identifier)
+        sys.exit("Entity not found: " + identifier)
 
 class Collection(object):
     """
