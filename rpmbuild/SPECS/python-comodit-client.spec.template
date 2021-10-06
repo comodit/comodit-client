@@ -75,13 +75,15 @@ BuildRequires:  python3-setuptools
 
 Requires: python3 >= 3.5
 Requires: python3-pycurl
-Requires: python3-progressbar
 %{?el7:Requires: python36-future}
 %{?el7:Requires: python36-six}
+%{?el7:Requires: progressbar2}
 %{?el8:Requires: python3-future}
 %{?el8:Requires: python3-six}
+%{?el8:Requires: python3-progressbar2}
 %{?fedora:Requires: python3-future}
 %{?fedora:Requires: python3-six}
+%{?fedora:Requires: python3-progressbar2}
 
 BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
