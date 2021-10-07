@@ -6,10 +6,13 @@
 #
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
+import sys
 
 from future import standard_library
 import base64
 import six
+
+JWT_FILE = ".comodit.jwt"
 standard_library.install_aliases()
 from builtins import object
 import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, json
@@ -132,7 +135,7 @@ class HttpClient(object):
                 }
 
     def _get_jwt_token(self):
-        jwt_file = os.path.join(os.getcwd(), ".comodit-jwt")
+        jwt_file = self._get_jwt_file()
         if os.path.exists(jwt_file):
             f = open(jwt_file, "r")
             try:
@@ -144,6 +147,14 @@ class HttpClient(object):
         else :
             self._get_valid_jwt_token()
             return self._get_jwt_token()
+
+    def _get_jwt_file(self):
+        path = os.getenv('COMODIT_JWT_TOKEN_FILE')
+        if path is None:
+            path = os.getenv('HOME')
+        if path is None:
+            sys.exit('You must define COMODIT_JWT_TOKEN_FILE or HOME to use JWT and fall-back')
+        return os.path.join(path, JWT_FILE)
 
     def _get_valid_jwt_token(self):
         self.ask_mfa = True
@@ -158,8 +169,7 @@ class HttpClient(object):
 
         if result is not None:
             decoded = self._decode_and_keep_key_order(result)
-
-            jwt_file = os.path.join(os.getcwd(), ".comodit-jwt")
+            jwt_file = self._get_jwt_file()
             if os.path.exists(jwt_file):
                 os.remove(jwt_file)
 
