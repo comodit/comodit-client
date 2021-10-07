@@ -176,6 +176,7 @@ class OrchestrationActionController(AbstractActionController):
         super(OrchestrationActionController, self).__init__()
         self._register(["pause"], self._pause, self._print_orchestration_context_completions)
         self._register(["stop"], self._stop, self._print_orchestration_context_completions)
+        self._register(["cancel"], self._cancel, self._print_orchestration_context_completions)
         self._register(["resume"], self._resume, self._print_orchestration_context_completions)
         self._register(["continue"], self._restart, self._print_orchestration_context_completions)
 
@@ -207,6 +208,10 @@ class OrchestrationActionController(AbstractActionController):
     def _stop(self, argv):
         orchestration = self._get_orchestration_context(argv)
         orchestration.stop()
+
+    def _cancel(self, argv):
+        orchestration = self._get_orchestration_context(argv)
+        orchestration.cancel()
 
     def _restart(self, argv):
         orchestration = self._get_orchestration_context(argv)
@@ -276,6 +281,7 @@ class PipelineActionController(AbstractActionController):
         super(PipelineActionController, self).__init__()
         self._register(["pause"], self._pause, self._print_context_completions)
         self._register(["stop"], self._stop, self._print_context_completions)
+        self._register(["cancel"], self._cancel, self._print_context_completions)
         self._register(["resume"], self._resume, self._print_context_completions)
 
         self._register_action_doc(self._pause_doc())
@@ -292,6 +298,10 @@ class PipelineActionController(AbstractActionController):
     def _stop(self, argv):
         context = self._get_context(argv[0],  argv[1], argv[2])
         context.stop()
+
+    def _cancel(self, argv):
+        context = self._get_context(argv[0],  argv[1], argv[2])
+        context.cancel()
 
     def _resume(self, argv):
         context = self._get_context(argv[0],  argv[1], argv[2])

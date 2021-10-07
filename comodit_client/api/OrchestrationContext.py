@@ -211,6 +211,15 @@ class OrchestrationContext(Entity):
         """
         return self._http_client.update(self.url + "_stop", decode = True)
 
+    def cancel(self):
+        """
+        Requests to cancel orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_cancel", decode = True)
+
     def restart(self, skip_error = False):
         """
         Requests to restart orchestration in error
