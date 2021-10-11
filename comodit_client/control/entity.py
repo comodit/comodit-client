@@ -89,6 +89,12 @@ class EntityController(AbstractController):
 
     def _show(self, argv):
         parameters = self._get_show_parameters(argv)
+
+        options = self._config.options
+        parameters["secret_only"] = options.secret
+        parameters["no_secret"] = options.non_secret
+        parameters["obfuscate"] = options.obfuscate
+
         res = self._get_entity(argv, parameters=parameters)
 
         # Display the result
