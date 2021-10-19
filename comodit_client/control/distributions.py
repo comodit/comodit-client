@@ -19,6 +19,7 @@ from comodit_client.control.settings import DistributionSettingsController
 from comodit_client.control.store_helper import StoreHelper
 from comodit_client.control.sync import DistSyncController
 from . import completions
+from ..util import prompt
 
 
 class DistributionsController(OrganizationEntityController):
@@ -33,6 +34,8 @@ class DistributionsController(OrganizationEntityController):
         self._register_subcontroller(["files"], DistributionFilesController())
         self._register_subcontroller(["parameters"], DistributionParametersController())
         self._register_subcontroller(["sync"], DistSyncController())
+        self._register(["lock"], self._lock, self._print_entity_completions)
+        self._register(["unlock"], self._unlock, self._print_entity_completions)
 
         self._doc = "Distributions handling."
 
@@ -53,10 +56,21 @@ class DistributionsController(OrganizationEntityController):
         self._register_action_doc(helper._unpublish_doc())
         self._register_action_doc(helper._push_doc())
         self._register_action_doc(helper._pull_doc())
+        self._register_action_doc(self._lock_doc())
+        self._register_action_doc(self._unlock_doc())
         self._register_action_doc(helper._update_authorized_doc())
 
     def _get_collection(self, org_name):
         return self._client.distributions(org_name)
+
+    def _lock_doc(self):
+        return ActionDoc("lock"," <org_name> <dist_name>", """
+        Lock disable update.""")
+
+    def _unlock_doc(self):
+        return ActionDoc("unlock", "<org_name> <dist_name> [--force]", """
+        Unlock enable update.""")
+
 
     def _prune_json_update(self, json_wrapper):
         super(DistributionsController, self)._prune_json_update(json_wrapper)
@@ -118,3 +132,15 @@ class DistributionsController(OrganizationEntityController):
             flavor = self._client.get_flavor(flavor_name)
             for p in flavor.parameters_f:
                 template_json["settings"].append({"key": p.key, "value":p.value})
+
+    def _lock(self, argv):
+        dist = self._get_entity(argv)
+        dist.lock()
+
+    def _unlock(self, argv):
+        dist = self._get_entity(argv)
+        if not dist.locked :
+            print("distribution not locked")
+        elif self._config.options.force or (prompt.confirm(prompt="Unlock " + dist.name + " ?", resp=False)) :
+            dist.unlock()
+

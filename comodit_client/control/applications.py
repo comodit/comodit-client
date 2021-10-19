@@ -56,10 +56,21 @@ class ApplicationsController(OrganizationEntityController):
         self._register_action_doc(helper._unpublish_doc())
         self._register_action_doc(helper._push_doc())
         self._register_action_doc(helper._pull_doc())
+        self._register_action_doc(self._lock_doc())
+        self._register_action_doc(self._unlock_doc())
         self._register_action_doc(helper._update_authorized_doc())
 
     def _get_collection(self, org_name):
         return self._client.applications(org_name)
+
+    def _lock_doc(self):
+        return ActionDoc("lock"," <org_name> <app_name>", """
+        Lock disable update.""")
+
+    def _unlock_doc(self):
+        return ActionDoc("unlock", "<org_name> <app_name> [--force]", """
+        Unlock enable update.""")
+
 
     def _prune_json_update(self, json_wrapper):
         super(ApplicationsController, self)._prune_json_update(json_wrapper)
