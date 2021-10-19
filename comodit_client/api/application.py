@@ -1116,6 +1116,7 @@ class Application(HasParameters, IsStoreCapable):
     def _show(self, indent=0):
         print(" "*indent, "Name:", self.name)
         print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Locked:", self.locked)
 
         self._show_parameters(indent)
 

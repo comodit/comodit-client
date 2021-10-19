@@ -3,6 +3,7 @@
 Provides the classes related to distribution entity: L{Distribution}
 and L{DistributionCollection}.
 """
+from __future__ import print_function
 
 from comodit_client.api.settings import HasSettings
 from comodit_client.api.parameters import HasParameters
@@ -85,6 +86,17 @@ class Distribution(HasSettings, HasParameters, HasFiles, IsStoreCapable):
 
         return self._get_field("organization")
 
+    @property
+    def locked(self):
+        """
+        locked distribution.
+
+        @rtype: bool
+        """
+
+        return self._get_field("locked")
+
+
     def clone(self, clone_name):
         """
         Requests the cloning of remote entity. Clone will have given name.
@@ -118,7 +130,32 @@ class Distribution(HasSettings, HasParameters, HasFiles, IsStoreCapable):
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
+        print(" " * indent, "Locked:", self.locked)
+
         self._show_settings(indent)
         self._show_parameters(indent)
         self._show_files(indent)
         self._show_store_fields(indent)
+
+
+    def lock(self):
+        """
+        lock distribution.
+        """
+        try:
+            result = self._http_client.create(self.url + "lock", decode = False)
+            if result.getcode() != 200:
+                raise PythonApiException("Call not accepted by server")
+        except ApiException as e:
+            raise PythonApiException("Unable to lock distribution : " + e.message)
+
+    def unlock(self):
+        """
+        unlock distribution
+        """
+        try:
+            result = self._http_client.create(self.url + "unlock", decode = False)
+            if result.getcode() != 200:
+                raise PythonApiException("Call not accepted by server")
+        except ApiException as e:
+            raise PythonApiException("Unable to unlock distribution : " + e.message)
