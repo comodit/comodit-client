@@ -1479,7 +1479,7 @@ class Host(HasSettings):
 
         self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_disable", decode = False)
 
-    def live_update_package(self, app_name, pkg_name, pkg_version):
+    def update_package(self, app_name, pkg_name, pkg_version):
         """
         Requests the update of a package on provisioned machine. This may, for
         instance, solve a compliance error linked to target package having been
@@ -1493,11 +1493,32 @@ class Host(HasSettings):
         @type pkg_version: string
         """
 
-        res = PackageResource()
-        res.name = pkg_name
-        res.release = pkg_version
+        parameters = {}
+        if pkg_version:
+            parameters['release'] = pkg_version
 
-        self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name, res.get_json(), decode = False)
+        self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name + "/_update", decode = False, parameters = parameters)
+
+
+    def live_install_package(self, app_name, pkg_name, pkg_version):
+        """
+        Requests the install of a package on provisioned machine. This may, for
+        instance, solve a compliance error linked to target package having been
+        removed. A change is queued and exposes the result of the operation.
+
+        @param app_name: The name of file's application.
+        @type app_name: string
+        @param pkg_name: The package's name.
+        @type pkg_name: string
+        @param pkg_version: The package's version.
+        @type pkg_version: string
+        """
+
+        parameters = {}
+        if pkg_version:
+            parameters['release'] = pkg_version
+
+        self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name + "/_install",parameters = parameters, decode = False)
 
     def install(self, name, settings = {}):
         """
