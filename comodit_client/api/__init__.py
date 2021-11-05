@@ -338,6 +338,9 @@ class Client(object):
     def __get_unresolved_orchestration(self, org_name, name):
         return self.orchestrations(org_name).new(name)
 
+    def orchestration_handlers(self, org_name, env_name):
+        return self.__get_unresolved_orchestration(org_name, env_name).handlers()
+
     def orchestrations(self, org_name):
         """
         Instantiates the collection of orchestrations associated to named
