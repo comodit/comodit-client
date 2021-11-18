@@ -6,6 +6,7 @@ and L{OrchestrationCollection}.
 from __future__ import print_function
 from __future__ import absolute_import
 
+from .OrchestrationHandler import OrchestrationHandlerCollection
 from .collection import Collection
 from comodit_client.api.entity import Entity
 from comodit_client.util.json_wrapper import JsonWrapper
@@ -122,6 +123,16 @@ class Orchestration(Entity):
         """
 
         return self.contexts().get(id)
+
+    def handlers(self):
+        """
+        Instantiates the collection of handlers associated to this orchestration.
+
+        @return: The collection of orchestration context associated to this orchestration.
+        @rtype: L{OrchestrationHandlerCollection}
+        """
+
+        return OrchestrationHandlerCollection(self.client, self.url + "handlers/")
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)
