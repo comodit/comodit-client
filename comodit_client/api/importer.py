@@ -118,7 +118,7 @@ class Import(object):
 
     def _is_conflict(self, collection, res_name):
         try:
-            collection.get(res_name)
+            collection.get(res_name, return_error_code=False)
             return True
         except EntityNotFoundException:
             return False
@@ -361,7 +361,6 @@ class Import(object):
 
         host = Host(env.hosts(), None)
         host.load(host_folder)
-
         apps = host.application_names
 
         # Contexts are created below
@@ -438,6 +437,8 @@ class Import(object):
 
 
     def import_full_host(self, org, env, host_folder):
+        org.return_error_code=False
+
         host = Host(env.hosts(), None)
         host.load(host_folder)
 
@@ -453,7 +454,6 @@ class Import(object):
         self._import_entity_and_detect_conflict(host, "host", False)
 
         org_folder = os.path.join(host_folder, "..", "..", "..", "..")
-
         if dist:
             dists_folder = os.path.join(org_folder, "distributions")
             self.import_distribution_if_not_exist(org, dists_folder, dist)

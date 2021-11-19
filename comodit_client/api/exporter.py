@@ -240,16 +240,19 @@ class Export(object):
             context.dump_json(os.path.join(app_folder, context.application + ".json"))
 
         # Export platform context
-        try:
-            host.get_platform().dump_json(os.path.join(path, "platform.json"))
-        except EntityNotFoundException:
-            pass
+        if host.platform_name is not None:
+            try:
+                host.get_platform().dump_json(os.path.join(path, "platform.json"))
+            except EntityNotFoundException:
+                pass
 
         # Export distribution context
-        try:
-            host.get_distribution().dump_json(os.path.join(path, "distribution.json"))
-        except EntityNotFoundException:
-            pass
+        if host.distribution_name is not None:
+            try:
+                host.get_distribution().dump_json(os.path.join(path, "distribution.json"))
+            except EntityNotFoundException:
+                pass
+
 
     def export_organization(self, org, path):
         """
