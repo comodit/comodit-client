@@ -13,7 +13,7 @@ class EntityNotFoundException(PythonApiException):
     Exception raised when an entity was not found in a collection.
     """
 
-    def __init__(self, identifier):
+    def __init__(self, identifier, return_error_code=True):
         """
         Creates an instance of EntityNotFoundException.
 
@@ -21,7 +21,9 @@ class EntityNotFoundException(PythonApiException):
         @type identifier: string
         """
         super(EntityNotFoundException, self).__init__("Entity not found: " + identifier)
-        sys.exit("Entity not found: " + identifier)
+        if return_error_code:
+            sys.exit("Entity not found: " + identifier)
+
 
 class Collection(object):
     """
@@ -75,9 +77,9 @@ class Collection(object):
 
         return self.client._http_client
 
-    def _handle_error(self, e, identifier):
+    def _handle_error(self, e, identifier, return_error_code=True):
         if e.code == 404:
-            raise EntityNotFoundException(identifier)
+            raise EntityNotFoundException(identifier, return_error_code)
         else:
             raise PythonApiException("error " + str(e.code) + ": " + e.message)
 
@@ -180,7 +182,7 @@ class Collection(object):
 
         return self.list().__iter__()
 
-    def get(self, identifier = "", parameters = {}):
+    def get(self, identifier = "", parameters = {}, return_error_code=True):
         """
         Retrieves a particular entity of this collection.
 
@@ -203,7 +205,7 @@ class Collection(object):
             result = self.client._http_client.read(self.url + identifier, parameters = parameters)
             return self._new(result)
         except ApiException as e:
-            self._handle_error(e, identifier)
+            self._handle_error(e, identifier, return_error_code)
 
     def delete(self, identifier, parameters = {}):
         """

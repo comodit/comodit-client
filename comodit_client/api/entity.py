@@ -41,6 +41,7 @@ class Entity(JsonWrapper):
 
         super(Entity, self).__init__(json_data)
         self.collection = collection
+        self.return_error_code = True
 
     @property
     def url(self):

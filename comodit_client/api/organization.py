@@ -158,7 +158,7 @@ class Organization(HasSettings):
         @rtype: L{Application}
         """
 
-        return self.applications().get(name)
+        return self.applications().get(name, return_error_code=self.return_error_code)
 
     def platforms(self):
         """
@@ -179,7 +179,7 @@ class Organization(HasSettings):
         @rtype: L{Application}
         """
 
-        return self.platforms().get(name)
+        return self.platforms().get(name, return_error_code=self.return_error_code)
 
     def distributions(self):
         """
@@ -200,7 +200,7 @@ class Organization(HasSettings):
         @rtype: L{Distribution}
         """
 
-        return self.distributions().get(name)
+        return self.distributions().get(name, return_error_code=self.return_error_code)
 
     def environments(self):
         """
