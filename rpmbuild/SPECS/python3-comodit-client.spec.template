@@ -21,6 +21,7 @@ Packager: Daniel Bartz <daniel.bartz@guardis.com>
 %{?el8:BuildRequires: platform-python-devel}
 %{?fedora:BuildRequires: platform-devel}
 %{?fedora:BuildRequires: python3-devel}
+%{?fedora:BuildRequires: python3-setuptools}
 
 Requires: python3 >= 3.5
 Requires: python3-pycurl
