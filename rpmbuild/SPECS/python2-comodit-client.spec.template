@@ -12,7 +12,7 @@ Vendor: Guardis
 Source0: %{name}-%{version}-#RELEASE#.tar.gz
 
 BuildArch: noarch
-BuildRoot:  %{_tmppath}/python2-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Packager: Daniel Bartz <daniel.bartz@guardis.com>
 
