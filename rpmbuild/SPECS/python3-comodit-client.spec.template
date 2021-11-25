@@ -1,5 +1,7 @@
 %global pkgname comodit-client
 
+%define main_package comodit_client
+
 Name: python3-%{pkgname}
 Version: #VERSION#
 Release: #RELEASE#%{?dist}
