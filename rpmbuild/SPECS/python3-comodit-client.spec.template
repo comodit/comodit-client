@@ -40,8 +40,8 @@ auditing and monitoring.
 
 %build
 %py3_build
-/usr/bin/pathfix.py -pn -i %{__python2} setup.py
-/usr/bin/pathfix.py -pn -i %{__python2} comodit
+/usr/bin/pathfix.py -pn -i %{__python3} setup.py
+/usr/bin/pathfix.py -pn -i %{__python3} comodit
 
 %install
 %py3_install
