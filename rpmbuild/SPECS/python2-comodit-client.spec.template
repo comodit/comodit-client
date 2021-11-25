@@ -34,7 +34,7 @@ life-cycle. Integrating in particular the management of virtual machines
 auditing and monitoring.
 
 %prep
-%autosetup -c python22-%{name}-%{version}-#RELEASE#
+%autosetup -c %{name}-%{version}-#RELEASE#
 
 %build
 %py2_build

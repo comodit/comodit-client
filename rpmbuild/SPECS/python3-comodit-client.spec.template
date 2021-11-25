@@ -12,7 +12,7 @@ Vendor: Guardis
 Source0: %{name}-%{version}-#RELEASE#.tar.gz
 
 BuildArch: noarch
-BuildRoot:  %{_tmppath}/python3-%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Packager: Daniel Bartz <daniel.bartz@guardis.com>
 
@@ -33,7 +33,7 @@ life-cycle. Integrating in particular the management of virtual machines
 auditing and monitoring.
 
 %prep
-%autosetup -c python3-%{name}-%{version}-#RELEASE#
+%autosetup -c %{name}-%{version}-#RELEASE#
 
 %build
 %py3_build
