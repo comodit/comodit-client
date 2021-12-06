@@ -1,10 +1,4 @@
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-
 %define main_package comodit_client
-
-%if 0%{?fedora} >= 29
-%define __python /usr/bin/python2
-%endif
 
 Name: comodit-client
 Version: #VERSION#
@@ -24,27 +18,13 @@ Packager: Daniel Bartz <daniel.bartz@guardis.com>
 BuildRequires: python-devel
 BuildRequires: python-setuptools
 
-%if 0%{?fedora}
-Requires: python3 >= 3.5
-Requires: python3-pycurl
-Requires: python3-future
-Requires: python3-six
-Requires: python3-progressbar
-%endif
-
-%if 0%{?rhel}
 Requires: python >= 2.6
 Requires: python-argparse
-%endif
-
-# The following may be moved to rhel only when fedora will be fully supporting python3
 Requires: python-pycurl
 Requires: python-progressbar
 Requires: python-future
 Requires: python-six
 Requires: python-configparser
-
-Obsoletes: cortex-client
 
 %description
 
@@ -57,10 +37,10 @@ auditing and monitoring.
 %setup -c
 
 %build
-%{__python} setup.py build
+%py2_build
 
 %install
-%{__rm} -rf %{buildroot}
+%py2_install
 %{__mkdir} -p %{buildroot}/etc/comodit-client/
 %{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
 %{__mkdir} -p %{buildroot}/etc/bash_completion.d/
@@ -89,5 +69,6 @@ auditing and monitoring.
 %{python_sitelib}/%{main_package}
 
 %changelog
-* Fri Sep 29 2017 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
-- Update SPEC file
+* Wed Nov 24 2021 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
+- Initial SPEC file
+
