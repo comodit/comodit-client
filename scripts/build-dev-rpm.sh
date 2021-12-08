@@ -35,14 +35,17 @@ echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
 mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 # Do not tar directly in SOURCES directory to escape error
-tar -cvzf ${NAME}-${VERSION}-${RELEASE}.tar.gz * \
+# Do not tar directly in SOURCES directory to escape error
+tar -cvzf ${NAME}-${VERSION}-${RELEASE}.tar.gz \
 --exclude .git \
+--exclude .gitignore \
 --exclude debian \
 --exclude scripts \
---exclude deb_dist \
 --exclude test \
---exclude gitignorel \
---exclude gitmodules 
+--exclude rpmbuild/BUILD \
+--exclude rpmbuild/BUILDROOT \
+--exclude rpmbuild/SOURCES \
+--exclude gitmodules  *
 
 mv ${NAME}-${VERSION}-${RELEASE}.tar.gz rpmbuild/SOURCES
 
