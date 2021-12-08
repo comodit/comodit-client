@@ -1,52 +1,54 @@
+%global pkgname comodit-client
+
 %define main_package comodit_client
 
-Name: comodit-client
+Name: python3-%{pkgname}
 Version: #VERSION#
 Release: #RELEASE#%{?dist}
 Summary: ComodIT command line interface
+
 Group: System Environment/Shells
 License: MIT
 URL: http://www.comodit.com
 Vendor: Guardis
 Source0: %{name}-%{version}-#RELEASE#.tar.gz
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Packager: Daniel Bartz <daniel.bartz@guardis.com>
 
-BuildRequires: python-devel
-BuildRequires: python-setuptools
+%{?el8:BuildRequires: platform-python-devel}
+%{?fedora:BuildRequires: platform-devel}
+%{?fedora:BuildRequires: python3-devel}
+%{?fedora:BuildRequires: python3-setuptools}
 
-Requires: python >= 2.6
-Requires: python-argparse
-Requires: python-pycurl
-Requires: python-progressbar
-Requires: python-future
-Requires: python-six
-Requires: python-configparser
+Requires: python3 >= 3.5
+Requires: python3-pycurl
+Requires: python3-future
+Requires: python3-six
+Requires: python3-progressbar2
 
 %description
-
 ComodIT automates the management of an Information System through the entire
 life-cycle. Integrating in particular the management of virtual machines
 (though an hypervisor), the provisioning, the configuration management,
 auditing and monitoring.
 
 %prep
-%setup -c
+%autosetup -c %{name}-%{version}-#RELEASE#
 
 %build
-%py2_build
+%py3_build
+/usr/bin/pathfix.py -pn -i %{__python3} setup.py
+/usr/bin/pathfix.py -pn -i %{__python3} comodit
 
 %install
-%py2_install
+%py3_install
 %{__mkdir} -p %{buildroot}/etc/comodit-client/
 %{__mkdir} -p %{buildroot}/usr/share/comodit-client/templates/
 %{__mkdir} -p %{buildroot}/etc/bash_completion.d/
 %{__mkdir} -p %{buildroot}/usr/share/man/man1/
-
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 %{__cp} comodit %{buildroot}/usr/bin/comodit
 %{__cp} rpmbuild/etc/comodit-client/comodit-client.conf %{buildroot}/etc/comodit-client/
@@ -55,10 +57,7 @@ auditing and monitoring.
 %{__cp} doc/comodit.1 %{buildroot}/usr/share/man/man1/comodit.1
 
 # Remove egg info
-%{__rm} -rf %{buildroot}/%{python_sitelib}/comodit_client*.egg-info
-
-%clean
-%{__rm} -rf %{buildroot}
+%{__rm} -rf %{buildroot}/%{python3_sitelib}/comodit_client*.egg-info
 
 %files
 %attr(755, root, root) /usr/bin/comodit
@@ -66,9 +65,8 @@ auditing and monitoring.
 /usr/share/comodit-client/templates/*.json
 /etc/bash_completion.d/comodit
 /usr/share/man/man1/comodit.1.gz
-%{python_sitelib}/%{main_package}
+%{python3_sitelib}/%{main_package}
 
 %changelog
 * Wed Nov 24 2021 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
 - Initial SPEC file
-

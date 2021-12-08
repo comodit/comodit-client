@@ -4,7 +4,7 @@
 set -e
 source config
 
-NAME="python-comodit-client"
+NAME="python2-comodit-client"
 
 if [ -z $1 ]
 then
@@ -34,14 +34,14 @@ echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
 mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 # Do not tar directly in SOURCES directory to escape error
-tar -cvzf ${NAME}-${VERSION}-${RELEASE}.tar.gz * \
+tar -cvzf ${NAME}-${VERSION}-${RELEASE}.tar.gz \
 --exclude .git \
 --exclude debian \
 --exclude scripts \
 --exclude deb_dist \
 --exclude test \
 --exclude gitignorel \
---exclude gitmodules 
+--exclude gitmodules *
 
 mv ${NAME}-${VERSION}-${RELEASE}.tar.gz rpmbuild/SOURCES
 
@@ -56,3 +56,4 @@ then
     mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages/${platform}
   done
 fi
+
