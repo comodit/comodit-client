@@ -9,26 +9,28 @@
  
         $ git remote add upstream  https://github.com/comodit/comodit-client.git
 
-more information in help of github https://docs.github.com/en/get-started/quickstart/fork-a-repo
+more information [GitHub help](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
 
 
 ## Create new branch for feature or fixed
+
+> if you cloned your repository not now. Read before Retrieve change from source project
 
 Create branch
 
         $ git checkout -b branchName
 
-Commit your change
+Commit changes
 
         $ git commit -am "description of change"
 
-Push you change
+Push changes
 
         $ git push origin <branch_name>
 
 ## Create PullRequest
 
-1. Go to https://github.com/REPO_NAME/comodit-client/branches
+1. Go to https://github.com/<REPO_NAME>/comodit-client/branches
 
 #### ![pullRequest](./image/pr.png)
 
@@ -42,8 +44,23 @@ In GitHub flow, Pull request merge directly in branch master of source project
 4. Verify your change
 5. Ask to someone to verify your change and accept the pull request
 
-more information in help of GitHub https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request#changing-the-branch-range-and-destination-repository
+more information [GitHub help](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request#changing-the-branch-range-and-destination-repository)
 
 
-## Accept PullRequest
+## Accept PullRequest with squash
+
+When you accept the change, select and merge and push on it.
+
+This option create only one commit with all your commit and you can write a description for details.
+Now your change it's on branch master of comodit-client repository 
+### ![squash](./image/squash.png)
+
+
+## Retrieve change from source project
+
+      $ git checkout master
+      $ git fetch upstream
+      $ git rebase upstream/master
+
+
 
