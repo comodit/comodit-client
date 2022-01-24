@@ -116,6 +116,11 @@ Available entities:
     parser.add_argument("--timeout", dest = "timeout", help = "set timeout in second for wait", default = 0)
     parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor upon creation", default = None)
 
+    parser.add_argument("--non-handler", dest="non_handler", help="No application or orchestration handler is triggered",
+                        action="store_true", default=False)
+    parser.add_argument("--orchestration_handler", dest="orchestration_handler", help="Only orchestration handler is triggered",
+                        action="store_true", default=False)
+
     parser.add_argument("--skip-chown", dest = "skip_chown", help = "Do not chown files on render tree", action = "store_true", default = False)
     parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "Do not chmod files on render tree", action = "store_true", default = False)
 

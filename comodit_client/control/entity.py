@@ -131,6 +131,12 @@ class EntityController(AbstractController):
             parameters["default"] = "true"
         if options.test:
             parameters["test"] = "true"
+        if options.orchestration_handler:
+            parameters["trigger_orchestration_handler"] = "true"
+            parameters["trigger_application_handler"] = "false"
+        if options.non_handler:
+            parameters["trigger_orchestration_handler"] = "false"
+            parameters["trigger_application_handler"] = "false"
         if options.flavor != None:
             parameters["flavor"] = options.flavor
         res.create(parameters=parameters)
@@ -171,14 +177,34 @@ class EntityController(AbstractController):
                 res.rename(new_name)
 
         # Update entity
+        options = self._config.options
+        parameters = {}
+        parameters["force"] = self._config.options.force
+        if options.orchestration_handler:
+            parameters["trigger_orchestration_handler"] = "true"
+            parameters["trigger_application_handler"] = "false"
+        if options.non_handler:
+            parameters["trigger_orchestration_handler"] = "false"
+            parameters["trigger_application_handler"] = "false"
+
+
         res.set_json(item)
-        res.update(self._config.options.force)
+        res.update(parameters)
         res.show(as_json=self._config.options.raw)
 
     def _delete(self, argv):
         res = self._get_entity(argv)
+        options = self._config.options
+        parameters = {}
+        if options.orchestration_handler:
+            parameters["trigger_orchestration_handler"] = "true"
+            parameters["trigger_application_handler"] = "false"
+        if options.non_handler:
+            parameters["trigger_orchestration_handler"] = "false"
+            parameters["trigger_application_handler"] = "false"
+
         if self._config.options.force or (prompt.confirm(prompt="Delete " + res.name + " ?", resp=False)) :
-            res.delete()
+            res.delete(parameters)
 
     def _help(self, argv):
         self._print_doc()
