@@ -205,6 +205,14 @@ class Entity(JsonWrapper):
             parameters["force"] = "true"
         self.collection._update(self, parameters)
 
+    def update(self, parameters):
+        """
+        Updates remote entity with this object's state.
+        @raise PythonApiException: If collection is not set.
+        """
+        self.__enforce_connected()
+        self.collection._update(self, parameters)
+
     def create(self, parameters = {}):
         """
         Creates a new entity on the server using this object's state for
