@@ -161,7 +161,6 @@ class OrchestrationContext(Entity):
         start_time = time.time()
 
         if progress:
-            print(self.organization, 'orchestration', self.orchestration, 'started')
             widgets = ['Orchestration - ', Timer()]
             pbar = ProgressBar(widgets=widgets)
             pbar.start()
