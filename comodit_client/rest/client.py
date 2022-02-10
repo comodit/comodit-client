@@ -129,10 +129,38 @@ class HttpClient(object):
         else:
             if self._is_mfa_enabled():
                 return self._get_jwt_token()
-            else :
+            elif self._jwt_file_exist():
+                if self._valid_jwt_token():
+                    return self._get_jwt_token()
+                else:
+                    return {
+                    "Authorization": self._get_basic_authorization_field(),
+                }
+            else:
                 return {
                     "Authorization": self._get_basic_authorization_field(),
                 }
+
+    def _valid_jwt_token(self):
+        headers = self._get_jwt_token()
+        url = self._encode_url("account/_verify", {})
+
+        req = self._new_request_with_headers(url, "GET", headers=headers)
+
+        result = None
+        try:
+            result = self._urlopen(req)
+        except Exception as e:
+            pass
+
+        if result is not None:
+            return True
+        else:
+            return False
+
+    def _jwt_file_exist(self):
+        jwt_file = self._get_jwt_file()
+        return os.path.exists(jwt_file)
 
     def _get_jwt_token(self):
         jwt_file = self._get_jwt_file()
@@ -157,10 +185,10 @@ class HttpClient(object):
         return os.path.join(path, JWT_FILE)
 
     def _get_valid_jwt_token(self):
-        self.ask_mfa = True
         url = self._encode_url("account/_verify", {})
-
+        self.ask_mfa = True
         req = self._new_request_with_headers(url, "GET", self._get_mfa_header())
+
         result = None
         try:
             result = self._urlopen(req)
