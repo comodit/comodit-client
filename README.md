@@ -13,7 +13,7 @@ system).
 
 Below you will find usage examples for both library and CLI. These examples
 suppose that you already have a ComodIT account. If it is not yet the case, do
-not hesitate to [register](https://my.comodit.com/), it's free.
+not hesitate to [register](https://my.comodit.com/).
 
 
 # Install
@@ -44,26 +44,28 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
 ## From repository
 
+### Install dependencies
+
+      $ pip install pycurl future six progressbar
+
 ### Fedora/CentOS Users
 
 1. Add ComodIT repository by executing the following command:
 
-    - On CentOS 7 `rpm -ivh http://dl.comodit.com/pub/centos/7/x86_64/comodit-release-7-0.el7.noarch.rpm`
-    - On Fedora 28: `rpm -ivh http://dl.comodit.com/pub/fedora/28/x86_64/comodit-release-1-0.fc28.noarch.rpm`
+    - On EL8 (RHEL, Rocky Linux, Alma Linux, ...) `rpm -ivh http://dl.comodit.com/pub/el/8/x86_64/comodit-release-2-1.el8.noarch.rpm`
+    - On Fedora 36 `rpm -ivh http://dl.comodit.com/pub/fedora/36/x86_64/comodit-release-2-0.fc36.noarch.rpm`
 
-2. Install client with command `yum install comodit-client`.
+2. Install client with command `dnf install python3-comodit-client`.
 
 ### Ubuntu/Debian Users
 
 1. Add ComodIT repository by executing the following command:
 
-        cat <<EOF > /etc/apt/sources.list.d/comodit.list
-        deb http://dl.comodit.com/pub debian-stretch main
-        EOF
+        echo "deb http://dl.comodit.com/pub $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/comodit.list
 
 2. Install repository key:
 
-        wget http://dl.comodit.com/pub/dists/comodit.asc -O /tmp/key; apt-key add /tmp/key; rm -f /tmp/key
+        wget http://dl.comodit.com/pub/comodit.asc -O /tmp/key; apt-key add /tmp/key; rm -f /tmp/key
 
 3. Install client with command `apt-get update; apt-get install comodit-client`.
 
@@ -81,8 +83,11 @@ not hesitate to [register](https://my.comodit.com/), it's free.
         vnc_viewer_call = vinagre %h:%p
 
 2. Run the following command to check that everything works (you should see the list of organizations you have access to)
-
-        $ comodit organizations list
+         
+        # Without MFA
+        $ comodit organizations listc 
+        # With MFA
+        $ comodit organizations list --mfa XXXXXX 
 
 For more information, read below sections and/or the man page:
 
