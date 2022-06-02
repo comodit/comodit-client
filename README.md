@@ -67,7 +67,7 @@ not hesitate to [register](https://my.comodit.com/).
 
         wget http://dl.comodit.com/pub/comodit.asc -O /tmp/key; apt-key add /tmp/key; rm -f /tmp/key
 
-3. Install client with command `apt-get update; apt-get install comodit-client`.
+3. Install client with command `apt-get update; apt-get install python3-comodit-client`.
 
 # After installation
 
