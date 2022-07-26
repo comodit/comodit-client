@@ -1415,7 +1415,7 @@ class Host(HasSettings):
         @return: Orchestration context
         @rtype: L{OrchestrationContext}
         """
-        return self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode=True)
+        return self._http_client.update(self.url + "orchestrations/" + orchestration_name + "/_run", decode=True)
 
     def get_orchestrations(self):
         """
