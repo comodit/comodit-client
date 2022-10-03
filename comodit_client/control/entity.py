@@ -52,13 +52,6 @@ class EntityController(AbstractController):
         if parameters is None:
             parameters = self._get_list_parameters(argv)
 
-        options = self._config.options
-        parameters["secret_only"] = options.secret
-        parameters["no_secret"] = options.non_secret
-        parameters["obfuscate"] = options.obfuscate
-        if options.key is not None:
-            parameters["key"] = options.key
-
         entities_list = self._list_entities(argv, parameters=parameters)
         if self._config.options.raw:
             print(json.dumps([entity.get_json() for entity in entities_list], indent=4))
@@ -131,12 +124,6 @@ class EntityController(AbstractController):
             parameters["default"] = "true"
         if options.test:
             parameters["test"] = "true"
-        if options.orchestration_handler:
-            parameters["trigger_orchestration_handler"] = "true"
-            parameters["trigger_application_handler"] = "false"
-        if options.non_handler:
-            parameters["trigger_orchestration_handler"] = "false"
-            parameters["trigger_application_handler"] = "false"
         if options.flavor != None:
             parameters["flavor"] = options.flavor
         res.create(parameters=parameters)
@@ -149,21 +136,20 @@ class EntityController(AbstractController):
     def _update(self, argv):
         # First, get entity
         res = self._get_entity(argv)
-        
+
         # Check if function exist
         if "_get_value_argument" in dir(self):
-            value = self._get_value_argument(argv);
-            if value != None and res.schema.multiline != True:
+            value = self._get_value_argument(argv)
+            if value is not None and res.schema.multiline != True:
                 # Update entity
-                
+
                 res.value = value
                 res.update(self._config.options.force)
                 res.show(as_json=self._config.options.raw)
                 exit()
 
-        
         cur_name = res.name
-        
+
         # Prune entity fields (all may not be updatable)
         self._prune_json_update(res)
 
@@ -187,7 +173,6 @@ class EntityController(AbstractController):
             parameters["trigger_orchestration_handler"] = "false"
             parameters["trigger_application_handler"] = "false"
 
-
         res.set_json(item)
         res.update(parameters)
         res.show(as_json=self._config.options.raw)
@@ -203,7 +188,7 @@ class EntityController(AbstractController):
             parameters["trigger_orchestration_handler"] = "false"
             parameters["trigger_application_handler"] = "false"
 
-        if self._config.options.force or (prompt.confirm(prompt="Delete " + res.name + " ?", resp=False)) :
+        if self._config.options.force or (prompt.confirm(prompt="Delete " + res.name + " ?", resp=False)):
             res.delete(parameters)
 
     def _help(self, argv):

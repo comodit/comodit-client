@@ -122,7 +122,8 @@ class Package(ApplicationResource):
     DEB, etc.) associated to the application.
     """
 
-    pass
+    def identifier(self):
+        return self.name;
 
 
 class Repository(ApplicationResource):
@@ -150,7 +151,7 @@ class Repository(ApplicationResource):
         @type location: string
         """
 
-        return self._set_field("location", location)
+        self._set_field("location", location)
 
     def show(self, indent=0):
         """

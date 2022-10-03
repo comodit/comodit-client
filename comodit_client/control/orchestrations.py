@@ -23,7 +23,7 @@ class OrchestrationsController(OrganizationEntityController):
     # actions
 
     def _get_collection(self, org_name):
-        return self._client.orchestration(org_name, )
+        return self._client.orchestrations(org_name)
 
     def _prune_json_update(self, json_wrapper):
         super(OrchestrationsController, self)._prune_json_update(json_wrapper)
