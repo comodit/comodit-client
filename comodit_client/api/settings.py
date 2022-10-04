@@ -4,8 +4,12 @@ Provides classes related to setting entities, in particular L{HasSettings}.
 """
 from __future__ import print_function
 
+import re
+
+from comodit_client.api.applicationResourceProperty import ApplicationResourcePropertyCollection
 from comodit_client.api.entity import Entity
 from comodit_client.api.collection import Collection
+from comodit_client.api.applicationOperation import ApplicationOperation
 from comodit_client.util.json_wrapper import JsonWrapper
 
 
@@ -245,6 +249,15 @@ class SettingImpact(Entity):
 
         return self._get_list_field("settingHandlerContexts", lambda x: SettingHandlerContext(x))
 
+    def orchestration_handler_execution(self):
+        """
+        List of orchestration handler.
+
+        @rtype: list of orchestrationHandlerExecution L{SettingHandlerContext}
+        """
+
+        return self._get_list_field("orchestrationHandlerExecution", lambda x: OrchestrationHandlerExecution(x))
+
     @settingHandlerContexts.setter
     def argumsettingHandlerContextsents(self, settingHandlerContexts):
         """
@@ -277,6 +290,16 @@ class SettingImpact(Entity):
         """
         return self._set_list_field("otherResources", otherResources)
 
+    @property
+    def packages(self):
+
+        return self._get_list_field("packageResources")
+
+    @property
+    def rpm_modules(self):
+
+        return self._get_list_field("rpmModuleResources")
+
     def show(self, indent = 0):
         print(" "*(indent + 2), "Resources automatically updated by event handlers")
         for s in self.settingHandlerContexts:
@@ -286,10 +309,26 @@ class SettingImpact(Entity):
         for g in self.otherResources:
             print(" "*(indent + 4), g)
 
+        print(" "*(indent + 2), "Orchestration impacted")
+        for g in self.orchestration_handler_execution():
+            g.show(2)
+
+        if self.packages:
+            print(" " * (indent + 2), "Packages impacted")
+            for p in self.packages:
+                print(" "*(indent + 4), p)
+
+        if self.rpm_modules:
+            print(" " * (indent + 2), "Rpm modules impacted")
+            for p in self.rpm_modules:
+                print(" "*(indent + 4), p)
+
+
 class SettingImpactCollection(Collection):
 
      def _new(self, json_data = None):
         return SettingImpact(self, json_data)
+
 
 class OrganizationSettingTree(JsonWrapper):
 
@@ -556,7 +595,58 @@ class ApplicationSettingTree(JsonWrapper):
         for s in self.settings:
             s._show(indent + 4, False)
 
+class OrchestrationHandlerExecution(JsonWrapper):
 
+    @property
+    def orchestration(self):
+
+        return OrchestrationExecution(self._get_field("orchestration"))
+    @property
+    def hosts(self):
+        """
+        List of hosts with handler or setting isn't define
+
+        @rtype: list of hosts L{HostSettingContext}
+        """
+
+        return self._get_list_field("hosts", lambda x: HostSettingContext(x))
+
+    def show(self, indent = 0):
+        print(" " * (indent + 2), "orchestration", self.orchestration.name)
+        print(" " * (indent + 2), "Action(s)")
+        for a in self.orchestration.application_operations():
+            a._show(indent + 4)
+        print(" " * (indent + 2), "Hosts")
+        for h in self.hosts:
+            h.show(indent)
+
+class OrchestrationExecution(JsonWrapper):
+
+    @property
+    def name(self):
+        """
+        name of orchestration
+
+        @rtype: string
+        """
+        return self._get_field("name")
+
+    @property
+    def name(self):
+        """
+        name of orchestration
+
+        @rtype: string
+        """
+        return self._get_field("name")
+    def application_operations(self):
+        """
+                List of orchestration's applicationOperations.
+
+                @rtype: list of applicationOperations L{ApplicationOperation}
+                """
+
+        return self._get_list_field("applicationsOperations", lambda x: ApplicationOperation(x))
 
 class SettingHandlerContext(JsonWrapper):
 
@@ -960,6 +1050,9 @@ class HasSettings(Entity):
     def impact(self, key):
         return SettingImpactCollection(self.client, self.url + "settings/" + key).get("/impact")
 
+    def resource_impact(self, path):
+        return SettingImpactCollection(self.client, self.url + path).get("/impact")
+
     def add_simple_setting(self, key, value):
         """
         Adds a simple setting to local list of settings. Note that this list is considered only at creation time.
@@ -1034,6 +1127,45 @@ class HasSettings(Entity):
         print(" "*indent, "Settings:")
         for s in self.settings_f:
             s._show(indent + 2)
+
+    @property
+    def application_properties(self):
+        """
+        applicationproerties hostGroup.
+
+        @rtype: Setting
+        """
+        return ApplicationResourcePropertyCollection(self.client, self.url + "application_properties/")
+
+    @property
+    def resource_properties(self):
+        """
+        applicationproerties hostGroup.
+
+        @rtype: Setting
+        """
+        return ApplicationResourcePropertyCollection(self.client, self.url)
+
+    def package(self, app, package, key):
+        """
+        applicationproerties hostGroup.
+
+        @rtype: Setting
+        """
+        return ApplicationResourcePropertyCollection(self.client,
+                                                     self.url + "applications/" + app + "/packages/" + package + "/properties/").get(
+            key)
+
+    def rpm_module(self, app, name, key):
+        """
+        applicationproerties hostGroup.
+
+        @rtype: Setting
+        """
+        return ApplicationResourcePropertyCollection(self.client,
+                                                     self.url + "applications/" + app + "/rpmmodules/" + name + "/properties/").get(
+            key)
+
 
 def add_settings(container, settings):
     """
