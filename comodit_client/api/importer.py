@@ -17,6 +17,7 @@ from comodit_client.api.contexts import ApplicationContext, PlatformContext, \
 from comodit_client.api.distribution import Distribution
 from comodit_client.api.environment import Environment
 from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.git import Git
 from comodit_client.api.host import Host, Instance
 from comodit_client.api.job import Job
 from comodit_client.api.organization import Organization
@@ -231,6 +232,16 @@ class Import(object):
                 res = RpmModule(app.rpm_modules(), None)
                 res.load(module_folder)
                 self._import_entity_and_detect_conflict(res, "rpmmodule", skip_conflict_detection=skip_conflict_detection)
+
+        gits_folder = os.path.join(root_folder, "gits")
+        if os.path.exists(gits_folder):
+            gits_list = os.listdir(gits_folder)
+
+            for git_name in gits_list:
+                git_folder = os.path.join(gits_folder, git_name)
+                res = Git(app.gits(), None)
+                res.load(git_folder)
+                self._import_entity_and_detect_conflict(res, "git", skip_conflict_detection=skip_conflict_detection)
 
     def import_distribution(self, org, root_folder, skip_conflict_detection=False):
         """
