@@ -602,6 +602,9 @@ class Client(object):
     def rpm_modules(self, org, app):
         return self.get_application(org, app).rpm_modules()
 
+    def gits(self, org, app):
+        return self.get_application(org, app).gits()
+
     # Hosts helpers
 
     def hosts(self, org_name, env_name):

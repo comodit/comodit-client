@@ -107,6 +107,13 @@ class Export(object):
             ensure(module_folder)
             module.dump_json(os.path.join(module_folder, "definition.json"))
 
+        git_folders = os.path.join(path, "gits")
+        ensure(git_folders)
+        for git in app.gits():
+            folder = os.path.join(git_folders, git.name)
+            ensure(folder)
+            git.dump_json(os.path.join(folder, "definition.json"))
+
     def export_distribution(self, dist, path, backup = False):
         """
         Exports a distribution to a local folder.

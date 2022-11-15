@@ -1499,6 +1499,26 @@ class Host(HasSettings):
 
         self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name + "/_update", decode = False, parameters = parameters)
 
+    def update_git(self, app_name, git_name, branch):
+        """
+        Requests the update of a git repository on provisioned machine. This may, for
+        instance, solve a compliance error linked to target git repository having been
+        removed. A change is queued and exposes the result of the operation.
+
+        @param app_name: The name of file's application.
+        @type app_name: string
+        @param git_name: The git's name.
+        @type git_name: string
+        @param branch: The git's branch.
+        @type branch: string
+        """
+
+        parameters = {}
+        if branch:
+            parameters['branch'] = branch
+
+        self._http_client.update(self.url + "applications/" + app_name + "/gits/" + git_name + "/_install", decode = False, parameters = parameters)
+
 
     def live_install_package(self, app_name, pkg_name, pkg_version):
         """

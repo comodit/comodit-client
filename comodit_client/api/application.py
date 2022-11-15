@@ -27,6 +27,7 @@ from comodit_client.api.store import IsStoreCapable
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.json_wrapper import JsonWrapper
 from .files import File
+from .git import ApplicationGitCollection
 
 
 class ApplicationCollection(Collection):
@@ -973,6 +974,16 @@ class Application(HasParameters, IsStoreCapable):
         """
 
         return ApplicationRpmModuleCollection(self.client, self.url + "rpmmodules/")
+
+    def gits(self):
+        """
+        Instantiates the collection of application gits associated to the
+        application.
+
+        @rtype: L{ApplicationGitCollection}
+        """
+
+        return ApplicationGitCollection(self.client, self.url + "gits/")
 
     def get_rpm_modules(self, name):
         """

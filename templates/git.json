@@ -1,0 +1,9 @@
+{
+    "name": "<file name>",
+    "endpoint": "<url>",
+    "username": "<username>",
+    "token": "<token>",
+    "keyName": "<ssh file name>",
+    "branch": "<branch>",
+    "authenticationMethod": "<HTTPS||SSH>"
+}

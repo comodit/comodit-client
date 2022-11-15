@@ -27,6 +27,7 @@ class ApplicationActionController(AbstractController):
         self._register(["disable-service"], self._disable_service, self._print_service_completions)
         self._register(["install-package"], self._install_package, self._print_package_completions)
         self._register(["update-package"], self._force_update_package, self._print_package_completions)
+        self._register(["update-git"], self._force_update_git, self._print_git_completions)
         self._register(["run"], self._run_action, self._print_run_completions)
 
         self._register(["help"], self._help)
@@ -110,6 +111,14 @@ class ApplicationActionController(AbstractController):
         elif len(argv) > 3 and param_num == 4:
             app = self._client.get_application(argv[0], argv[3])
             for res in app.packages:
+                completions.print_escaped_string(res.name)
+
+    def _print_git_completions(self, param_num, argv):
+        if param_num < 4:
+            self._print_host_completions(param_num, argv)
+        elif len(argv) > 3 and param_num == 4:
+            app = self._client.get_application(argv[0], argv[3])
+            for res in app.gits:
                 completions.print_escaped_string(res.name)
 
     def _impact(self, argv):
@@ -206,6 +215,21 @@ class ApplicationActionController(AbstractController):
             pkg_version = None
 
         host.update_package(app_name, pkg_name, pkg_version)
+
+    def _force_update_git(self, argv):
+        if len(argv) < 4:
+            raise ArgumentException("Wrong number of arguments")
+
+        host = self._get_host(argv)
+        app_name = argv[3]
+        git_name = argv[4]
+
+        if len(argv) == 4:
+            branch = argv[5]
+        else:
+            branch = None
+
+        host.update_git(app_name, git_name, branch)
 
     def _install_package(self, argv):
         if len(argv) < 4:
