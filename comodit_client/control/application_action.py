@@ -137,7 +137,7 @@ class ApplicationActionController(AbstractController):
         get impact action.""")
         
     def _update_file(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
@@ -150,7 +150,7 @@ class ApplicationActionController(AbstractController):
         Updates file on given host.""")
 
     def _restart_service(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
@@ -163,7 +163,7 @@ class ApplicationActionController(AbstractController):
         Restarts service on given host.""")
 
     def _update_service(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
@@ -176,7 +176,7 @@ class ApplicationActionController(AbstractController):
         Updates service on given host.""")
     
     def _enable_service(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
@@ -189,7 +189,7 @@ class ApplicationActionController(AbstractController):
         Enables service on given host.""")
     
     def _disable_service(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
@@ -202,7 +202,7 @@ class ApplicationActionController(AbstractController):
         Disables service on given host.""")
 
     def _force_update_package(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
@@ -217,14 +217,14 @@ class ApplicationActionController(AbstractController):
         host.update_package(app_name, pkg_name, pkg_version)
 
     def _force_update_git(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
         app_name = argv[3]
         git_name = argv[4]
 
-        if len(argv) == 4:
+        if len(argv) == 6:
             branch = argv[5]
         else:
             branch = None
@@ -232,14 +232,14 @@ class ApplicationActionController(AbstractController):
         host.update_git(app_name, git_name, branch)
 
     def _install_package(self, argv):
-        if len(argv) < 4:
+        if len(argv) < 5:
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
         app_name = argv[3]
         pkg_name = argv[4]
 
-        if len(argv) == 4:
+        if len(argv) == 6:
             pkg_version = argv[5]
         else:
             pkg_version = None
