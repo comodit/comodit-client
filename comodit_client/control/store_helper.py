@@ -1,6 +1,6 @@
 from builtins import str
 from builtins import object
-import json, os
+import json, os, sys
 
 from comodit_client.control.doc import ActionDoc
 from comodit_client.api.exceptions import PythonApiException
@@ -108,8 +108,21 @@ class StoreHelper(object):
             pub = self.store().get(app.published_as, {"org_name" : argv[0]})
         except PythonApiException:
             raise ControllerException("Unable to retrieve entity from store, maybe you forgot to use --org option?")
-        updated = edit_text(json.dumps(pub.authorized, indent = 4))
-        pub.update_authorized(json.loads(updated, object_pairs_hook=OrderedDict))
+
+        config = Config()
+        options = config.options
+        if options.filename:
+            with open(options.filename, 'r', encoding='utf-8') as f:
+                updated = json.load(f)
+        elif options.json:
+            updated = json.loads(options.json)
+        elif options.stdin:
+            updated = json.load(sys.stdin)
+        else:
+            updated = edit_text(json.dumps(pub.authorized, indent = 4))
+            updated = json.loads(updated, object_pairs_hook=OrderedDict)
+
+        pub.update_authorized(updated)
 
     def _update_authorized_doc(self):
         return ActionDoc("update-authorized", "<UUID>", """
