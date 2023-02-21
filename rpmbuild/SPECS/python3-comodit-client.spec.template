@@ -21,6 +21,9 @@ Packager: Daniel Bartz <daniel.bartz@guardis.com>
 BuildRequires: python3 >= 3.5
 
 %{?el8:BuildRequires: platform-python-devel}
+%{?el9:BuildRequires: platform-devel}
+%{?el9:BuildRequires: python3-devel}
+%{?el9:BuildRequires: python3-setuptools}
 %{?fedora:BuildRequires: platform-devel}
 %{?fedora:BuildRequires: python3-devel}
 %{?fedora:BuildRequires: python3-setuptools}
