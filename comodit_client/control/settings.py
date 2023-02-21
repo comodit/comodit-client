@@ -239,7 +239,8 @@ class HostAbstractSettingsController(EntityController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _list_setting_doc(self):
         return ActionDoc("list", "<org_name> <env_name> <host_name> [--secret] [--non-secret] [--key]", """
@@ -338,7 +339,8 @@ class ApplicationContextSettingsController(EntityController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _show_origin_doc(self):
         return ActionDoc("show-origin", self._list_params(), """
@@ -411,7 +413,8 @@ class HostSettingsController(SettingController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _impact_doc(self):
         return ActionDoc("impact", "<org_name> <env_name> <host_name> <setting_name>", """
@@ -513,7 +516,8 @@ class EnvironmentSettingsController(SettingController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _impact_doc(self):
         return ActionDoc("impact", "<org_name> <env_name> <setting_name>", """
@@ -580,7 +584,8 @@ class HostGroupSettingsController(SettingController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _impact_doc(self):
         return ActionDoc("impact", "<org_name> <hostgroup_name> <setting_name>", """
@@ -684,7 +689,8 @@ class DistributionSettingsController(EntityController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _list_setting_doc(self):
         return ActionDoc("list", "<org_name> <dist_name> [--secret] [--non-secret] [--key]", """
@@ -749,7 +755,8 @@ class PlatformSettingsController(EntityController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _list_setting_doc(self):
         return ActionDoc("list", "<org_name> <plat_name> [--secret] [--non-secret] [--key]", """
@@ -820,7 +827,8 @@ class OrganizationSettingsController(SettingController):
 
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
-        Add, update or delete Settings.""")
+        Add, update or delete Settings.
+        --no-delete           Skips deletions when changing settings""")
 
     def _impact(self, argv):
         res = self._client.get_organization(argv[0]).impact(argv[1])
