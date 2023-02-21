@@ -49,11 +49,20 @@ class ComplianceController(EntityController):
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 2 and param_num == 3:
             for e in self._client.get_host(argv[0], argv[1], argv[2]).compliance():
-                completions.print_escaped_string(e.name)
+                completions.print_escaped_string(e.identifier)
+
+    def _show_doc(self):
+        return ActionDoc("show", "<org_name> <env_name> <host_name> <applications/<app_name>/<type>/<id>>", """
+        Show an entity.""")
+
+    def _delete_doc(self):
+        return ActionDoc("delete", "<org_name> <env_name> <host_name> <applications/<app_name>/<type>/<id>>", """
+        Delete an existing entity.""")
+
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
-            raise ArgumentException("An organization, environment, host and compliance error name must be provided");
+            raise ArgumentException("An organization, environment, host and compliance error name must be provided")
         return argv[3]
 
     def _delete_all(self, argv):
