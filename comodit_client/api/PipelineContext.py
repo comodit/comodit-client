@@ -196,15 +196,6 @@ class PipelineContext(Entity):
         """
         return self._http_client.update(self.url + "_pause", decode = True)
 
-    def stop(self):
-        """
-        Requests to stop pipeline
-
-        @return: Pipeline context
-        @rtype: L{PipelineContext}
-        """
-        return self._http_client.update(self.url + "_stop", decode = True)
-
     def cancel(self):
         """
         Requests to cancel pipeline

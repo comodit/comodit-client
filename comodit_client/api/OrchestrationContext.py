@@ -201,15 +201,6 @@ class OrchestrationContext(Entity):
         """
         return self._http_client.update(self.url + "_pause", decode = True)
 
-    def stop(self):
-        """
-        Requests to stop orchestration
-
-        @return: Orchestration context
-        @rtype: L{OrchestrationContext}
-        """
-        return self._http_client.update(self.url + "_stop", decode = True)
-
     def cancel(self):
         """
         Requests to cancel orchestration

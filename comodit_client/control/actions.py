@@ -175,13 +175,12 @@ class OrchestrationActionController(AbstractActionController):
     def __init__(self):
         super(OrchestrationActionController, self).__init__()
         self._register(["pause"], self._pause, self._print_orchestration_context_completions)
-        self._register(["stop"], self._stop, self._print_orchestration_context_completions)
         self._register(["cancel"], self._cancel, self._print_orchestration_context_completions)
         self._register(["resume"], self._resume, self._print_orchestration_context_completions)
         self._register(["continue"], self._restart, self._print_orchestration_context_completions)
 
         self._register_action_doc(self._pause_doc())
-        self._register_action_doc(self._stop_doc())
+        self._register_action_doc(self._cancel_doc())
         self._register_action_doc(self._resume_doc())
         self._register_action_doc(self._restart_doc())
 
@@ -204,10 +203,6 @@ class OrchestrationActionController(AbstractActionController):
     def _pause(self, argv):
         context = self._get_orchestration_context(argv)
         context.pause()
-
-    def _stop(self, argv):
-        orchestration = self._get_orchestration_context(argv)
-        orchestration.stop()
 
     def _cancel(self, argv):
         orchestration = self._get_orchestration_context(argv)
@@ -238,9 +233,9 @@ class OrchestrationActionController(AbstractActionController):
         return ActionDoc("pause", "<org_name> <orchestration_name> <id>", """
         pause running orchestration on host in hostgroups.""")
 
-    def _stop_doc(self):
-        return ActionDoc("stop", "<org_name> <orchestration_name> <id>", """
-        stop running orchestration on host in hostgroups.""")
+    def _cancel_doc(self):
+        return ActionDoc("cancel", "<org_name> <orchestration_name> <id>", """
+        cancel running orchestration on host in hostgroups.""")
 
     def _restart_doc(self):
         return ActionDoc("restart", "<org_name> <orchestration_name> <id>", """
@@ -280,12 +275,10 @@ class PipelineActionController(AbstractActionController):
     def __init__(self):
         super(PipelineActionController, self).__init__()
         self._register(["pause"], self._pause, self._print_context_completions)
-        self._register(["stop"], self._stop, self._print_context_completions)
         self._register(["cancel"], self._cancel, self._print_context_completions)
         self._register(["resume"], self._resume, self._print_context_completions)
 
         self._register_action_doc(self._pause_doc())
-        self._register_action_doc(self._stop_doc())
         self._register_action_doc(self._resume_doc())
 
     def _get_context(self, organization, name, context_uuid):
@@ -294,10 +287,6 @@ class PipelineActionController(AbstractActionController):
     def _pause(self, argv):
         context = self._get_context(argv[0],  argv[1], argv[2])
         context.pause()
-
-    def _stop(self, argv):
-        context = self._get_context(argv[0],  argv[1], argv[2])
-        context.stop()
 
     def _cancel(self, argv):
         context = self._get_context(argv[0],  argv[1], argv[2])
@@ -323,10 +312,6 @@ class PipelineActionController(AbstractActionController):
     def _pause_doc(self):
         return ActionDoc("pause", "<org_name> <pipeline_name> <id>", """
         pause running pipeline.""")
-
-    def _stop_doc(self):
-        return ActionDoc("stop", "<org_name> <pipeline_name> <id>", """
-        stop running pipeline.""")
 
     def _resume_doc(self):
         return ActionDoc("resume", "<org_name> <pipeline_name> <id>", """
