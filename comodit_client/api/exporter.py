@@ -275,7 +275,8 @@ class Export(object):
         self._export_entity(org, path)
 
         for app in org.applications():
-            self.export_application(app, os.path.join(path, "applications", app.name))
+            app_to_export = org.get_application(app.name)
+            self.export_application(app_to_export, os.path.join(path, "applications", app_to_export.name))
 
         for dist in org.distributions():
             self.export_distribution(dist, os.path.join(path, "distributions", dist.name))
