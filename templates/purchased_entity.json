@@ -1,4 +1,5 @@
 {
     "published" : "<instore_UUID>",
-    "name" : ""
+    "name" : "",
+    "forceUpdate": false
 }
